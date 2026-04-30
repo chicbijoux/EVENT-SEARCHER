@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EventScout RO v3 — Contact Page Email Hunter</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+:root {
+  --bg:#06080f;--s1:#0e1220;--s2:#151b2e;--border:#1f2a45;
+  --accent:#4f8ef7;--green:#34d399;--yellow:#fbbf24;--red:#f87171;--purple:#a78bfa;
+  --text:#e2e8f8;--muted:#5a6a8a;
+  --mono:'JetBrains Mono',monospace;--sans:'Space Grotesk',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh;font-size:14px}
+.app{display:grid;grid-template-columns:300px 1fr;min-height:100vh}
+@media(max-width:700px){.app{grid-template-columns:1fr}}
+
+.sidebar{background:var(--s1);border-right:1px solid var(--border);padding:18px;display:flex;flex-direction:column;gap:14px;overflow-y:auto;max-height:100vh;position:sticky;top:0}
+.brand{display:flex;align-items:center;gap:10px;padding-bottom:14px;border-bottom:1px solid var(--border)}
+.brand-icon{width:32px;height:32px;background:linear-gradient(135deg,var(--accent),var(--purple));border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.brand h1{font-size:.95rem;font-weight:700;letter-spacing:-.02em}
+.brand p{font-size:.6rem;color:var(--muted);font-family:var(--mono)}
+.slabel{font-size:.6rem;font-family:var(--mono);text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:5px}
+.field{margin-bottom:9px}
+.field label{display:block;font-size:.68rem;color:var(--muted);margin-bottom:3px;font-family:var(--mono)}
+select,input{width:100%;background:var(--s2);border:1px solid var(--border);color:var(--text);font-family:var(--sans);font-size:.8rem;padding:7px 10px;border-radius:6px;outline:none;transition:border .2s;appearance:none}
+select:focus,input:focus{border-color:var(--accent)}
+.tag-grid{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}
+.tag{background:var(--s2);border:1px solid var(--border);color:var(--muted);font-size:.62rem;font-family:var(--mono);padding:3px 7px;border-radius:4px;cursor:pointer;user-select:none;transition:all .15s}
+.tag.on{background:#0f1f3a;border-color:var(--accent);color:var(--accent)}
+.tag:hover{border-color:var(--accent)}
+
+/* pipeline */
+.pipeline-steps{display:flex;flex-direction:column;gap:5px}
+.step{display:flex;align-items:center;gap:7px;padding:7px 9px;background:var(--s2);border:1px solid var(--border);border-radius:6px;font-size:.72rem;transition:all .2s}
+.step-num{width:19px;height:19px;border-radius:50%;background:var(--border);display:flex;align-items:center;justify-content:center;font-size:.58rem;font-family:var(--mono);flex-shrink:0;transition:background .2s}
+.step.active{border-color:var(--accent)}.step.active .step-num{background:var(--accent);color:#fff}
+.step.done{border-color:var(--green)}.step.done .step-num{background:var(--green);color:#000}
+.step.error{border-color:var(--red)}.step.error .step-num{background:var(--red);color:#fff}
+.step-info{flex:1}.step-title{font-weight:600}
+.step-sub{font-size:.6rem;color:var(--muted);font-family:var(--mono);margin-top:1px}
+.step-badge{font-size:.58rem;font-family:var(--mono);padding:2px 6px;border-radius:3px;background:var(--s1);border:1px solid var(--border);color:var(--muted);white-space:nowrap;transition:all .2s}
+.step.done .step-badge{background:#0a1f15;border-color:var(--green);color:var(--green)}
+.step.active .step-badge{background:#0d1a35;border-color:var(--accent);color:var(--accent);animation:blink 1.2s infinite}
+.step.error .step-badge{background:#1f0808;border-color:var(--red);color:var(--red)}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.5}}
+
+/* highlight box for new feature */
+.feature-box{background:#0a1520;border:1px solid var(--accent);border-radius:6px;padding:9px 10px;font-size:.65rem;font-family:var(--mono);color:var(--accent);line-height:1.6}
+.feature-box strong{color:#fff;display:block;margin-bottom:3px;font-size:.68rem}
+
+.token-notice{background:#1a1000;border:1px solid #503000;border-radius:6px;padding:9px 10px;font-size:.65rem;font-family:var(--mono);color:#f0a830;line-height:1.6}
+.token-notice strong{color:#fbbf24;display:block;margin-bottom:3px}
+
+.btn-run{width:100%;padding:11px;background:var(--accent);color:#fff;border:none;border-radius:8px;font-family:var(--sans);font-weight:700;font-size:.9rem;cursor:pointer;transition:all .2s;margin-top:4px}
+.btn-run:hover:not(:disabled){background:#3a7ef6;transform:translateY(-1px);box-shadow:0 4px 20px rgba(79,142,247,.3)}
+.btn-run:disabled{opacity:.4;cursor:not-allowed;transform:none}
+
+.qpbox{background:var(--s2);border:1px solid var(--border);border-radius:5px;padding:8px;max-height:100px;overflow-y:auto}
+.qpitem{font-family:var(--mono);font-size:.6rem;color:var(--muted);padding:2px 0;border-bottom:1px solid var(--border);line-height:1.5}
+.qpitem:last-child{border:none}
+.qpitem .arrow{color:var(--accent);margin-right:4px}
+
+/* main */
+.main{display:flex;flex-direction:column;min-height:100vh}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:13px 20px;border-bottom:1px solid var(--border);background:var(--s1);gap:10px;flex-wrap:wrap;position:sticky;top:0;z-index:10}
+.topbar h2{font-size:.92rem;font-weight:700}
+.stats-row{display:flex;gap:16px}
+.stat{text-align:center}
+.stat-val{font-size:1.1rem;font-weight:700;font-family:var(--mono);color:var(--accent);transition:color .3s}
+.stat-val.has{color:var(--green)}
+.stat-label{font-size:.58rem;color:var(--muted);font-family:var(--mono)}
+.progress-strip{height:3px;background:var(--border);flex-shrink:0}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--purple));transition:width .4s ease;width:0%}
+
+.log-panel{background:var(--s1);border-bottom:1px solid var(--border);padding:9px 18px;font-family:var(--mono);font-size:.64rem;height:130px;overflow-y:auto;flex-shrink:0}
+.log-entry{padding:1.5px 0;display:flex;gap:8px;align-items:baseline}
+.log-time{color:var(--muted);flex-shrink:0;font-size:.6rem}
+.log-msg{color:var(--text);line-height:1.4}
+.log-msg.ok{color:var(--green)}.log-msg.warn{color:var(--yellow)}
+.log-msg.err{color:var(--red)}.log-msg.info{color:var(--accent)}
+.log-msg.step{color:var(--purple);font-weight:500}
+.log-msg.contact{color:#f0a830}
+
+.results-area{flex:1;display:flex;flex-direction:column}
+.rtoolbar{display:flex;align-items:center;justify-content:space-between;padding:9px 18px;border-bottom:1px solid var(--border);flex-wrap:wrap;gap:8px}
+.rtoolbar-left{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.badge{font-family:var(--mono);font-size:.63rem;padding:3px 9px;border-radius:12px;background:var(--s2);border:1px solid var(--border);color:var(--muted);transition:all .3s}
+.badge.green{background:#0a1f15;border-color:var(--green);color:var(--green)}
+.badge.blue{background:#0d1a35;border-color:var(--accent);color:var(--accent)}
+.btn-exp{background:var(--s2);border:1px solid var(--green);color:var(--green);font-family:var(--sans);font-size:.75rem;font-weight:600;padding:5px 13px;border-radius:6px;cursor:pointer;transition:all .15s}
+.btn-exp:hover:not(:disabled){background:#0a2018}
+.btn-exp:disabled{opacity:.3;cursor:not-allowed}
+.btn-clear{background:var(--s2);border:1px solid var(--border);color:var(--muted);font-family:var(--sans);font-size:.72rem;padding:5px 10px;border-radius:6px;cursor:pointer;transition:all .15s}
+.btn-clear:hover{border-color:var(--red);color:var(--red)}
+
+.table-wrap{overflow:auto;flex:1}
+table{width:100%;border-collapse:collapse;font-size:.76rem;min-width:780px}
+thead th{background:var(--s2);padding:8px 12px;text-align:left;font-family:var(--mono);font-size:.58rem;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);border-bottom:1px solid var(--border);white-space:nowrap;position:sticky;top:0;z-index:5}
+tbody tr{border-bottom:1px solid var(--border);transition:background .1s}
+tbody tr:hover{background:var(--s2)}
+td{padding:8px 12px;vertical-align:top}
+.ev-name{font-weight:600;color:var(--text);line-height:1.35;max-width:200px}
+.ev-org{font-size:.63rem;color:var(--muted);font-family:var(--mono);margin-top:2px}
+.chip{display:inline-block;font-size:.6rem;font-family:var(--mono);padding:2px 7px;border-radius:3px;white-space:nowrap}
+.chip-blue{background:#0d1a35;border:1px solid #2a4080;color:#7aabff}
+.chip-green{background:#0a1f15;border:1px solid #1a5035;color:#4fbd8a}
+.email-val{font-family:var(--mono);font-size:.68rem;color:var(--green);word-break:break-all}
+.email-src{font-size:.58rem;font-family:var(--mono);color:var(--muted);margin-top:1px}
+.email-src.contact-src{color:#f0a830}
+.email-none{color:var(--muted);font-style:italic;font-size:.68rem}
+.extra-emails{font-size:.58rem;color:var(--muted);font-family:var(--mono);margin-top:2px}
+.phone-val{font-family:var(--mono);font-size:.68rem;color:var(--muted)}
+.url-link{font-family:var(--mono);font-size:.6rem;color:var(--accent);text-decoration:none;word-break:break-all}
+.url-link:hover{text-decoration:underline}
+.contact-link{font-family:var(--mono);font-size:.58rem;color:#f0a830;text-decoration:none;display:block;margin-top:2px}
+.contact-link:hover{text-decoration:underline}
+.src-chip{font-family:var(--mono);font-size:.58rem;color:var(--muted);max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block;cursor:help}
+.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;color:var(--muted);text-align:center;gap:12px}
+.empty-icon{font-size:2.5rem}
+.empty-state p{font-family:var(--mono);font-size:.75rem;line-height:1.7}
+
+/* email found highlight */
+@keyframes flashRow{0%{background:#0a2a15}100%{background:transparent}}
+.email-found{animation:flashRow 1.5s ease}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <div class="brand">
+    <div class="brand-icon">🕵️</div>
+    <div><h1>EventScout RO</h1><p>// v3 · contact page hunter</p></div>
+  </div>
+
+  <div>
+    <div class="slabel">🔑 Apify API Token</div>
+    <div class="field">
+      <input type="password" id="apifyToken" placeholder="apify_api_..." value="apify_api_MzqE2XDSpFgw4zd7zS8Etn7nsgvZwb4oq9Fl">
+    </div>
+    <div class="token-notice">
+      <strong>⚠️ Nu partaja acest fișier HTML</strong>
+      Token-ul Apify e stocat local. Păstrează fișierul privat.
+    </div>
+  </div>
+
+  <div class="feature-box">
+    <strong>🆕 v3 — Contact Page Hunter</strong>
+    După crawlul paginii principale, detectez automat linkurile /contact /despre /echipa și le crawlesc separat pentru a găsi emailuri.
+  </div>
+
+  <div>
+    <div class="slabel">⚙️ Configurare</div>
+    <div class="field"><label>Oraș</label>
+      <select id="citySelect">
+        <option>Cluj-Napoca</option><option>București</option>
+        <option>Iași</option><option>Timișoara</option><option>Brașov</option>
+        <option>Sibiu</option><option>Oradea</option><option>Constanța</option>
+      </select>
+    </div>
+    <div class="field"><label>Pattern căutare</label>
+      <select id="patternSelect">
+        <option value="1">Pattern 1 — Core + Audiență + Topic</option>
+        <option value="2">Pattern 2 — Activitate + Audiență</option>
+        <option value="3">Pattern 3 — Descoperire largă</option>
+        <option value="4">Pattern 4 — Cursuri / Educație</option>
+        <option value="5">Pattern 5 — English fallback</option>
+      </select>
+    </div>
+    <div class="field"><label>Rezultate Google / query</label>
+      <select id="numResults">
+        <option value="5">5</option><option value="10" selected>10</option><option value="20">20</option>
+      </select>
+    </div>
+    <div class="field"><label>Max site-uri principale crawlate</label>
+      <select id="maxPages">
+        <option value="5">5 site-uri</option>
+        <option value="10" selected>10 site-uri</option>
+        <option value="20">20 site-uri</option>
+      </select>
+    </div>
+  </div>
+
+  <div>
+    <div class="slabel">🧠 Topicuri active</div>
+    <div class="tag-grid" id="topicTags">
+      <span class="tag on" data-v="parenting">parenting</span>
+      <span class="tag on" data-v="educație parentală">ed. parentală</span>
+      <span class="tag" data-v="disciplină pozitivă">disciplină poz.</span>
+      <span class="tag" data-v="dezvoltare copil">dezv. copil</span>
+      <span class="tag" data-v="inteligență emoțională">int. emoțională</span>
+      <span class="tag" data-v="relația părinte copil">rel. părinte-copil</span>
+      <span class="tag" data-v="psihologie copil">psih. copil</span>
+      <span class="tag" data-v="comunicare copii">comunicare copii</span>
+      <span class="tag" data-v="montessori">Montessori</span>
+      <span class="tag" data-v="STEM copii">STEM copii</span>
+      <span class="tag" data-v="activități creative">activități creative</span>
+    </div>
+  </div>
+
+  <div>
+    <div class="slabel">🔎 Queries generate</div>
+    <div class="qpbox" id="qpbox"></div>
+  </div>
+
+  <div>
+    <div class="slabel">🔄 Pipeline (4 pași)</div>
+    <div class="pipeline-steps">
+      <div class="step" id="step1">
+        <div class="step-num">1</div>
+        <div class="step-info"><div class="step-title">Google SERP</div><div class="step-sub">apify~google-search-scraper</div></div>
+        <span class="step-badge" id="s1b">idle</span>
+      </div>
+      <div class="step" id="step2">
+        <div class="step-num">2</div>
+        <div class="step-info"><div class="step-title">Crawl pagini principale</div><div class="step-sub">apify~website-content-crawler</div></div>
+        <span class="step-badge" id="s2b">idle</span>
+      </div>
+      <div class="step" id="step3">
+        <div class="step-num">3</div>
+        <div class="step-info"><div class="step-title">🆕 Crawl pagini Contact</div><div class="step-sub">detectez /contact /despre /echipa</div></div>
+        <span class="step-badge" id="s3b">idle</span>
+      </div>
+      <div class="step" id="step4">
+        <div class="step-num">4</div>
+        <div class="step-info"><div class="step-title">Extracție & deduplicare</div><div class="step-sub">email · telefon · topic</div></div>
+        <span class="step-badge" id="s4b">idle</span>
+      </div>
+    </div>
+  </div>
+
+  <button class="btn-run" id="btnRun">⚡ Pornește Pipeline</button>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <h2>Rezultate extrase</h2>
+    <div class="stats-row">
+      <div class="stat"><div class="stat-val" id="stUrls">0</div><div class="stat-label">URLs</div></div>
+      <div class="stat"><div class="stat-val" id="stCrawled">0</div><div class="stat-label">Crawled</div></div>
+      <div class="stat"><div class="stat-val" id="stContact">0</div><div class="stat-label">Contact pgs</div></div>
+      <div class="stat"><div class="stat-val" id="stEvents">0</div><div class="stat-label">Evenimente</div></div>
+      <div class="stat"><div class="stat-val" id="stEmails">0</div><div class="stat-label">Emailuri</div></div>
+    </div>
+  </div>
+  <div class="progress-strip"><div class="progress-fill" id="pfill"></div></div>
+  <div class="log-panel" id="logPanel">
+    <div class="log-entry"><span class="log-time">--:--:--</span><span class="log-msg info">v3 ready · Contact Page Hunter activ. Configurează și apasă Start.</span></div>
+  </div>
+  <div class="results-area">
+    <div class="rtoolbar">
+      <div class="rtoolbar-left">
+        <span class="badge" id="tbadge">0 events</span>
+        <span class="badge" id="ebadge">0 emails</span>
+        <span class="badge blue" id="cbadge">0 de pe contact</span>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="btn-clear" id="btnClear">🗑 Șterge</button>
+        <button class="btn-exp" id="btnExp" disabled>📥 Export CSV → Google Sheets</button>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr>
+          <th>Eveniment / Organizator</th>
+          <th>URL principal · Contact</th>
+          <th>Topic</th>
+          <th>Oraș</th>
+          <th>Email(uri)</th>
+          <th>Telefon</th>
+          <th>Query</th>
+        </tr></thead>
+        <tbody id="tbody">
+          <tr><td colspan="7"><div class="empty-state">
+            <div class="empty-icon">🔍</div>
+            <p>v3 crawlează automat paginile de Contact, Despre, Echipă<br>
+            pentru a găsi emailuri care lipseau în v2.<br><br>
+            Apasă <strong>⚡ Pornește Pipeline</strong> pentru a începe.</p>
+          </div></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+const BASE = 'https://api.apify.com/v2';
+const SOCIAL = /instagram\.com|facebook\.com|tiktok\.com|twitter\.com|x\.com|youtube\.com|linkedin\.com/;
+const EMAIL_RE = /[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}/g;
+const PHONE_RO = /(\+40|0040|0)[0-9\s\-\.]{8,13}/g;
+
+// ── Contact page patterns ──────────────────────────────────────
+// These URL patterns strongly indicate a contact/about page
+const CONTACT_PATTERNS = [
+  /\/contact/i, /\/despre/i, /\/about/i, /\/echipa/i, /\/team/i,
+  /\/get-in-touch/i, /\/reach/i, /\/write/i, /\/mail/i,
+  /\/ne-contactati/i, /\/contactati/i, /\/contacteaza/i,
+  /\/informati/i, /\/ajutor/i, /\/support/i
+];
+
+function isContactUrl(url) {
+  return CONTACT_PATTERNS.some(re => re.test(url));
+}
+
+// Given a base URL, generate candidate contact page URLs to try
+function guessContactUrls(baseUrl) {
+  try {
+    const u = new URL(baseUrl);
+    const origin = u.origin;
+    const slugs = ['/contact', '/despre-noi', '/despre', '/contact-us',
+                   '/about', '/echipa', '/contacteaza-ne', '/ne-contactati'];
+    return slugs.map(s => origin + s);
+  } catch { return []; }
+}
+
+// ── Tags & queries ─────────────────────────────────────────────
+document.querySelectorAll('.tag').forEach(t => t.addEventListener('click', () => {
+  t.classList.toggle('on'); updateQP();
+}));
+['citySelect','patternSelect'].forEach(id =>
+  document.getElementById(id).addEventListener('change', updateQP));
+
+function selTopics(){ return [...document.querySelectorAll('.tag.on')].map(t=>t.dataset.v) }
+
+function buildQueries(city, pat, tops){
+  const t = tops.length ? tops : ['parenting'];
+  let qs = [];
+  if(pat==='1'){ t.slice(0,4).forEach(tp=>qs.push(`atelier părinți copii ${tp} ${city} 2026`)); qs.push(`workshop familie ${t[0]} ${city}`,`curs ${t[0]} părinți ${city}`); }
+  else if(pat==='2'){ qs.push(`atelier creativ părinte copil ${city} 2026`,`activități interactive copii ${city}`,`ateliere muzică dans teatru copii ${city} 2026`,`experimente STEM copii ${city}`); }
+  else if(pat==='3'){ qs.push(`evenimente copii părinți ${city} weekend 2026`,`program activități familie ${city} 2026`,`târg festival copii ${city} 2026`,`calendar activități ${city} 2026`); }
+  else if(pat==='4'){ t.slice(0,3).forEach(tp=>qs.push(`cursuri ${tp} părinți ${city} 2026`)); qs.push(`seminar educație parentală ${city}`,`training parenting ${city} 2026`); }
+  else { qs.push(`parenting workshop ${city} Romania 2026`,`parent child workshop ${city} Romania`,`family events kids ${city} Romania`,`child development class ${city} Romania`,`parenting class ${city} Romania`); }
+  return qs.slice(0,6);
+}
+
+function updateQP(){
+  const city=document.getElementById('citySelect').value;
+  const pat=document.getElementById('patternSelect').value;
+  const qs=buildQueries(city,pat,selTopics());
+  document.getElementById('qpbox').innerHTML=qs.map(q=>`<div class="qpitem"><span class="arrow">›</span>${q}</div>`).join('');
+}
+updateQP();
+
+// ── UI helpers ─────────────────────────────────────────────────
+function log(msg, type=''){
+  const p=document.getElementById('logPanel');
+  const n=new Date();
+  const ts=[n.getHours(),n.getMinutes(),n.getSeconds()].map(x=>String(x).padStart(2,'0')).join(':');
+  const d=document.createElement('div'); d.className='log-entry';
+  d.innerHTML=`<span class="log-time">${ts}</span><span class="log-msg ${type}">${msg}</span>`;
+  p.appendChild(d); p.scrollTop=p.scrollHeight;
+}
+function setP(pct){ document.getElementById('pfill').style.width=pct+'%' }
+function setStep(n,state,badge){
+  document.getElementById('step'+n).className='step '+state;
+  document.getElementById('s'+n+'b').textContent=badge;
+}
+let _emailsFromContact=0;
+function updStats(urls,crawled,contact,evts,emails){
+  const sv=(id,val,hi)=>{ const e=document.getElementById(id); e.textContent=val; e.className='stat-val'+(hi?' has':''); };
+  sv('stUrls',urls,false); sv('stCrawled',crawled,false);
+  sv('stContact',contact,contact>0); sv('stEvents',evts,evts>0); sv('stEmails',emails,emails>0);
+  document.getElementById('tbadge').textContent=evts+' events';
+  const eb=document.getElementById('ebadge'); eb.textContent=emails+' emails'; eb.className=emails>0?'badge green':'badge';
+  const cb=document.getElementById('cbadge'); cb.textContent=_emailsFromContact+' de pe /contact';
+}
+
+// ── Apify ──────────────────────────────────────────────────────
+function getToken(){ return document.getElementById('apifyToken').value.trim() }
+
+async function apifyRun(actorId, input){
+  const token=getToken();
+  if(!token) throw new Error('Token Apify lipsă!');
+  const url=`${BASE}/acts/${actorId}/run-sync-get-dataset-items?token=${token}&format=json&clean=true`;
+  const r=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(input)});
+  if(!r.ok){ const t=await r.text(); throw new Error(`Apify [${r.status}]: ${t.slice(0,300)}`); }
+  return r.json();
+}
+
+// ── Extraction helpers ─────────────────────────────────────────
+const TOPIC_MAP=[
+  {kw:['montessori'],label:'Montessori'},
+  {kw:['stem','știință','stiinta','experiment','robotică','robotica'],label:'STEM / Știință'},
+  {kw:['muzic','dans','teatru','pictură','pictura','arte','creativ'],label:'Activități creative'},
+  {kw:['disciplin','pozitiv'],label:'Disciplină pozitivă'},
+  {kw:['emoțional','emotional','empatie'],label:'Inteligență emoțională'},
+  {kw:['comunicar'],label:'Comunicare copii'},
+  {kw:['atașament','atasament','relati','relație'],label:'Relație părinte-copil'},
+  {kw:['parenting','parental','parentala','parentală'],label:'Parenting'},
+  {kw:['copil','copii','bebelus','bebeluș'],label:'Dezvoltare copil'},
+];
+const EVENT_KW=['atelier','workshop','curs','cursuri','seminar','conferință','conferinta','training','program','activitat','eveniment','webinar','lecție','lectie','sesiune','întâlnire','intalnire','festival','tabără','tabara'];
+const AUDIENCE_KW=['copil','copii','părinți','parinti','famil','parenting','bebelus','bebeluș','mama','tata','mame','tați','preșcolar'];
+
+function detectTopic(text){
+  const low=text.toLowerCase();
+  for(const {kw,label} of TOPIC_MAP) if(kw.some(k=>low.includes(k))) return label;
+  return 'Parenting / Familie';
+}
+function isRelevant(text){
+  if(!text||text.length<80) return false;
+  const low=text.toLowerCase();
+  return EVENT_KW.some(k=>low.includes(k)) && AUDIENCE_KW.some(k=>low.includes(k));
+}
+function extractEmails(text){
+  return [...new Set((text.match(EMAIL_RE)||[]).filter(e=>!e.includes('example')&&!e.includes('yourdomain')&&!e.includes('@2x')&&!e.match(/\.(png|jpg|gif|svg|webp)$/i)))];
+}
+function extractPhones(text){
+  return [...new Set((text.match(PHONE_RO)||[]).map(p=>p.trim()).filter(p=>p.replace(/\D/g,'').length>=9))];
+}
+function extractTitle(text,url){
+  const lines=text.split('\n').map(l=>l.replace(/^#+\s*/,'').trim()).filter(l=>l.length>8&&l.length<110&&/[a-zA-ZăîșțâÎȘȚĂÂ]/.test(l));
+  for(const l of lines.slice(0,12)) if(l.length>12) return l;
+  try{ return new URL(url).hostname.replace('www.',''); } catch{ return url.slice(0,60); }
+}
+function extractOrganizer(text,url){
+  const low=text.toLowerCase();
+  for(const re of [/organizator[:\s]+([^\n,\.]{3,50})/,/organizat(?:ă)? de[:\s]+([^\n,\.]{3,50})/,/prezentat(?:ă)? de[:\s]+([^\n,\.]{3,50})/,/trainer[:\s]+([^\n,\.]{3,50})/,/psiholog[:\s]+([^\n,\.]{3,40})/]){
+    const m=low.match(re); if(m) return m[1].trim();
+  }
+  try{ return new URL(url).hostname.replace('www.',''); } catch{ return '—'; }
+}
+
+// Extract contact-page links from crawled markdown/text
+function extractContactLinks(text, baseUrl){
+  const links=[];
+  // Find links in markdown: [text](url) or bare URLs
+  const mdLinks=[...text.matchAll(/\[([^\]]*)\]\((https?:\/\/[^\)]+)\)/g)].map(m=>m[2]);
+  const bareLinks=[...text.matchAll(/https?:\/\/[^\s\)\]"'<>]+/g)].map(m=>m[0]);
+  const allLinks=[...mdLinks,...bareLinks];
+
+  let base='';
+  try{ base=new URL(baseUrl).origin; } catch{}
+
+  for(const link of allLinks){
+    try{
+      const u=new URL(link, base);
+      if(u.origin===base && isContactUrl(u.href) && !links.includes(u.href)){
+        links.push(u.href);
+      }
+    } catch{}
+  }
+  return links.slice(0,4); // max 4 contact links per site
+}
+
+// ── Result store & render ──────────────────────────────────────
+let allResults=[];
+let running=false;
+
+// Map: domain → row element (for updating in place when contact page found)
+const domainToRow={};
+
+function getDomain(url){
+  try{ return new URL(url).hostname.replace('www.',''); } catch{ return url; }
+}
+
+function renderRow(ev){
+  const tbody=document.getElementById('tbody');
+  if(tbody.querySelector('.empty-state')) tbody.innerHTML='';
+  const domain=getDomain(ev.source_url);
+  const tr=document.createElement('tr');
+  tr.id='row-'+encodeURIComponent(domain);
+  const shortUrl=ev.source_url.replace(/https?:\/\/(www\.)?/,'').replace(/\/$/,'').slice(0,38);
+  tr.innerHTML=buildRowHtml(ev, shortUrl);
+  tbody.appendChild(tr);
+  domainToRow[domain]=tr;
+}
+
+function buildRowHtml(ev, shortUrl){
+  shortUrl=shortUrl||ev.source_url.replace(/https?:\/\/(www\.)?/,'').replace(/\/$/,'').slice(0,38);
+  return `
+    <td>
+      <div class="ev-name">${esc(ev.name)}</div>
+      <div class="ev-org">${esc(ev.organizer)}</div>
+    </td>
+    <td>
+      <a class="url-link" href="${esc(ev.source_url)}" target="_blank" rel="noopener">${shortUrl}</a>
+      ${ev.contact_url ? `<a class="contact-link" href="${esc(ev.contact_url)}" target="_blank" rel="noopener">📧 ${esc(ev.contact_url.replace(/https?:\/\/(www\.)?/,'').slice(0,36))}</a>` : ''}
+    </td>
+    <td><span class="chip chip-blue">${esc(ev.topic)}</span></td>
+    <td><span class="chip chip-green">${esc(ev.city)}</span></td>
+    <td>
+      ${ev.email
+        ? `<div class="email-val">${esc(ev.email)}</div>
+           <div class="email-src ${ev.email_from_contact?'contact-src':''}">${ev.email_from_contact?'📧 din pagina Contact':'din pagina principală'}</div>`
+        : '<span class="email-none">— negăsit</span>'}
+      ${ev.allEmails&&ev.allEmails.length>1?`<div class="extra-emails">+${ev.allEmails.length-1} alt(ele):<br>${ev.allEmails.slice(1).map(e=>esc(e)).join('<br>')}</div>`:''}
+    </td>
+    <td><span class="phone-val">${esc(ev.phone||'—')}</span></td>
+    <td><span class="src-chip" title="${esc(ev.source_query)}">${esc(ev.source_query||'').slice(0,38)}</span></td>
+  `;
+}
+
+// Update an existing row in-place when contact page data arrives
+function updateRow(domain, ev){
+  const tr=domainToRow[domain];
+  if(!tr) return;
+  const shortUrl=ev.source_url.replace(/https?:\/\/(www\.)?/,'').replace(/\/$/,'').slice(0,38);
+  tr.innerHTML=buildRowHtml(ev, shortUrl);
+  if(ev.email) tr.classList.add('email-found');
+}
+
+function esc(s){ if(!s)return''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;') }
+
+// ── CSV Export ─────────────────────────────────────────────────
+document.getElementById('btnExp').addEventListener('click',()=>{
+  if(!allResults.length) return;
+  const headers=['Eveniment','Organizator','Topic','Oraș','Email principal','Sursa email','Toate emailurile','Telefon','URL principal','URL contact','Query','Snippet'];
+  const rows=allResults.map(e=>[
+    e.name,e.organizer,e.topic,e.city,
+    e.email||'',
+    e.email_from_contact?'pagina Contact':'pagina principala',
+    (e.allEmails||[]).join(' | '),
+    e.phone||'',e.source_url,e.contact_url||'',e.source_query,e.snippet||''
+  ]);
+  const csv=[headers,...rows].map(r=>r.map(c=>`"${String(c||'').replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=`eventscout_v3_${document.getElementById('citySelect').value.replace(/ /g,'_')}_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  log(`📥 CSV exportat — ${allResults.length} rânduri, ${allResults.filter(e=>e.email).length} cu email`,'ok');
+});
+
+document.getElementById('btnClear').addEventListener('click',()=>{
+  allResults=[]; Object.keys(domainToRow).forEach(k=>delete domainToRow[k]);
+  _emailsFromContact=0;
+  document.getElementById('tbody').innerHTML=`<tr><td colspan="7"><div class="empty-state"><div class="empty-icon">🗑</div><p>Rezultate șterse. Rulează din nou pipeline-ul.</p></div></td></tr>`;
+  updStats(0,0,0,0,0); setP(0);
+  [1,2,3,4].forEach(n=>setStep(n,'','idle'));
+  document.getElementById('btnExp').disabled=true;
+  log('Rezultate șterse.','warn');
+});
+
+// ══════════════════════════════════════════════════════════════
+//  MAIN PIPELINE
+// ══════════════════════════════════════════════════════════════
+document.getElementById('btnRun').addEventListener('click', async()=>{
+  if(running) return;
+  if(!getToken()){ log('⚠️ Introdu tokenul Apify!','err'); return; }
+  running=true;
+  const btn=document.getElementById('btnRun');
+  btn.disabled=true; btn.textContent='⏳ Pipeline rulează...';
+  allResults=[]; Object.keys(domainToRow).forEach(k=>delete domainToRow[k]);
+  _emailsFromContact=0;
+  document.getElementById('tbody').innerHTML='';
+  document.getElementById('btnExp').disabled=true;
+  updStats(0,0,0,0,0); setP(0);
+  [1,2,3,4].forEach(n=>setStep(n,'','idle'));
+
+  const city       = document.getElementById('citySelect').value;
+  const pat        = document.getElementById('patternSelect').value;
+  const tops       = selTopics();
+  const numResults = parseInt(document.getElementById('numResults').value);
+  const maxPages   = parseInt(document.getElementById('maxPages').value);
+  const queries    = buildQueries(city, pat, tops);
+
+  log(`▶ Pipeline v3 pornit — ${queries.length} queries · ${city} · max ${maxPages} site-uri`,'step');
+
+  // ── STEP 1: Google Search ──────────────────────────────────
+  setStep(1,'active','running…'); log('[1/4] Google Search Scraper...','info'); setP(5);
+  let allUrls=[]; let urlToQuery={};
+  try{
+    const res=await apifyRun('apify~google-search-scraper',{
+      queries:queries.join('\n'), maxPagesPerQuery:1,
+      resultsPerPage:numResults, countryCode:'ro', languageCode:'ro', mobileResults:false
+    });
+    res.forEach((r,qi)=>{
+      (r.organicResults||r.nonPromotedSearchResults||[]).forEach(item=>{
+        const u=item.url||item.link;
+        if(!u||allUrls.includes(u)||SOCIAL.test(u)) return;
+        allUrls.push(u); urlToQuery[u]=queries[qi]||queries[0];
+      });
+    });
+    setStep(1,'done',`${allUrls.length} URLs`);
+    log(`[1/4] ✓ ${allUrls.length} URLs (social exclus)`,'ok');
+    updStats(allUrls.length,0,0,0,0); setP(20);
+  } catch(e){
+    setStep(1,'error','eroare'); log(`[1/4] ✗ ${e.message}`,'err');
+    btn.disabled=false; btn.textContent='⚡ Pornește Pipeline'; running=false; return;
+  }
+  if(!allUrls.length){ log('Niciun URL găsit.','warn'); btn.disabled=false; btn.textContent='⚡ Pornește Pipeline'; running=false; return; }
+
+  // ── STEP 2: Crawl pagini principale ───────────────────────
+  setStep(2,'active','running…');
+  const crawlBatch=allUrls.slice(0,maxPages);
+  log(`[2/4] Crawl ${crawlBatch.length} pagini principale...`,'info'); setP(25);
+  let crawledPages=[]; let siteData={}; // domain → {ev, contactLinks}
+
+  try{
+    const res=await apifyRun('apify~website-content-crawler',{
+      startUrls:crawlBatch.map(u=>({url:u})),
+      maxCrawlPages:crawlBatch.length,
+      crawlerType:'cheerio', maxCrawlDepth:0,
+      outputFormats:['markdown'], removeCookieWarnings:true,
+      removeElementsCssSelector:'nav,footer,script,style,.cookie,.popup,.ad,.ads,.menu,.sidebar,[class*="cookie"],[class*="banner"]',
+    });
+    crawledPages=res.filter(p=>p.text||p.markdown||p.content);
+    setStep(2,'done',`${crawledPages.length} pages`);
+    log(`[2/4] ✓ ${crawledPages.length} pagini crawlate`,'ok');
+    updStats(allUrls.length,crawledPages.length,0,0,0); setP(45);
+  } catch(e){
+    setStep(2,'error','eroare'); log(`[2/4] ✗ ${e.message}`,'err');
+    btn.disabled=false; btn.textContent='⚡ Pornește Pipeline'; running=false; return;
+  }
+
+  // Process main pages & collect contact URLs to crawl
+  let contactUrlsToFetch=[];
+  let contactUrlToDomain={};
+
+  for(const page of crawledPages){
+    const text=page.markdown||page.text||page.content||'';
+    const url=page.url||'';
+    const domain=getDomain(url);
+    const sq=urlToQuery[url]||queries[0];
+    if(!isRelevant(text)) continue;
+
+    const emails=extractEmails(text);
+    const phones=extractPhones(text);
+    const ev={
+      name:extractTitle(text,url),
+      organizer:extractOrganizer(text,url),
+      topic:detectTopic(text),
+      city,
+      email:emails[0]||null,
+      allEmails:emails,
+      phone:phones[0]||null,
+      email_from_contact:false,
+      contact_url:null,
+      source_url:url,
+      source_query:sq,
+      snippet:text.slice(0,220).replace(/\n+/g,' ').trim()+'…'
+    };
+
+    allResults.push(ev);
+    renderRow(ev);
+    updStats(allUrls.length,crawledPages.length,0,allResults.length,allResults.filter(e=>e.email).length);
+
+    // Find contact links in page content + generate guesses
+    const foundContactLinks=extractContactLinks(text, url);
+    const guessedContactLinks=guessContactUrls(url);
+    const allContactCandidates=[...new Set([...foundContactLinks,...guessedContactLinks])];
+
+    siteData[domain]={ev, contactCandidates:allContactCandidates};
+
+    // Queue contact URLs for batch crawl (deduplicated)
+    allContactCandidates.forEach(cu=>{
+      if(!contactUrlsToFetch.includes(cu)){
+        contactUrlsToFetch.push(cu);
+        contactUrlToDomain[cu]=domain;
+      }
+    });
+  }
+
+  log(`[2/4] ${allResults.length} site-uri relevante · ${contactUrlsToFetch.length} contact URLs de crawlat`,'ok');
+  setP(50);
+
+  // ── STEP 3: Crawl pagini de Contact ───────────────────────
+  setStep(3,'active','running…');
+  log(`[3/4] Crawl ${contactUrlsToFetch.length} pagini Contact/Despre...`,'contact'); setP(55);
+
+  let contactCrawled=0;
+
+  if(contactUrlsToFetch.length > 0){
+    // Batch in chunks of 20 to avoid timeout
+    const BATCH=20;
+    const batches=[];
+    for(let i=0;i<contactUrlsToFetch.length;i+=BATCH) batches.push(contactUrlsToFetch.slice(i,i+BATCH));
+
+    for(let bi=0;bi<batches.length;bi++){
+      const batch=batches[bi];
+      log(`  Batch ${bi+1}/${batches.length} — ${batch.length} pagini...`);
+      try{
+        const res=await apifyRun('apify~website-content-crawler',{
+          startUrls:batch.map(u=>({url:u})),
+          maxCrawlPages:batch.length,
+          crawlerType:'cheerio', maxCrawlDepth:0,
+          outputFormats:['markdown'], removeCookieWarnings:true,
+          removeElementsCssSelector:'nav,footer,script,style,.cookie,.popup,.ad,.ads,.menu,.sidebar',
+        });
+
+        for(const page of res){
+          const text=page.markdown||page.text||page.content||'';
+          if(!text||text.length<50) continue;
+          const pageUrl=page.url||'';
+          const domain=contactUrlToDomain[pageUrl]||getDomain(pageUrl);
+          const siteInfo=siteData[domain];
+          if(!siteInfo) continue;
+
+          const emails=extractEmails(text);
+          const phones=extractPhones(text);
+          if(!emails.length && !phones.length) continue;
+
+          contactCrawled++;
+          log(`  📧 ${domain} → ${emails.join(', ')||''}${phones[0]?' 📞'+phones[0]:''}`, 'contact');
+
+          // Update the result
+          const ev=siteInfo.ev;
+          const merged=[...new Set([...emails,...(ev.allEmails||[])])];
+          if(emails[0] && !ev.email){
+            ev.email=emails[0]; ev.email_from_contact=true; _emailsFromContact++;
+          }
+          if(emails.length) ev.allEmails=merged;
+          if(phones[0] && !ev.phone) ev.phone=phones[0];
+          ev.contact_url=pageUrl;
+
+          updateRow(domain, ev);
+          updStats(allUrls.length,crawledPages.length,contactCrawled,allResults.length,allResults.filter(e=>e.email).length);
+        }
+      } catch(e){
+        log(`  ⚠ Batch ${bi+1} eroare: ${e.message.slice(0,80)}`,'warn');
+      }
+      setP(55 + Math.round((bi+1)/batches.length * 35));
+    }
+  }
+
+  setStep(3,'done',`${contactCrawled} found`);
+  log(`[3/4] ✓ ${contactCrawled} pagini contact cu date de contact`,'ok'); setP(92);
+
+  // ── STEP 4: Summary ───────────────────────────────────────
+  setStep(4,'active','running…'); setP(95);
+  await new Promise(r=>setTimeout(r,300));
+
+  const totalEmails=allResults.filter(e=>e.email).length;
+  setStep(4,'done',`${totalEmails} emails`);
+  updStats(allUrls.length,crawledPages.length,contactCrawled,allResults.length,totalEmails);
+  setP(100);
+
+  if(allResults.length>0){
+    document.getElementById('btnExp').disabled=false;
+    log(`✅ Gata! ${allResults.length} evenimente · ${totalEmails} emailuri (${_emailsFromContact} din pagini Contact)`,'step');
+  } else {
+    document.getElementById('tbody').innerHTML=`<tr><td colspan="7"><div class="empty-state"><div class="empty-icon">😕</div><p>Niciun eveniment detectat. Încearcă alt pattern sau topicuri.</p></div></td></tr>`;
+    log('Niciun rezultat relevant. Încearcă Pattern 5 (English) sau mai multe topicuri.','warn');
+  }
+
+  btn.disabled=false; btn.textContent='⚡ Pornește Pipeline'; running=false;
+});
+</script>
+</body>
+</html>

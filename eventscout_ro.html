@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EventScout RO — Parenting Events Pipeline</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+:root {
+  --bg:#06080f;--s1:#0e1220;--s2:#151b2e;--border:#1f2a45;
+  --accent:#4f8ef7;--green:#34d399;--yellow:#fbbf24;--red:#f87171;--purple:#a78bfa;
+  --text:#e2e8f8;--muted:#5a6a8a;
+  --mono:'JetBrains Mono',monospace;--sans:'Space Grotesk',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh;font-size:14px}
+.app{display:grid;grid-template-columns:300px 1fr;min-height:100vh}
+@media(max-width:700px){.app{grid-template-columns:1fr}}
+
+/* ── SIDEBAR ── */
+.sidebar{background:var(--s1);border-right:1px solid var(--border);padding:18px;display:flex;flex-direction:column;gap:14px;overflow-y:auto;max-height:100vh;position:sticky;top:0}
+.brand{display:flex;align-items:center;gap:10px;padding-bottom:14px;border-bottom:1px solid var(--border)}
+.brand-icon{width:32px;height:32px;background:linear-gradient(135deg,var(--accent),var(--purple));border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.brand h1{font-size:.95rem;font-weight:700;letter-spacing:-.02em}
+.brand p{font-size:.6rem;color:var(--muted);font-family:var(--mono)}
+.slabel{font-size:.6rem;font-family:var(--mono);text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:5px}
+.field{margin-bottom:9px}
+.field label{display:block;font-size:.68rem;color:var(--muted);margin-bottom:3px;font-family:var(--mono)}
+select,input{width:100%;background:var(--s2);border:1px solid var(--border);color:var(--text);font-family:var(--sans);font-size:.8rem;padding:7px 10px;border-radius:6px;outline:none;transition:border .2s;appearance:none;-webkit-appearance:none}
+select:focus,input:focus{border-color:var(--accent)}
+.tag-grid{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}
+.tag{background:var(--s2);border:1px solid var(--border);color:var(--muted);font-size:.62rem;font-family:var(--mono);padding:3px 7px;border-radius:4px;cursor:pointer;user-select:none;transition:all .15s}
+.tag.on{background:#0f1f3a;border-color:var(--accent);color:var(--accent)}
+.tag:hover{border-color:var(--accent)}
+
+/* Pipeline steps */
+.pipeline-steps{display:flex;flex-direction:column;gap:5px}
+.step{display:flex;align-items:center;gap:7px;padding:7px 9px;background:var(--s2);border:1px solid var(--border);border-radius:6px;font-size:.72rem;transition:border .2s}
+.step-num{width:19px;height:19px;border-radius:50%;background:var(--border);display:flex;align-items:center;justify-content:center;font-size:.58rem;font-family:var(--mono);flex-shrink:0;transition:background .2s}
+.step.active{border-color:var(--accent)}
+.step.active .step-num{background:var(--accent);color:#fff}
+.step.done{border-color:var(--green)}
+.step.done .step-num{background:var(--green);color:#000}
+.step.error{border-color:var(--red)}
+.step.error .step-num{background:var(--red);color:#fff}
+.step-info{flex:1}
+.step-title{font-weight:600}
+.step-sub{font-size:.6rem;color:var(--muted);font-family:var(--mono);margin-top:1px}
+.step-badge{font-size:.58rem;font-family:var(--mono);padding:2px 6px;border-radius:3px;background:var(--s1);border:1px solid var(--border);color:var(--muted);white-space:nowrap;transition:all .2s}
+.step.done .step-badge{background:#0a1f15;border-color:var(--green);color:var(--green)}
+.step.active .step-badge{background:#0d1a35;border-color:var(--accent);color:var(--accent);animation:blink 1.2s infinite}
+.step.error .step-badge{background:#1f0808;border-color:var(--red);color:var(--red)}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.5}}
+
+/* Buttons */
+.btn-run{width:100%;padding:11px;background:var(--accent);color:#fff;border:none;border-radius:8px;font-family:var(--sans);font-weight:700;font-size:.9rem;cursor:pointer;transition:all .2s;letter-spacing:-.01em;margin-top:4px}
+.btn-run:hover:not(:disabled){background:#3a7ef6;transform:translateY(-1px);box-shadow:0 4px 20px rgba(79,142,247,.3)}
+.btn-run:disabled{opacity:.4;cursor:not-allowed;transform:none}
+
+/* Query preview */
+.qpbox{background:var(--s2);border:1px solid var(--border);border-radius:5px;padding:8px;max-height:115px;overflow-y:auto}
+.qpitem{font-family:var(--mono);font-size:.6rem;color:var(--muted);padding:2px 0;border-bottom:1px solid var(--border);line-height:1.5}
+.qpitem:last-child{border:none}
+.qpitem .arrow{color:var(--accent);margin-right:4px}
+
+/* Token notice */
+.token-notice{background:#1a1000;border:1px solid #503000;border-radius:6px;padding:9px 10px;font-size:.65rem;font-family:var(--mono);color:#f0a830;line-height:1.6}
+.token-notice strong{color:#fbbf24;display:block;margin-bottom:3px}
+
+/* ── MAIN ── */
+.main{display:flex;flex-direction:column;min-height:100vh}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:13px 20px;border-bottom:1px solid var(--border);background:var(--s1);gap:10px;flex-wrap:wrap;position:sticky;top:0;z-index:10}
+.topbar h2{font-size:.92rem;font-weight:700}
+.stats-row{display:flex;gap:16px}
+.stat{text-align:center}
+.stat-val{font-size:1.1rem;font-weight:700;font-family:var(--mono);color:var(--accent);transition:color .3s}
+.stat-val.has{color:var(--green)}
+.stat-label{font-size:.58rem;color:var(--muted);font-family:var(--mono)}
+.progress-strip{height:3px;background:var(--border);flex-shrink:0}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--purple));transition:width .4s ease;width:0%}
+
+/* Log */
+.log-panel{background:var(--s1);border-bottom:1px solid var(--border);padding:9px 18px;font-family:var(--mono);font-size:.64rem;height:115px;overflow-y:auto;flex-shrink:0}
+.log-entry{padding:1.5px 0;display:flex;gap:8px;align-items:baseline}
+.log-time{color:var(--muted);flex-shrink:0;font-size:.6rem}
+.log-msg{color:var(--text);line-height:1.4}
+.log-msg.ok{color:var(--green)}
+.log-msg.warn{color:var(--yellow)}
+.log-msg.err{color:var(--red)}
+.log-msg.info{color:var(--accent)}
+.log-msg.step{color:var(--purple);font-weight:500}
+
+/* Results */
+.results-area{flex:1;display:flex;flex-direction:column}
+.rtoolbar{display:flex;align-items:center;justify-content:space-between;padding:9px 18px;border-bottom:1px solid var(--border);flex-wrap:wrap;gap:8px;background:var(--bg)}
+.rtoolbar-left{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.badge{font-family:var(--mono);font-size:.63rem;padding:3px 9px;border-radius:12px;background:var(--s2);border:1px solid var(--border);color:var(--muted);transition:all .3s}
+.badge.green{background:#0a1f15;border-color:var(--green);color:var(--green)}
+.btn-exp{background:var(--s2);border:1px solid var(--green);color:var(--green);font-family:var(--sans);font-size:.75rem;font-weight:600;padding:5px 13px;border-radius:6px;cursor:pointer;transition:all .15s}
+.btn-exp:hover:not(:disabled){background:#0a2018}
+.btn-exp:disabled{opacity:.3;cursor:not-allowed}
+.btn-clear{background:var(--s2);border:1px solid var(--border);color:var(--muted);font-family:var(--sans);font-size:.72rem;padding:5px 10px;border-radius:6px;cursor:pointer;transition:all .15s}
+.btn-clear:hover{border-color:var(--red);color:var(--red)}
+
+/* Table */
+.table-wrap{overflow:auto;flex:1}
+table{width:100%;border-collapse:collapse;font-size:.76rem;min-width:720px}
+thead th{background:var(--s2);padding:8px 13px;text-align:left;font-family:var(--mono);font-size:.58rem;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);border-bottom:1px solid var(--border);white-space:nowrap;position:sticky;top:0;z-index:5}
+tbody tr{border-bottom:1px solid var(--border);transition:background .1s}
+tbody tr:hover{background:var(--s2)}
+td{padding:9px 13px;vertical-align:top}
+.ev-name{font-weight:600;color:var(--text);line-height:1.35;max-width:220px}
+.ev-org{font-size:.63rem;color:var(--muted);font-family:var(--mono);margin-top:2px}
+.chip{display:inline-block;font-size:.6rem;font-family:var(--mono);padding:2px 7px;border-radius:3px;white-space:nowrap}
+.chip-blue{background:#0d1a35;border:1px solid #2a4080;color:#7aabff}
+.chip-green{background:#0a1f15;border:1px solid #1a5035;color:#4fbd8a}
+.email-val{font-family:var(--mono);font-size:.7rem;color:var(--green);word-break:break-all}
+.email-none{color:var(--muted);font-style:italic;font-size:.68rem}
+.extra-emails{font-size:.58rem;color:var(--muted);font-family:var(--mono);margin-top:2px}
+.phone-val{font-family:var(--mono);font-size:.68rem;color:var(--muted)}
+.url-link{font-family:var(--mono);font-size:.62rem;color:var(--accent);text-decoration:none;word-break:break-all}
+.url-link:hover{text-decoration:underline}
+.src-chip{font-family:var(--mono);font-size:.58rem;color:var(--muted);max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block;cursor:help}
+.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;color:var(--muted);text-align:center;gap:12px}
+.empty-icon{font-size:2.5rem}
+.empty-state p{font-family:var(--mono);font-size:.75rem;line-height:1.7}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- ══ SIDEBAR ══ -->
+<div class="sidebar">
+  <div class="brand">
+    <div class="brand-icon">🕵️</div>
+    <div>
+      <h1>EventScout RO</h1>
+      <p>// parenting events · apify pipeline</p>
+    </div>
+  </div>
+
+  <!-- Token -->
+  <div>
+    <div class="slabel">🔑 Apify API Token</div>
+    <div class="field">
+      <input type="password" id="apifyToken" placeholder="apify_api_..." value="apify_api_MzqE2XDSpFgw4zd7zS8Etn7nsgvZwb4oq9Fl">
+    </div>
+    <div class="token-notice">
+      <strong>⚠️ Fișier local — token vizibil</strong>
+      Nu partaja acest fișier HTML cu nimeni. Token-ul tău Apify e stocat în câmpul de mai sus.
+    </div>
+  </div>
+
+  <!-- Config -->
+  <div>
+    <div class="slabel">⚙️ Configurare</div>
+    <div class="field"><label>Oraș</label>
+      <select id="citySelect">
+        <option>Cluj-Napoca</option>
+        <option>București</option>
+        <option>Iași</option>
+        <option>Timișoara</option>
+        <option>Brașov</option>
+        <option>Sibiu</option>
+        <option>Oradea</option>
+        <option>Constanța</option>
+      </select>
+    </div>
+    <div class="field"><label>Pattern căutare</label>
+      <select id="patternSelect">
+        <option value="1">Pattern 1 — Core + Audiență + Topic</option>
+        <option value="2">Pattern 2 — Activitate + Audiență</option>
+        <option value="3">Pattern 3 — Descoperire largă</option>
+        <option value="4">Pattern 4 — Cursuri / Educație</option>
+        <option value="5">Pattern 5 — English fallback</option>
+      </select>
+    </div>
+    <div class="field"><label>Rezultate Google / query</label>
+      <select id="numResults">
+        <option value="5">5 rezultate</option>
+        <option value="10" selected>10 rezultate</option>
+        <option value="20">20 rezultate</option>
+      </select>
+    </div>
+    <div class="field"><label>Max pagini crawlate</label>
+      <select id="maxPages">
+        <option value="5">5 pagini (rapid ~30s)</option>
+        <option value="10" selected>10 pagini (~1 min)</option>
+        <option value="20">20 pagini (~2 min)</option>
+        <option value="30">30 pagini (lent)</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Topics -->
+  <div>
+    <div class="slabel">🧠 Topicuri active</div>
+    <div class="tag-grid" id="topicTags">
+      <span class="tag on" data-v="parenting">parenting</span>
+      <span class="tag on" data-v="educație parentală">ed. parentală</span>
+      <span class="tag" data-v="disciplină pozitivă">disciplină poz.</span>
+      <span class="tag" data-v="dezvoltare copil">dezv. copil</span>
+      <span class="tag" data-v="inteligență emoțională">int. emoțională</span>
+      <span class="tag" data-v="relația părinte copil">rel. părinte-copil</span>
+      <span class="tag" data-v="psihologie copil">psih. copil</span>
+      <span class="tag" data-v="comunicare copii">comunicare copii</span>
+      <span class="tag" data-v="montessori">Montessori</span>
+      <span class="tag" data-v="STEM copii">STEM copii</span>
+      <span class="tag" data-v="activități creative">activități creative</span>
+    </div>
+  </div>
+
+  <!-- Query preview -->
+  <div>
+    <div class="slabel">🔎 Queries ce vor fi trimise</div>
+    <div class="qpbox" id="qpbox"></div>
+  </div>
+
+  <!-- Pipeline status -->
+  <div>
+    <div class="slabel">🔄 Status pipeline</div>
+    <div class="pipeline-steps">
+      <div class="step" id="step1">
+        <div class="step-num">1</div>
+        <div class="step-info">
+          <div class="step-title">Google SERP</div>
+          <div class="step-sub">apify~google-search-scraper</div>
+        </div>
+        <span class="step-badge" id="s1b">idle</span>
+      </div>
+      <div class="step" id="step2">
+        <div class="step-num">2</div>
+        <div class="step-info">
+          <div class="step-title">Content Crawl</div>
+          <div class="step-sub">apify~website-content-crawler</div>
+        </div>
+        <span class="step-badge" id="s2b">idle</span>
+      </div>
+      <div class="step" id="step3">
+        <div class="step-num">3</div>
+        <div class="step-info">
+          <div class="step-title">Extracție locală</div>
+          <div class="step-sub">regex · email · topic detect</div>
+        </div>
+        <span class="step-badge" id="s3b">idle</span>
+      </div>
+    </div>
+  </div>
+
+  <button class="btn-run" id="btnRun">⚡ Pornește Pipeline</button>
+</div>
+
+<!-- ══ MAIN ══ -->
+<div class="main">
+  <div class="topbar">
+    <h2>Rezultate extrase</h2>
+    <div class="stats-row">
+      <div class="stat"><div class="stat-val" id="stUrls">0</div><div class="stat-label">URLs găsite</div></div>
+      <div class="stat"><div class="stat-val" id="stCrawled">0</div><div class="stat-label">Crawled</div></div>
+      <div class="stat"><div class="stat-val" id="stEvents">0</div><div class="stat-label">Evenimente</div></div>
+      <div class="stat"><div class="stat-val" id="stEmails">0</div><div class="stat-label">Emailuri</div></div>
+    </div>
+  </div>
+
+  <div class="progress-strip">
+    <div class="progress-fill" id="pfill"></div>
+  </div>
+
+  <div class="log-panel" id="logPanel">
+    <div class="log-entry">
+      <span class="log-time">--:--:--</span>
+      <span class="log-msg info">EventScout RO gata. Configurează în stânga și apasă ⚡ Pornește Pipeline.</span>
+    </div>
+  </div>
+
+  <div class="results-area">
+    <div class="rtoolbar">
+      <div class="rtoolbar-left">
+        <span class="badge" id="tbadge">0 events</span>
+        <span class="badge" id="ebadge">0 emails</span>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="btn-clear" id="btnClear">🗑 Șterge rezultate</button>
+        <button class="btn-exp" id="btnExp" disabled>📥 Export CSV → Google Sheets</button>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Eveniment / Organizator</th>
+            <th>URL Sursă</th>
+            <th>Topic</th>
+            <th>Oraș</th>
+            <th>Email(uri)</th>
+            <th>Telefon</th>
+            <th>Query sursă</th>
+          </tr>
+        </thead>
+        <tbody id="tbody">
+          <tr><td colspan="7">
+            <div class="empty-state">
+              <div class="empty-icon">🔍</div>
+              <p>Alege orașul, pattern-ul și topicurile<br>
+              apoi apasă <strong>⚡ Pornește Pipeline</strong>.<br><br>
+              Pipeline: Google Search → Crawl site-uri → Extrage emailuri</p>
+            </div>
+          </td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+</div><!-- .app -->
+
+<script>
+// ══════════════════════════════════════════════
+//  CONFIGURARE
+// ══════════════════════════════════════════════
+const BASE = 'https://api.apify.com/v2';
+
+function getToken(){ return document.getElementById('apifyToken').value.trim(); }
+
+// ── Tags ──
+document.querySelectorAll('.tag').forEach(t => t.addEventListener('click', () => {
+  t.classList.toggle('on'); updateQP();
+}));
+['citySelect','patternSelect'].forEach(id =>
+  document.getElementById(id).addEventListener('change', updateQP)
+);
+
+function selectedTopics(){
+  return [...document.querySelectorAll('.tag.on')].map(t => t.dataset.v);
+}
+
+function buildQueries(city, pat, tops){
+  const t = tops.length ? tops : ['parenting'];
+  let qs = [];
+  if(pat==='1'){
+    t.slice(0,4).forEach(tp => qs.push(`atelier părinți copii ${tp} ${city} 2026`));
+    qs.push(`workshop familie ${t[0]} ${city}`);
+    qs.push(`curs ${t[0]} părinți ${city} 2026`);
+  } else if(pat==='2'){
+    qs.push(
+      `atelier creativ părinte copil ${city} 2026`,
+      `activități interactive copii ${city}`,
+      `ateliere muzică dans teatru copii ${city} 2026`,
+      `experimente STEM copii ${city}`
+    );
+  } else if(pat==='3'){
+    qs.push(
+      `evenimente copii părinți ${city} weekend 2026`,
+      `program activități familie ${city} 2026`,
+      `târg festival copii ${city} 2026`,
+      `calendar activități ${city} 2026`
+    );
+  } else if(pat==='4'){
+    t.slice(0,3).forEach(tp => qs.push(`cursuri ${tp} părinți ${city} 2026`));
+    qs.push(
+      `seminar conferință educație parentală ${city}`,
+      `training parenting ${city} 2026`
+    );
+  } else {
+    qs.push(
+      `parenting workshop ${city} Romania 2026`,
+      `parent child workshop ${city} Romania`,
+      `family events kids ${city} Romania`,
+      `child development class ${city} Romania`,
+      `parenting class ${city} Romania 2026`
+    );
+  }
+  return qs.slice(0, 6);
+}
+
+function updateQP(){
+  const city = document.getElementById('citySelect').value;
+  const pat  = document.getElementById('patternSelect').value;
+  const qs   = buildQueries(city, pat, selectedTopics());
+  document.getElementById('qpbox').innerHTML =
+    qs.map(q => `<div class="qpitem"><span class="arrow">›</span>${q}</div>`).join('');
+}
+updateQP();
+
+// ══════════════════════════════════════════════
+//  LOGGING & UI HELPERS
+// ══════════════════════════════════════════════
+function log(msg, type=''){
+  const p = document.getElementById('logPanel');
+  const n = new Date();
+  const ts = [n.getHours(),n.getMinutes(),n.getSeconds()]
+    .map(x => String(x).padStart(2,'0')).join(':');
+  const d = document.createElement('div');
+  d.className = 'log-entry';
+  d.innerHTML = `<span class="log-time">${ts}</span><span class="log-msg ${type}">${msg}</span>`;
+  p.appendChild(d);
+  p.scrollTop = p.scrollHeight;
+}
+
+function setP(pct){ document.getElementById('pfill').style.width = pct + '%'; }
+
+function setStep(n, state, badge){
+  document.getElementById('step'+n).className = 'step ' + state;
+  document.getElementById('s'+n+'b').textContent = badge;
+}
+
+function updStats(urls, crawled, evts, emails){
+  const set = (id, val, hi) => {
+    const el = document.getElementById(id);
+    el.textContent = val;
+    el.className = 'stat-val' + (hi ? ' has' : '');
+  };
+  set('stUrls', urls, false);
+  set('stCrawled', crawled, false);
+  set('stEvents', evts, evts > 0);
+  set('stEmails', emails, emails > 0);
+  document.getElementById('tbadge').textContent = evts + ' events';
+  const eb = document.getElementById('ebadge');
+  eb.textContent = emails + ' emails';
+  eb.className = emails > 0 ? 'badge green' : 'badge';
+}
+
+// ══════════════════════════════════════════════
+//  APIFY CALL
+// ══════════════════════════════════════════════
+async function apifyRun(actorId, input){
+  const token = getToken();
+  if(!token){ throw new Error('Token Apify lipsă! Introdu-l în câmpul din sidebar.'); }
+  const url = `${BASE}/acts/${actorId}/run-sync-get-dataset-items?token=${token}&format=json&clean=true`;
+  const r = await fetch(url, {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify(input)
+  });
+  if(!r.ok){
+    const txt = await r.text();
+    throw new Error(`Apify [${r.status}]: ${txt.slice(0,250)}`);
+  }
+  return r.json();
+}
+
+// ══════════════════════════════════════════════
+//  CLIENT-SIDE EXTRACTION
+// ══════════════════════════════════════════════
+const EMAIL_RE = /[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}/g;
+const PHONE_RE  = /(\+40|0040|0)[0-9\s\-\.]{8,13}/g;
+
+const TOPIC_MAP = [
+  {kw:['montessori'],                                          label:'Montessori'},
+  {kw:['stem','știință','stiinta','experiment','robotică','robotica'], label:'STEM / Știință'},
+  {kw:['muzic','dans','teatru','pictură','pictura','arte','creativ'],  label:'Activități creative'},
+  {kw:['disciplin','pozitiv'],                                 label:'Disciplină pozitivă'},
+  {kw:['emoțional','emotional','empatie','emotii','emoții'],   label:'Inteligență emoțională'},
+  {kw:['comunicar'],                                           label:'Comunicare copii'},
+  {kw:['atașament','atasament','relati','relație'],            label:'Relație părinte-copil'},
+  {kw:['parenting','parental','parentala','parentală'],        label:'Parenting'},
+  {kw:['copil','copii','bebelus','bebeluș','preșcolar','prescolar'],  label:'Dezvoltare copil'},
+];
+
+const EVENT_KW = ['atelier','workshop','curs','cursuri','seminar','conferință','conferinta',
+  'training','program','activitat','eveniment','webinar','lecție','lectie','sesiune',
+  'întâlnire','intalnire','festival','tabără','tabara'];
+const AUDIENCE_KW = ['copil','copii','părinți','parinti','famil','parenting','bebelus',
+  'bebeluș','mama','tata','mame','tați','preșcolar'];
+const SOCIAL = /instagram\.com|facebook\.com|tiktok\.com|twitter\.com|x\.com|youtube\.com|linkedin\.com/;
+
+function detectTopic(text){
+  const low = text.toLowerCase();
+  for(const {kw, label} of TOPIC_MAP){
+    if(kw.some(k => low.includes(k))) return label;
+  }
+  return 'Parenting / Familie';
+}
+
+function isRelevant(text){
+  if(!text || text.length < 80) return false;
+  const low = text.toLowerCase();
+  const hasEvent    = EVENT_KW.some(k => low.includes(k));
+  const hasAudience = AUDIENCE_KW.some(k => low.includes(k));
+  return hasEvent && hasAudience;
+}
+
+function extractTitle(text, url){
+  const lines = text.split('\n').map(l => l.replace(/^#+\s*/,'').trim())
+    .filter(l => l.length > 8 && l.length < 110 && /[a-zA-ZăîșțâÎȘȚĂÂ]/.test(l));
+  for(const line of lines.slice(0,12)){
+    if(line.length > 12) return line;
+  }
+  try{ return new URL(url).hostname.replace('www.',''); } catch{ return url.slice(0,60); }
+}
+
+function extractOrganizer(text, url){
+  const low = text.toLowerCase();
+  const patterns = [
+    /organizator[:\s]+([^\n,\.]{3,50})/,
+    /organizat(?:ă)? de[:\s]+([^\n,\.]{3,50})/,
+    /prezentat(?:ă)? de[:\s]+([^\n,\.]{3,50})/,
+    /trainer[:\s]+([^\n,\.]{3,50})/,
+    /psiholog[:\s]+([^\n,\.]{3,40})/,
+  ];
+  for(const re of patterns){
+    const m = low.match(re);
+    if(m) return m[1].trim();
+  }
+  try{ return new URL(url).hostname.replace('www.',''); } catch{ return '—'; }
+}
+
+function processPage(page, sourceQuery, city){
+  const text = page.markdown || page.text || page.content || '';
+  if(!isRelevant(text)) return null;
+
+  const emails = [...new Set(
+    (text.match(EMAIL_RE) || [])
+      .filter(e => !e.includes('example') && !e.includes('yourdomain') && !e.includes('@2x'))
+  )];
+  const phones = [...new Set(
+    (text.match(PHONE_RE) || []).map(p => p.trim()).filter(p => p.replace(/\D/g,'').length >= 9)
+  )];
+
+  return {
+    name:        extractTitle(text, page.url || ''),
+    organizer:   extractOrganizer(text, page.url || ''),
+    topic:       detectTopic(text),
+    city,
+    email:       emails[0] || null,
+    allEmails:   emails,
+    phone:       phones[0] || null,
+    source_url:  page.url || '',
+    source_query: sourceQuery,
+    snippet:     text.slice(0, 220).replace(/\n+/g,' ').trim() + '…'
+  };
+}
+
+// ══════════════════════════════════════════════
+//  RENDER ROW
+// ══════════════════════════════════════════════
+function renderRow(ev){
+  const tbody = document.getElementById('tbody');
+  // Remove empty state on first row
+  if(tbody.querySelector('.empty-state')) tbody.innerHTML = '';
+
+  const tr = document.createElement('tr');
+  const shortUrl = ev.source_url.replace(/https?:\/\/(www\.)?/,'').replace(/\/$/,'').slice(0,40);
+  tr.innerHTML = `
+    <td>
+      <div class="ev-name">${esc(ev.name)}</div>
+      <div class="ev-org">${esc(ev.organizer)}</div>
+    </td>
+    <td><a class="url-link" href="${esc(ev.source_url)}" target="_blank" rel="noopener">${shortUrl}</a></td>
+    <td><span class="chip chip-blue">${esc(ev.topic)}</span></td>
+    <td><span class="chip chip-green">${esc(ev.city)}</span></td>
+    <td>
+      ${ev.email
+        ? `<div class="email-val">${esc(ev.email)}</div>`
+        : '<span class="email-none">—</span>'}
+      ${ev.allEmails && ev.allEmails.length > 1
+        ? `<div class="extra-emails">+${ev.allEmails.length-1} mai mult(e):<br>${ev.allEmails.slice(1).map(e=>esc(e)).join('<br>')}</div>`
+        : ''}
+    </td>
+    <td><span class="phone-val">${esc(ev.phone || '—')}</span></td>
+    <td><span class="src-chip" title="${esc(ev.source_query)}">${esc(ev.source_query || '').slice(0,38)}</span></td>
+  `;
+  tbody.appendChild(tr);
+}
+
+function esc(s){
+  if(!s) return '';
+  return String(s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ══════════════════════════════════════════════
+//  EXPORT CSV
+// ══════════════════════════════════════════════
+document.getElementById('btnExp').addEventListener('click', () => {
+  if(!allResults.length) return;
+  const headers = ['Eveniment','Organizator','Topic','Oraș','Email principal',
+    'Toate emailurile','Telefon','URL Sursă','Query sursă','Snippet'];
+  const rows = allResults.map(e => [
+    e.name, e.organizer, e.topic, e.city,
+    e.email || '',
+    (e.allEmails || []).join(' | '),
+    e.phone || '',
+    e.source_url,
+    e.source_query,
+    e.snippet || ''
+  ]);
+  const csv = [headers, ...rows]
+    .map(r => r.map(c => `"${String(c||'').replace(/"/g,'""')}"`).join(','))
+    .join('\n');
+  const blob = new Blob(['\uFEFF' + csv], {type:'text/csv;charset=utf-8;'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  const city = document.getElementById('citySelect').value.replace(/ /g,'_');
+  a.download = `eventscout_${city}_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  log(`📥 CSV exportat — ${allResults.length} rânduri`, 'ok');
+});
+
+// Clear
+document.getElementById('btnClear').addEventListener('click', () => {
+  allResults = [];
+  document.getElementById('tbody').innerHTML = `<tr><td colspan="7"><div class="empty-state"><div class="empty-icon">🗑</div><p>Rezultate șterse. Rulează din nou pipeline-ul.</p></div></td></tr>`;
+  updStats(0,0,0,0); setP(0);
+  ['step1','step2','step3'].forEach((_,i) => setStep(i+1,'','idle'));
+  document.getElementById('btnExp').disabled = true;
+  log('Rezultate șterse.','warn');
+});
+
+// ══════════════════════════════════════════════
+//  MAIN PIPELINE
+// ══════════════════════════════════════════════
+let allResults = [];
+let running    = false;
+
+document.getElementById('btnRun').addEventListener('click', async () => {
+  if(running) return;
+  if(!getToken()){ log('⚠️ Introdu tokenul Apify în câmpul din sidebar!','err'); return; }
+
+  running = true;
+  const btn = document.getElementById('btnRun');
+  btn.disabled = true;
+  btn.textContent = '⏳ Pipeline rulează...';
+
+  allResults = [];
+  document.getElementById('tbody').innerHTML = '';
+  document.getElementById('btnExp').disabled = true;
+  updStats(0,0,0,0); setP(0);
+  ['step1','step2','step3'].forEach((_,i) => setStep(i+1,'','idle'));
+
+  const city       = document.getElementById('citySelect').value;
+  const pat        = document.getElementById('patternSelect').value;
+  const tops       = selectedTopics();
+  const numResults = parseInt(document.getElementById('numResults').value);
+  const maxPages   = parseInt(document.getElementById('maxPages').value);
+  const queries    = buildQueries(city, pat, tops);
+
+  log(`▶ Pipeline pornit — ${queries.length} queries · ${city} · max ${maxPages} pagini`, 'step');
+
+  // ─── STEP 1: Google Search ───────────────────
+  setStep(1,'active','running…');
+  log(`[1/3] Google Search Scraper → ${queries.length} queries`, 'info');
+  setP(5);
+
+  let allUrls   = [];
+  let urlToQuery = {};
+
+  try{
+    const res = await apifyRun('apify~google-search-scraper', {
+      queries:          queries.join('\n'),
+      maxPagesPerQuery: 1,
+      resultsPerPage:   numResults,
+      countryCode:      'ro',
+      languageCode:     'ro',
+      mobileResults:    false
+    });
+
+    res.forEach((r, qi) => {
+      const organic = r.organicResults || r.nonPromotedSearchResults || [];
+      organic.forEach(item => {
+        const u = item.url || item.link;
+        if(!u || allUrls.includes(u)) return;
+        if(SOCIAL.test(u)) return; // skip social — uncrawlable
+        allUrls.push(u);
+        urlToQuery[u] = queries[qi] || queries[0];
+      });
+    });
+
+    setStep(1, 'done', `${allUrls.length} URLs`);
+    log(`[1/3] ✓ ${allUrls.length} URL-uri unice (social exclus)`, 'ok');
+    updStats(allUrls.length, 0, 0, 0);
+    setP(30);
+  } catch(e){
+    setStep(1, 'error', 'eroare');
+    log(`[1/3] ✗ ${e.message}`, 'err');
+    btn.disabled = false; btn.textContent = '⚡ Pornește Pipeline'; running = false;
+    return;
+  }
+
+  if(!allUrls.length){
+    log('Niciun URL utilizabil găsit. Încearcă alt pattern sau topicuri.','warn');
+    btn.disabled = false; btn.textContent = '⚡ Pornește Pipeline'; running = false;
+    return;
+  }
+
+  // ─── STEP 2: Website Content Crawler ─────────
+  setStep(2, 'active', 'running…');
+  const crawlBatch = allUrls.slice(0, maxPages);
+  log(`[2/3] Website Content Crawler → ${crawlBatch.length} pagini`, 'info');
+  setP(35);
+
+  let crawledPages = [];
+  try{
+    const res = await apifyRun('apify~website-content-crawler', {
+      startUrls:    crawlBatch.map(u => ({url: u})),
+      maxCrawlPages: crawlBatch.length,
+      crawlerType:  'cheerio',
+      maxCrawlDepth: 0,
+      outputFormats: ['markdown'],
+      removeCookieWarnings: true,
+      removeElementsCssSelector:
+        'nav, footer, header, script, style, .cookie, .popup, .ad, .ads, .menu, .sidebar, [class*="cookie"], [class*="banner"]',
+    });
+    crawledPages = res.filter(p => p.text || p.markdown || p.content);
+    setStep(2, 'done', `${crawledPages.length} pages`);
+    log(`[2/3] ✓ ${crawledPages.length} pagini crawlate cu succes`, 'ok');
+    updStats(allUrls.length, crawledPages.length, 0, 0);
+    setP(65);
+  } catch(e){
+    setStep(2, 'error', 'eroare');
+    log(`[2/3] ✗ ${e.message}`, 'err');
+    btn.disabled = false; btn.textContent = '⚡ Pornește Pipeline'; running = false;
+    return;
+  }
+
+  // ─── STEP 3: Client-side extraction ──────────
+  setStep(3, 'active', 'running…');
+  log(`[3/3] Extragere locală din ${crawledPages.length} pagini...`, 'info');
+  setP(68);
+
+  let emailCount = 0;
+
+  for(let i = 0; i < crawledPages.length; i++){
+    const page = crawledPages[i];
+    const sq   = urlToQuery[page.url] || queries[0];
+    const ev   = processPage(page, sq, city);
+
+    if(ev){
+      allResults.push(ev);
+      emailCount = allResults.filter(e => e.email).length;
+      renderRow(ev);
+      updStats(allUrls.length, crawledPages.length, allResults.length, emailCount);
+      const tag = ev.email ? `📧 ${ev.email}` : 'fără email';
+      log(`  ✓ ${(page.url||'').slice(0,55)}… → ${tag}`, 'ok');
+    } else {
+      log(`  — ${(page.url||'').slice(0,55)}… irelevant`, 'warn');
+    }
+
+    setP(68 + Math.round((i+1) / crawledPages.length * 30));
+    await new Promise(r => setTimeout(r, 40));
+  }
+
+  // Done
+  setStep(3, 'done', `${allResults.length} events`);
+  setP(100);
+
+  if(allResults.length > 0){
+    document.getElementById('btnExp').disabled = false;
+    log(`✅ Gata! ${allResults.length} pagini relevante · ${emailCount} emailuri găsite · apasă Export CSV`, 'step');
+  } else {
+    document.getElementById('tbody').innerHTML = `
+      <tr><td colspan="7"><div class="empty-state">
+        <div class="empty-icon">😕</div>
+        <p>Niciun eveniment parenting detectat în paginile crawlate.<br>
+        Încearcă alt pattern, mai multe topicuri, sau un alt oraș.</p>
+      </div></td></tr>`;
+    log('Niciun rezultat relevant. Încearcă Pattern 5 (English) sau mai multe topicuri.','warn');
+  }
+
+  btn.disabled = false;
+  btn.textContent = '⚡ Pornește Pipeline';
+  running = false;
+});
+</script>
+</body>
+</html>

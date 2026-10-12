@@ -17,6 +17,7 @@ one catchy sing-along line.
 | File | What it is |
 |---|---|
 | [`SETUP.md`](SETUP.md) | Checklist for setting up the free video studio on your PC, plus the YouTube channel |
+| [`free-tools.md`](free-tools.md) | **No GPU?** Free online tools, checked for watermarks, commercial use and Romania access |
 | [`channel-bible.md`](channel-bible.md) | Channel rules: world, recurring ritual, style lock, negative prompt, render settings |
 | [`characters.md`](characters.md) | Locked character descriptions and character-sheet image prompts |
 | [`claude-prompts.md`](claude-prompts.md) | Copy-paste Claude prompts for writing a week of Shorts, copying what wins, and fixing scenes |

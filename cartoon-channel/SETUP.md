@@ -12,7 +12,7 @@ each video costs nothing after setup.
 |---|---|---|
 | **12 GB or more** (NVIDIA RTX) | **LTX-2.5** | Best quality. Makes video and sound together |
 | **6–8 GB** | **Wan 2.2 (5B)** | Lightest good model. No sound, so add all audio in CapCut |
-| **No GPU / too small** | **Kling** (klingai.com) | Use the free daily credits to test the idea first. The same prompts work |
+| **No GPU / too small** | Online tools: see [`free-tools.md`](free-tools.md) | Google Flow / Gemini for free clips and images, Kaggle + WanGP for free open models. Free Kling clips are watermarked and non-commercial, so use them for tests only |
 
 ## 2. Install the free video studio (Wan2GP)
 
@@ -60,7 +60,7 @@ Experience / NVIDIA App, or nvidia.com/drivers). Some of Wan2GP's speed-up kerne
 |---|---|---|
 | Character sheets and start frames | **Qwen Image 2.1** (or Flux 2 / Krea 2) | Qwen Image 2.1 can also **edit**: give it your character sheets as reference images. It writes text well, so the "1 2 3" bus-stop numbers come out right |
 | Keeping characters identical | **LTX 2.5 MSR** | Takes 1–4 reference images (Leo, Bibo, Tofu sheets) plus the prompt. Try it if image-to-video drifts away from the characters |
-| The song with vocals | **YuE2** (lyrics + style → full song) or **Ace Step** | Paste the lyrics and the music prompt from the episode's `script.md` |
+| The song with vocals | **Ace Step** (MIT license, safe to monetize) or **YuE2** (check its license first) | Paste the lyrics and the music prompt from the episode's `script.md`. Don't use **MMAudio** soundtracks on the channel, because its license is non-commercial |
 | Voices / narration | **Qwen3 TTS**, **Chatterbox**, **Index TTS2** | |
 | Continuity between scenes | Video Gallery → *add current frame to Image Gallery* | Use a clip's last frame as the next scene's start image |
 | Overnight batches | **Generation queue** | Add all 7 scenes, then leave the PC running |

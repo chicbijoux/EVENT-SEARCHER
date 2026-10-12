@@ -2,12 +2,14 @@
 
 Each scene gets two prompts:
 
-1. **Start frame:** an image prompt for Flux / Qwen Image. If your Wan2GP build has an image-edit
-   model (e.g. Qwen Image Edit / Flux Kontext), feed it your locked character sheets as
-   references. Otherwise generate from the text alone and keep the best of 4.
-2. **Video prompt:** for **LTX-2.5 image-to-video**. Upload that scene's start frame and paste the
-   prompt. Each one is a single present-tense paragraph: shot → scene → action → camera →
-   style → audio → final frame.
+1. **Start frame:** an image prompt for **Qwen Image 2.1** in Wan2GP. Give it your locked
+   character sheets as reference images so the characters match. Without references,
+   generate from the text alone and keep the best of 4.
+2. **Video prompt:** for **LTX 2.5 Distilled, image-to-video**. Upload that scene's start frame as
+   the Start Image and paste the prompt. Each one is a single present-tense paragraph:
+   shot → scene → action → camera → style → audio → final frame.
+   *If the characters drift:* try **LTX 2.5 MSR** with the Leo / Bibo / Tofu sheets as
+   references and the same prompt.
 
 **Settings for every clip:** 9:16 vertical · 5 s (Scene 0: 3 s) · negative prompt from
 [`../../channel-bible.md`](../../channel-bible.md).

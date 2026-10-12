@@ -16,6 +16,12 @@ each video costs nothing after setup.
 
 ## 2. Install the free video studio (Wan2GP)
 
+> Checked against the Wan2GP repo on 12 Oct 2026 (WanGP **v18.00**).
+
+**Before you start (NVIDIA cards):** update your graphics driver to the latest version (GeForce
+Experience / NVIDIA App, or nvidia.com/drivers). Some of Wan2GP's speed-up kernels need driver
+**R580 or newer**.
+
 **Easiest way: Pinokio (no typing)**
 
 - [ ] Download and install Pinokio from **pinokio.computer**
@@ -23,25 +29,41 @@ each video costs nothing after setup.
 - [ ] Click **Install** and wait. The first install downloads several GB
 - [ ] Click **Start**. The studio opens in your browser
 
-**Alternative: the one-click script (Windows)**
+**Alternative: the one-click script**
 
-```bash
-git clone https://github.com/deepbeepmeep/Wan2GP.git
-cd Wan2GP
-```
-
-- [ ] Double-click `scripts\install.bat` and choose **Auto Install**
-- [ ] Double-click `scripts\run.bat` and open the address it prints in your browser
-
-> On Linux, follow the install section of the Wan2GP README at github.com/deepbeepmeep/Wan2GP.
+- [ ] Install Git from **git-scm.com** (all default options are fine)
+- [ ] Open a terminal (Windows: press Start, type `cmd`, press Enter) and run:
+  ```bash
+  git clone https://github.com/deepbeepmeep/Wan2GP.git
+  cd Wan2GP
+  ```
+- [ ] **Windows:** double-click `scripts\install.bat`. If it says Python 3.11+ is missing, answer **y** and it installs it for you. In the menu, type **1** (*Automatic Install (1-Click)*). It picks the right setup for your card
+- [ ] **Linux:** run `scripts/install.sh` in the terminal and choose Auto Install
+- [ ] Start the studio: double-click `scripts\run.bat` (Linux: `scripts/run.sh`) and open **http://localhost:7860** in your browser
+- [ ] *Optional:* create a file `scripts\args.txt` containing `--open-browser`, so the browser opens by itself on every start
+- [ ] *Later:* `scripts\update.bat` (Linux: `scripts/update.sh`) gets the newest version. Wan2GP updates often
 
 ## 3. Pick your model and test it
 
-- [ ] In the studio's **top-left model menu**, pick **LTX-2.5** (or **Wan 2.2 5B**). It downloads the first time you use it
-- [ ] Choose **image-to-video** mode
+- [ ] In the studio's **top-left model menu**, pick a model. It downloads the first time you use it:
+  - **12 GB+:** **LTX 2.5 Distilled**. It makes video and sound together, needs only 8 steps, and is the recommended starting point
+  - **6–8 GB:** **Wan 2.2** (the 5B model, or **Wan 2.2 I2V**). It has no sound
+- [ ] Use **image-to-video**: upload the scene's start frame as the **Start Image**
 - [ ] Set **vertical 9:16** and about **5 seconds**. At 24 fps that's ≈ 121 frames, and ≈ 73 frames for the 3 s hook
+- [ ] Paste the negative prompt from `channel-bible.md`
 - [ ] **Test run:** generate Scene 0 from Episode 1 (`episodes/001-bip-bip-counting-bus/scene-prompts.md`)
-- [ ] Find the image models (**Flux** / **Qwen Image**) in the same menu. You'll use them for the character sheets and start frames
+- [ ] Create a **Workspace** called *Leo & Bibo*, so every clip of the channel lands in its own folder (see *Config / Outputs*)
+
+**The other tools you'll use, all in the same menu:**
+
+| Job | Model in Wan2GP | Tip |
+|---|---|---|
+| Character sheets and start frames | **Qwen Image 2.1** (or Flux 2 / Krea 2) | Qwen Image 2.1 can also **edit**: give it your character sheets as reference images. It writes text well, so the "1 2 3" bus-stop numbers come out right |
+| Keeping characters identical | **LTX 2.5 MSR** | Takes 1–4 reference images (Leo, Bibo, Tofu sheets) plus the prompt. Try it if image-to-video drifts away from the characters |
+| The song with vocals | **YuE2** (lyrics + style → full song) or **Ace Step** | Paste the lyrics and the music prompt from the episode's `script.md` |
+| Voices / narration | **Qwen3 TTS**, **Chatterbox**, **Index TTS2** | |
+| Continuity between scenes | Video Gallery → *add current frame to Image Gallery* | Use a clip's last frame as the next scene's start image |
+| Overnight batches | **Generation queue** | Add all 7 scenes, then leave the PC running |
 
 ## 4. Lock your characters
 

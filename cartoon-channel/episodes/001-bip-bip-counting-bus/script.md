@@ -55,7 +55,7 @@ Full prompts for every scene are in [`scene-prompts.md`](scene-prompts.md).
 The lines in brackets are **sound effects from the clips**, not sung. The song leaves a short
 gap for each one, so the kids get to "answer".
 
-### Music prompt (Wan2GP's music model, or any AI music tool)
+### Music prompt (Wan2GP → **YuE2** or **Ace Step**: paste the lyrics above plus this style)
 ```
 Cheerful original children's nursery song, 112 BPM, major key, bouncy and simple. Ukulele, glockenspiel, toy piano, hand claps and a light bouncy bass. Warm, friendly female lead vocal with a small kids' chorus joining on every "bip-bip". Short pauses after each animal line. Around 33 seconds, ending on a happy horn-like "bip-bip" note.
 ```

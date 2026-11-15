@@ -671,7 +671,7 @@ function apply(p){
   const cIn = eo(seg(p, T.c[0], T.c[1])), cOut = seg(p, T.c[2], T.c[3]);
   copy.style.opacity = veil.style.opacity = cIn * (1 - cOut);
   copy.style.transform = `translateY(${((1 - cIn) * 40 - cOut * 50).toFixed(1)}px)`;
-  if (film.on) { const sIn = eo(seg(p, .2, .27)), sOut = seg(p, .35, .41); side.style.opacity = sIn * (1 - sOut); side.style.translate = `${((1 - sIn) * -30 - sOut * 40).toFixed(1)}px 0`; }
+  if (film.on) { const sIn = eo(seg(p, .25, .32)), sOut = seg(p, .38, .44); side.style.opacity = sIn * (1 - sOut); side.style.translate = `${((1 - sIn) * -30 - sOut * 40).toFixed(1)}px 0`; }
   // liquid state
   glAlpha = film.on ? 0 : seg(p, .07, .13); glZ = seg(p, .12, .7); glM = seg(p, .66, .78);
   ribbons.forEach((r, i) => {

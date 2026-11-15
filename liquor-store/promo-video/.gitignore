@@ -3,3 +3,4 @@ node_modules/
 assets/screen.mp4
 renders/*
 !renders/amber-orbit-promo.mp4
+!renders/amber-orbit-screen.mp4

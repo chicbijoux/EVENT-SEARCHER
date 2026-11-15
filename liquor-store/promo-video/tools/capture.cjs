@@ -1,12 +1,14 @@
 // Deterministic phone-screen capture of the Amber Orbit page: JS time is faked, CSS animations are stepped by hand.
 const { chromium } = require('playwright');
 const fs = require('fs');
+// Optional env: VW, VH (CSS viewport), DSF (pixel density), END (seconds). Defaults record a 390x844 phone at 2x for 27.6 s.
+const VW = +(process.env.VW || 390), VH = +(process.env.VH || 844), DSF = +(process.env.DSF || 2), END = +(process.env.END || 27.6);
 const FPS = 30, OUT = process.argv[2], MAXF = +(process.argv[3] || 1e9), ONLY = process.argv[4] ? process.argv[4].split(',').map(Number) : null;
 const ease = t => t < .5 ? 4*t*t*t : 1 - Math.pow(-2*t + 2, 3) / 2;
 const lerp = (a, b, t) => a + (b - a) * t;
 (async () => {
   const b = await chromium.launch();
-  const ctx = await b.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2 });
+  const ctx = await b.newContext({ viewport: { width: VW, height: VH }, deviceScaleFactor: DSF });
   const p = await ctx.newPage();
   await p.clock.install({ time: new Date('2026-11-15T12:00:00') });
   await p.addInitScript(() => { try { localStorage.removeItem('ao-age'); } catch (e) {} });
@@ -28,7 +30,7 @@ const lerp = (a, b, t) => a + (b - a) * t;
   const P = q => L.pourTop + L.span * q;
   // scroll keyframes: [seconds, y]
   const K = [[0, 0], [3.5, 0], [3.95, P(0)], [5.4, P(.19)], [7.5, P(.42)], [10.2, P(.71)], [12.1, P(.875)], [13.0, P(1)], [13.75, L.boxes + 40], [14.55, L.card1 - 96], [15.5, L.card1 - 96], [17.1, L.card3 - 96], [17.7, L.card3 - 96],
-             [18.45, L.services - 70], [18.8, L.services - 70], [20.5, L.svcList + 250], [21.25, L.calc - 170], [27.6, L.calc - 170]];
+             [18.45, L.services - 70], [18.8, L.services - 70], [20.5, L.svcList + 250], [21.25, L.calc - 170], [END, L.calc - 170]];
   const yAt = s => { for (let i = 1; i < K.length; i++) if (s <= K[i][0]) { const [t0, y0] = K[i-1], [t1, y1] = K[i]; const u = (s - t0) / (t1 - t0); const lin = i >= 3 && i <= 7; return lerp(y0, y1, lin ? u : ease(u)); } return K[K.length-1][1]; };
   // taps: [seconds, selector, action]
   const T = [[0.85, '#gate-yes', () => document.getElementById('gate-yes').click()],
@@ -37,7 +39,7 @@ const lerp = (a, b, t) => a + (b - a) * t;
              [24.0, '#types button:nth-child(2)', () => document.querySelector('#types button:nth-child(2)').click()],
              [25.2, '#cart-btn', () => document.getElementById('cart-btn').click()]];
   const DRAG = [21.8, 23.4, 80, 200];                 // slider drag: start s, end s, from, to
-  const total = Math.min(MAXF, Math.round(27.6 * FPS));
+  const total = Math.min(MAXF, Math.round(END * FPS));
   const done = new Set();
   for (let f = 0; f < total; f++) {
     const s = f / FPS;

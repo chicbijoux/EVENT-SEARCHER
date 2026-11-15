@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en" data-resolution="portrait">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <title>Amber Orbit — website promo</title>
+    <script src="assets/gsap.min.js"></script>
+    <style>
+      @font-face { font-family: "Cinzel"; font-weight: 500; font-style: normal; src: url("assets/fonts/Cinzel-normal-500.woff2") format("woff2"); }
+      @font-face { font-family: "Cormorant Garamond"; font-weight: 500; font-style: normal; src: url("assets/fonts/CormorantGaramond-normal-500.woff2") format("woff2"); }
+      @font-face { font-family: "Cormorant Garamond"; font-weight: 400; font-style: italic; src: url("assets/fonts/CormorantGaramond-italic-400.woff2") format("woff2"); }
+      @font-face { font-family: "Manrope"; font-weight: 600; font-style: normal; src: url("assets/fonts/Manrope-normal-600.woff2") format("woff2"); }
+      :root {
+        --ground: #050403;
+        --ink: #efe6d6;
+        --mute: #b3a793;
+        --copper: #d39a63;
+        --copper2: #ecc59a;
+        --line: rgba(239, 230, 214, 0.2);
+        --display: "Cormorant Garamond", Georgia, serif;
+        --caps: "Cinzel", Georgia, serif;
+        --sans: "Manrope", system-ui, sans-serif;
+      }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { margin: 0; width: 1080px; height: 1920px; overflow: hidden; background: var(--ground); }
+      #root { position: relative; width: 1080px; height: 1920px; overflow: hidden; color: var(--ink); font-family: var(--sans); }
+
+      /* ---- background ---- */
+      #bg { position: absolute; inset: 0; }
+      .bg-base { position: absolute; inset: 0; background: #050403; }
+      .bg-glow { position: absolute; left: -160px; top: 520px; width: 1400px; height: 1400px; border-radius: 50%; background: radial-gradient(closest-side, rgba(214, 128, 52, 0.42), rgba(214, 128, 52, 0.12) 55%, rgba(214, 128, 52, 0) 100%); }
+      .bg-vignette { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(5, 4, 3, 0.92) 0, rgba(5, 4, 3, 0) 26%, rgba(5, 4, 3, 0) 80%, rgba(5, 4, 3, 0.9) 100%); }
+      .orbit { position: absolute; left: -70px; top: 660px; width: 1220px; height: 1040px; overflow: visible; }
+      .orbit ellipse { fill: none; stroke: url(#og); stroke-width: 2.5; }
+
+      /* ---- captions + progress ---- */
+      #ui { position: absolute; inset: 0; }
+      #caps { position: absolute; left: 90px; top: 292px; width: 900px; height: 220px; }
+      .cap { position: absolute; left: 0; top: 0; width: 900px; height: 220px; text-align: center; }
+      .eyebrow { display: block; font-family: var(--sans); font-weight: 600; font-size: 28px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--copper); }
+      .cap h2 { margin-top: 20px; font-family: var(--display); font-weight: 500; font-size: 78px; line-height: 0.98; letter-spacing: -0.01em; color: var(--ink); }
+      .cap h2 span { display: block; }
+      .cap h2 em { font-style: italic; font-weight: 400; color: var(--copper2); }
+      #steps { position: absolute; left: 140px; top: 530px; width: 800px; height: 4px; display: flex; gap: 14px; }
+      .step { position: relative; flex: 1; height: 4px; background: rgba(239, 230, 214, 0.2); border-radius: 2px; overflow: hidden; }
+      .step i { position: absolute; left: 0; top: 0; display: block; width: 100%; height: 4px; background: var(--copper2); transform-origin: 0 50%; }
+
+      /* ---- phone ---- */
+      #phone { position: absolute; left: 250px; top: 572px; width: 580px; height: 1220px; }
+      #phone-float { position: absolute; left: 0; top: 0; width: 580px; height: 1220px; }
+      .bezel { position: absolute; inset: 0; border-radius: 80px; background: linear-gradient(135deg, #4a423a 0, #17130f 22%, #0a0807 50%, #1c1712 78%, #5a5046 100%); box-shadow: 0 60px 120px rgba(0, 0, 0, 0.75), 0 0 140px rgba(214, 128, 52, 0.28), inset 0 0 0 2px rgba(255, 255, 255, 0.1); }
+      .screen { position: absolute; left: 14px; top: 14px; width: 552px; height: 1192px; border-radius: 66px; overflow: hidden; background: #000; }
+      #screen-video { position: absolute; left: 0; top: 0; width: 552px; height: 1192px; object-fit: cover; }
+      .island { position: absolute; left: 221px; top: 28px; width: 138px; height: 36px; border-radius: 18px; background: #000; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05); }
+      .glare { position: absolute; left: 14px; top: 14px; width: 552px; height: 1192px; border-radius: 66px; background: linear-gradient(118deg, rgba(255, 255, 255, 0.1) 0, rgba(255, 255, 255, 0) 22%, rgba(255, 255, 255, 0) 100%); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.07); }
+
+      /* ---- closing card ---- */
+      #outro { position: absolute; inset: 0; }
+      .outro-photo { position: absolute; left: -180px; top: 930px; width: 1440px; height: 960px; }
+      .outro-photo img { display: block; width: 1440px; height: 960px; }
+      .outro-fade { position: absolute; left: 0; top: 910px; width: 1080px; height: 1010px; background: linear-gradient(180deg, #050403 0, rgba(5, 4, 3, 0) 24%, rgba(5, 4, 3, 0) 78%, #050403 100%), linear-gradient(90deg, #050403 0, rgba(5, 4, 3, 0) 14%, rgba(5, 4, 3, 0) 86%, #050403 100%); }
+      .outro-copy { position: absolute; left: 130px; top: 310px; width: 820px; height: 560px; text-align: center; }
+      .outro-logo { font-family: var(--caps); font-weight: 500; font-size: 46px; letter-spacing: 0.42em; line-height: 1.3; text-transform: uppercase; color: var(--ink); }
+      .outro-logo span { display: block; }
+      .outro-rule { display: block; width: 90px; height: 2px; margin: 38px auto 38px; background: var(--copper); }
+      .outro-copy h2 { font-family: var(--display); font-weight: 500; font-size: 92px; line-height: 0.96; letter-spacing: -0.01em; }
+      .outro-copy h2 span { display: block; }
+      .outro-copy h2 em { font-style: italic; font-weight: 400; color: var(--copper2); }
+      .chips { position: absolute; left: 160px; top: 790px; width: 690px; display: flex; flex-wrap: wrap; justify-content: center; gap: 16px; }
+      .chip { display: block; padding: 14px 26px; border: 1.5px solid rgba(236, 197, 154, 0.5); border-radius: 999px; background: rgba(5, 4, 3, 0.7); font-family: var(--sans); font-weight: 600; font-size: 28px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--copper2); }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="31.4" data-width="1080" data-height="1920">
+
+      <!-- background -->
+      <section id="bg" class="clip" data-start="0" data-duration="31.4" data-track-index="0">
+        <div class="bg-base"></div>
+        <div class="bg-glow" id="bg-glow"></div>
+        <svg class="orbit" id="orbit" viewBox="0 0 1220 1040" aria-hidden="true">
+          <defs><linearGradient id="og" x1="0" x2="1"><stop offset="0" stop-color="#ecc59a" stop-opacity="0" /><stop offset="0.3" stop-color="#ecc59a" stop-opacity="0.75" /><stop offset="0.7" stop-color="#d39a63" stop-opacity="0.75" /><stop offset="1" stop-color="#d39a63" stop-opacity="0" /></linearGradient></defs>
+          <ellipse id="orbit-a" cx="610" cy="520" rx="560" ry="150" />
+          <ellipse id="orbit-b" cx="610" cy="520" rx="470" ry="96" />
+        </svg>
+        <div class="bg-vignette"></div>
+      </section>
+
+      <!-- phone with the recorded site -->
+      <div id="phone">
+        <div id="phone-float">
+          <div class="bezel"></div>
+          <div class="screen">
+            <video id="screen-video" class="clip" src="assets/screen.mp4" data-start="0" data-duration="27.6" data-track-index="1" muted playsinline></video>
+          </div>
+          <div class="island"></div>
+          <div class="glare"></div>
+        </div>
+      </div>
+
+      <!-- captions and section progress -->
+      <section id="ui" class="clip" data-start="0" data-duration="28" data-track-index="2">
+        <div id="ui-inner">
+          <div id="caps">
+            <div class="cap" id="cap-1"><span class="eyebrow">01 — Age gate &amp; hero</span><h2><span>A storefront that</span><span><em>pours its own whisky.</em></span></h2></div>
+            <div class="cap" id="cap-2"><span class="eyebrow">02 — Scroll film</span><h2><span>Scroll, and</span><span><em>the whisky pours.</em></span></h2></div>
+            <div class="cap" id="cap-3"><span class="eyebrow">02 — Scroll film</span><h2><span>Real footage,</span><span><em>frame by frame.</em></span></h2></div>
+            <div class="cap" id="cap-4"><span class="eyebrow">03 — Collection</span><h2><span>Six gift boxes.</span><span><em>One tap to add.</em></span></h2></div>
+            <div class="cap" id="cap-5"><span class="eyebrow">04 — Services</span><h2><span>Every extra,</span><span><em>priced upfront.</em></span></h2></div>
+            <div class="cap" id="cap-6"><span class="eyebrow">05 — Event bar</span><h2><span>A calculator that</span><span><em>quotes the party.</em></span></h2></div>
+            <div class="cap" id="cap-7"><span class="eyebrow">06 — Cart</span><h2><span>The box fills</span><span><em>as you shop.</em></span></h2></div>
+          </div>
+          <div id="steps">
+            <div class="step"><i id="st-1"></i></div><div class="step"><i id="st-2"></i></div><div class="step"><i id="st-3"></i></div>
+            <div class="step"><i id="st-4"></i></div><div class="step"><i id="st-5"></i></div><div class="step"><i id="st-6"></i></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- closing card -->
+      <section id="outro" class="clip" data-start="27.4" data-duration="4" data-track-index="3">
+        <div class="outro-photo" id="outro-photo"><img src="assets/hero.webp" alt="" /></div>
+        <div class="outro-fade"></div>
+        <div class="outro-copy">
+          <div class="outro-logo" id="outro-logo"><span>Amber</span><span>Orbit</span></div>
+          <span class="outro-rule" id="outro-rule"></span>
+          <h2><span id="outro-l1">Built to look rare.</span><span id="outro-l2"><em>Built to sell.</em></span></h2>
+        </div>
+        <div class="chips">
+          <span class="chip" id="chip-1">Mobile-first</span><span class="chip" id="chip-2">Scroll film</span><span class="chip" id="chip-3">Age gate</span>
+          <span class="chip" id="chip-4">Cart</span><span class="chip" id="chip-5">Event quotes</span>
+        </div>
+      </section>
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+
+      // ---- background life ----
+      tl.fromTo("#bg-glow", { opacity: 0.55, scale: 0.92 }, { opacity: 1, scale: 1.06, duration: 7.6, ease: "sine.inOut", yoyo: true, repeat: 3 }, 0);
+      tl.fromTo("#orbit", { rotation: -16, opacity: 0, transformOrigin: "50% 50%" }, { rotation: -10, opacity: 1, duration: 2.2, ease: "power2.out" }, 0.2);
+      tl.to("#orbit", { rotation: 6, duration: 24.8, ease: "none" }, 2.4);
+      tl.to("#orbit", { opacity: 0, duration: 0.6, ease: "power2.in" }, 27.2);
+
+      // ---- phone ----
+      tl.fromTo("#phone", { y: 110, opacity: 1, rotationY: -14, scale: 0.95, transformPerspective: 2200, transformOrigin: "50% 0%" }, { y: 0, opacity: 1, rotationY: 0, scale: 1, duration: 1.2, ease: "power3.out" }, 0);
+      tl.fromTo("#phone-float", { y: 6 }, { y: -8, duration: 2.6, ease: "sine.inOut", yoyo: true, repeat: 9 }, 1.2);
+      tl.to("#phone", { scale: 1.085, duration: 1.1, ease: "power2.inOut" }, 3.5);        // lean in for the pour
+      tl.to("#phone", { scale: 1, rotationY: 5, duration: 1.0, ease: "power2.inOut" }, 13.0);
+      tl.to("#phone", { rotationY: -5, duration: 1.0, ease: "power2.inOut" }, 18.3);
+      tl.to("#phone", { rotationY: 0, duration: 0.9, ease: "power2.inOut" }, 21.2);
+      tl.to("#phone", { y: -50, opacity: 0, scale: 0.95, duration: 0.5, ease: "power2.in" }, 27.1);
+
+      // ---- captions: [id, in, out] ----
+      tl.fromTo("#cap-1", { opacity: 1, y: 26 }, { opacity: 1, y: 0, duration: 0.9, ease: "power3.out" }, 0);
+      tl.to("#cap-1", { opacity: 0, y: -22, duration: 0.3, ease: "power2.in" }, 3.25);
+      [["#cap-2", 3.8, 8.45], ["#cap-3", 8.7, 13.05], ["#cap-4", 13.35, 18.2], ["#cap-5", 18.5, 21.05], ["#cap-6", 21.35, 24.95], ["#cap-7", 25.2, 27.2]].forEach(([id, a, b]) => {
+        tl.set(id, { opacity: 0 }, 0);
+        tl.fromTo(id, { opacity: 0, y: 34 }, { opacity: 1, y: 0, duration: 0.55, ease: "power3.out", immediateRender: false }, a);
+        tl.to(id, { opacity: 0, y: -22, duration: 0.3, ease: "power2.in" }, b - 0.3);
+      });
+
+      // ---- section progress: [id, start, end] ----
+      [["#st-1", 0, 3.6], ["#st-2", 3.6, 13.3], ["#st-3", 13.3, 18.4], ["#st-4", 18.4, 21.2], ["#st-5", 21.2, 25.1], ["#st-6", 25.1, 27.6]].forEach(([id, a, b]) => {
+        tl.fromTo(id, { scaleX: 0 }, { scaleX: 1, duration: b - a, ease: "none" }, a);
+      });
+            tl.to("#ui-inner", { opacity: 0, duration: 0.35, ease: "power2.in" }, 27.15);
+
+      // ---- closing card ----
+      tl.fromTo("#outro-photo", { opacity: 0, scale: 1.08, transformOrigin: "50% 70%" }, { opacity: 1, scale: 1, duration: 1.6, ease: "power2.out" }, 27.5);
+      tl.fromTo("#outro-logo", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" }, 27.7);
+      tl.fromTo("#outro-rule", { scaleX: 0 }, { scaleX: 1, duration: 0.6, ease: "power3.out" }, 27.95);
+      tl.fromTo("#outro-l1", { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" }, 28.05);
+      tl.fromTo("#outro-l2", { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" }, 28.25);
+      ["#chip-1", "#chip-2", "#chip-3", "#chip-4", "#chip-5"].forEach((id, i) => {
+        tl.fromTo(id, { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 28.45 + i * 0.08);
+      });
+
+      window.__timelines["main"] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>

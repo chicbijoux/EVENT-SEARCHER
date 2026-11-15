@@ -98,3 +98,22 @@ Only list files that are really there. An empty `{}` keeps the illustrations.
   headline, the angled labels and the closing circle are still drawn by the page on top.
 - The page must be opened from a web server (any host, or `python3 -m http.server`).
   Opened as a local file, browsers block the media list and the illustrations stay.
+
+## Generating with RunningHub (runninghub.ai)
+
+Chosen route: GPT Image 2 for the photos, Seedance 2.5 for the pour clips. Needs an
+**Enterprise-Shared** API key from the RunningHub API Key page (the other key types cannot
+call these models). Never put the key in this repo or in chat.
+
+- Auth: `Authorization: Bearer <key>`, host `www.runninghub.ai`.
+- Photos: `POST /openapi/v2/rhart-image-g-2-official/text-to-image` with
+  `{"prompt": "...", "aspectRatio": "16:9", "resolution": "2k", "quality": "high"}`.
+- Pour clips: `POST /openapi/v2/bytedance/seedance-2.5-token/image-to-video` with
+  `{"prompt": "...", "firstFrameUrl": "<photo result url>", "lastFrameUrl": "<optional>",
+  "resolution": "1080p", "duration": "8", "ratio": "adaptive", "generateAudio": false,
+  "watermark": false}`.
+- Each call returns a `taskId`. Poll `POST /openapi/v2/query` with `{"taskId": "..."}` until
+  `status` is `SUCCESS`, then download `results[].url`. `usage.consumeMoney` is the cost.
+- Prices are not listed in the API docs; check the first task's `usage` before running the rest.
+- Alternatives if Seedance disappoints: `rhart-video-v3.1-pro-official/image-to-video`
+  (Veo 3.1 Pro) or `kling-v3-4k/image-to-video`.

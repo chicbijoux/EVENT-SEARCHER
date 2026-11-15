@@ -9,6 +9,9 @@ Final files:
 
 - `renders/amber-orbit-promo.mp4` — the site on a phone, with captions and a closing card (31.4 s).
 - `renders/amber-orbit-screen.mp4` — the site recording alone, full frame, no phone or captions (28.8 s).
+- `renders/amber-orbit-screen-long.mp4` — the same full-frame recording at a reading pace (95.5 s):
+  every heading, card, price and the calculator is held long enough to read. Recorded with
+  `PLAN=long VW=432 VH=768 DSF=2.5 node promo-video/tools/capture.cjs <frames-dir>`.
 
 The full-frame version is the capture script's own output at 1080 × 1920:
 

@@ -25,21 +25,48 @@ const lerp = (a, b, t) => a + (b - a) * t;
   });
   await p.waitForTimeout(2500);                       // let every film frame and photo finish loading (real time)
   const L = await p.evaluate(() => { const top = s => Math.round(document.querySelector(s).getBoundingClientRect().top + scrollY); const pe = document.querySelector('#pour');
-    return { pourTop: pe.offsetTop, span: pe.offsetHeight - innerHeight, boxes: top('#boxes'), card1: top('#grid .card:nth-child(1)'), card3: top('#grid .card:nth-child(3)'), services: top('#services'), svcList: top('#svc'), calc: top('.calc'), max: document.documentElement.scrollHeight - innerHeight }; });
+    const tops = q => [...document.querySelectorAll(q)].map(e => Math.round(e.getBoundingClientRect().top + scrollY));
+    return { pourTop: pe.offsetTop, span: pe.offsetHeight - innerHeight, boxes: top('#boxes'), cards: tops('#grid .card'), services: top('#services'), svcList: top('#svc'), rows: tops('#svc .svc-row'), events: top('#events'), calc: top('.calc'), max: document.documentElement.scrollHeight - innerHeight }; });
   console.log(JSON.stringify(L));
   const P = q => L.pourTop + L.span * q;
-  // scroll keyframes: [seconds, y]
-  const K = [[0, 0], [3.5, 0], [3.95, P(0)], [5.4, P(.19)], [7.5, P(.42)], [10.2, P(.71)], [12.1, P(.875)], [13.0, P(1)], [13.75, L.boxes + 40], [14.55, L.card1 - 96], [15.5, L.card1 - 96], [17.1, L.card3 - 96], [17.7, L.card3 - 96],
-             [18.45, L.services - 70], [18.8, L.services - 70], [20.5, L.svcList + 250], [21.25, L.calc - 170], [END, L.calc - 170]];
-  const yAt = s => { for (let i = 1; i < K.length; i++) if (s <= K[i][0]) { const [t0, y0] = K[i-1], [t1, y1] = K[i]; const u = (s - t0) / (t1 - t0); const lin = i >= 3 && i <= 7; return lerp(y0, y1, lin ? u : ease(u)); } return K[K.length-1][1]; };
-  // taps: [seconds, selector, action]
-  const T = [[0.85, '#gate-yes', () => document.getElementById('gate-yes').click()],
-             [15.0, '#grid .card:nth-child(1) [data-add]', () => document.querySelector('#grid .card:nth-child(1) [data-add]').click()],
-             [17.35, '#grid .card:nth-child(3) [data-add]', () => document.querySelector('#grid .card:nth-child(3) [data-add]').click()],
-             [24.0, '#types button:nth-child(2)', () => document.querySelector('#types button:nth-child(2)').click()],
-             [25.2, '#cart-btn', () => document.getElementById('cart-btn').click()]];
-  const DRAG = [21.8, 23.4, 80, 200];                 // slider drag: start s, end s, from, to
-  const total = Math.min(MAXF, Math.round(END * FPS));
+  const click = sel => [sel, new Function(`document.querySelector(${JSON.stringify(sel)}).click()`)];
+  // K: scroll keyframes [seconds, y, 'ease'|'lin'] · T: taps [seconds, selector, action] · DRAG: slider [start s, end s, from, to]
+  let K, T, DRAG, endAt;
+  if (process.env.PLAN === 'long') {
+    // Reading pace: every heading, card and price is held long enough to read.
+    K = [[0, 0, 'ease']]; T = []; let t = 0;
+    const hold = d => { t += d; K.push([t, K[K.length - 1][1], 'ease']); };
+    const go = (y, d, mode = 'ease') => { t += d; K.push([t, Math.min(y, L.max), mode]); };
+    const tap = (sel, dt = 0) => T.push([t + dt, ...click(sel)]);
+    tap('#gate-yes', 1.8); hold(6.6);                                   // age gate, then the hero
+    go(P(0), 0.6);
+    go(P(.12), 1.6, 'lin'); go(P(.30), 2.2, 'lin');                     // ring opens
+    go(P(.375), 3.4, 'lin');                                            // "Twelve years in oak."
+    go(P(.56), 3.0, 'lin');
+    go(P(.645), 4.2, 'lin');                                            // "Poured slow. Savoured longer."
+    go(P(.775), 2.2, 'lin'); go(P(.83), 4.2, 'lin');                    // the three labels
+    go(P(.9), 1.4, 'lin'); go(P(1), 2.2, 'lin'); hold(1.8);             // circle opens on the collection title
+    go(L.boxes + 30, 0.9); hold(3.6);                                   // collection heading and intro
+    [3.4, 2.5, 3.4, 2.3, 2.3, 2.5].forEach((h, i) => { go(L.cards[i] - 84, 0.9); if (i === 0 || i === 2) tap(`#grid .card:nth-child(${i + 1}) [data-add]`, 1.7); hold(h); });
+    go(L.services - 60, 1.0); hold(3.2);                                // services photo and heading
+    go(L.rows[0] - 96, 0.9); tap('#svc .svc-row:nth-child(2) [data-add]', 1.9); hold(3.8);
+    go(L.rows[3] - 96, 0.9); hold(3.8);
+    go(L.events + 36, 1.0); hold(4.4);                                  // event bar heading and promises
+    go(L.calc - 150, 0.9); hold(1.3);
+    DRAG = [t, t + 2.6, 80, 200]; hold(2.6); hold(2.3);
+    tap('#types button:nth-child(2)'); hold(2.5);
+    tap('#types button:nth-child(3)'); hold(2.4);
+    tap('#cart-btn'); hold(4.8);                                        // the box with three items
+    endAt = t;
+  } else {
+    K = [[0, 0], [3.5, 0], [3.95, P(0)], [5.4, P(.19), 'lin'], [7.5, P(.42), 'lin'], [10.2, P(.71), 'lin'], [12.1, P(.875), 'lin'], [13.0, P(1), 'lin'], [13.75, L.boxes + 40], [14.55, L.cards[0] - 96], [15.5, L.cards[0] - 96], [17.1, L.cards[2] - 96], [17.7, L.cards[2] - 96],
+         [18.45, L.services - 70], [18.8, L.services - 70], [20.5, L.svcList + 250], [21.25, L.calc - 170], [END, L.calc - 170]];
+    T = [[0.85, ...click('#gate-yes')], [15.0, ...click('#grid .card:nth-child(1) [data-add]')], [17.35, ...click('#grid .card:nth-child(3) [data-add]')], [24.0, ...click('#types button:nth-child(2)')], [25.2, ...click('#cart-btn')]];
+    DRAG = [21.8, 23.4, 80, 200]; endAt = END;
+  }
+  const yAt = s => { for (let i = 1; i < K.length; i++) if (s <= K[i][0]) { const [t0, y0] = K[i-1], [t1, y1, mode] = K[i]; const u = (s - t0) / (t1 - t0); return lerp(y0, y1, mode === 'lin' ? u : ease(u)); } return K[K.length-1][1]; };
+  console.log('length', endAt.toFixed(1), 's');
+  const total = Math.min(MAXF, Math.round(endAt * FPS));
   const done = new Set();
   for (let f = 0; f < total; f++) {
     const s = f / FPS;

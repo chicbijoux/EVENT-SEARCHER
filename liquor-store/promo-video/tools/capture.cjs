@@ -31,13 +31,12 @@ const lerp = (a, b, t) => a + (b - a) * t;
   const P = q => L.pourTop + L.span * q;
   const click = sel => [sel, new Function(`document.querySelector(${JSON.stringify(sel)}).click()`)];
   // K: scroll keyframes [seconds, y, 'ease'|'lin'] · T: taps [seconds, selector, action] · DRAG: slider [start s, end s, from, to]
-  let K, T, DRAG, endAt;
+  let K = [[0, 0, 'ease']], T = [], DRAG, endAt, t = 0;
+  const hold = d => { t += d; K.push([t, K[K.length - 1][1], 'ease']); };
+  const go = (y, d, mode = 'ease') => { t += d; K.push([t, Math.min(y, L.max), mode]); };
+  const tap = (sel, dt = 0) => T.push([t + dt, ...click(sel)]);
   if (process.env.PLAN === 'long') {
     // Reading pace: every heading, card and price is held long enough to read.
-    K = [[0, 0, 'ease']]; T = []; let t = 0;
-    const hold = d => { t += d; K.push([t, K[K.length - 1][1], 'ease']); };
-    const go = (y, d, mode = 'ease') => { t += d; K.push([t, Math.min(y, L.max), mode]); };
-    const tap = (sel, dt = 0) => T.push([t + dt, ...click(sel)]);
     tap('#gate-yes', 1.8); hold(6.6);                                   // age gate, then the hero
     go(P(0), 0.6);
     go(P(.12), 1.6, 'lin'); go(P(.30), 2.2, 'lin');                     // ring opens
@@ -58,8 +57,27 @@ const lerp = (a, b, t) => a + (b - a) * t;
     tap('#types button:nth-child(3)'); hold(2.4);
     tap('#cart-btn'); hold(4.8);                                        // the box with three items
     endAt = t;
+  } else if (process.env.PLAN === 'mid') {
+    // 45-second cut: the same stops as the long plan, held just long enough to take in.
+    tap('#gate-yes', 1.2); hold(4.8);
+    go(P(0), 0.5);
+    go(P(.12), 1.0, 'lin'); go(P(.30), 1.3, 'lin'); go(P(.375), 2.0, 'lin'); go(P(.56), 1.8, 'lin');
+    go(P(.645), 2.4, 'lin'); go(P(.775), 1.3, 'lin'); go(P(.83), 2.0, 'lin'); go(P(.9), 0.8, 'lin'); go(P(1), 1.2, 'lin'); hold(0.4);
+    go(L.boxes + 30, 0.7); hold(1.6);
+    go(L.cards[0] - 84, 0.6); tap('#grid .card:nth-child(1) [data-add]', 0.9); hold(1.8);
+    go(L.cards[1] - 84, 0.6); hold(1.0);
+    go(L.cards[2] - 84, 0.6); tap('#grid .card:nth-child(3) [data-add]', 0.9); hold(1.8);
+    go(L.cards[5] - 84, 1.9, 'lin'); hold(0.5);                          // boxes four to six in one pass
+    go(L.services - 60, 0.7); hold(1.2);
+    go(L.rows[0] - 96, 0.6); tap('#svc .svc-row:nth-child(2) [data-add]', 0.9); hold(2.0);
+    go(L.events + 36, 0.7); hold(1.3);
+    go(L.calc - 150, 0.7); hold(0.5);
+    DRAG = [t, t + 1.6, 80, 200]; hold(1.6); hold(1.2);
+    tap('#types button:nth-child(2)'); hold(1.4);
+    tap('#cart-btn'); hold(Math.max(2.6, 45 - t));                      // pad the cart so the cut lands on 45 s
+    endAt = t;
   } else {
-    K = [[0, 0], [3.5, 0], [3.95, P(0)], [5.4, P(.19), 'lin'], [7.5, P(.42), 'lin'], [10.2, P(.71), 'lin'], [12.1, P(.875), 'lin'], [13.0, P(1), 'lin'], [13.75, L.boxes + 40], [14.55, L.cards[0] - 96], [15.5, L.cards[0] - 96], [17.1, L.cards[2] - 96], [17.7, L.cards[2] - 96],
+    T = []; K = [[0, 0], [3.5, 0], [3.95, P(0)], [5.4, P(.19), 'lin'], [7.5, P(.42), 'lin'], [10.2, P(.71), 'lin'], [12.1, P(.875), 'lin'], [13.0, P(1), 'lin'], [13.75, L.boxes + 40], [14.55, L.cards[0] - 96], [15.5, L.cards[0] - 96], [17.1, L.cards[2] - 96], [17.7, L.cards[2] - 96],
          [18.45, L.services - 70], [18.8, L.services - 70], [20.5, L.svcList + 250], [21.25, L.calc - 170], [END, L.calc - 170]];
     T = [[0.85, ...click('#gate-yes')], [15.0, ...click('#grid .card:nth-child(1) [data-add]')], [17.35, ...click('#grid .card:nth-child(3) [data-add]')], [24.0, ...click('#types button:nth-child(2)')], [25.2, ...click('#cart-btn')]];
     DRAG = [21.8, 23.4, 80, 200]; endAt = END;

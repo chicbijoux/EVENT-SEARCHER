@@ -1,0 +1,756 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shionagi — Omakase Counter</title>
+<meta name="description" content="Ten seats, one chef, one seating a night. A fifteen-course omakase in Bucharest. Choose your seat at the counter.">
+<meta property="og:title" content="Shionagi — Omakase Counter">
+<meta property="og:description" content="Ten seats. One chef. One evening.">
+<meta property="og:image" content="media/hero.webp">
+<meta name="theme-color" content="#ebe9e3">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;600;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* Layout concept: a light stone-and-ink page that reads like one evening, told by the clock;
+   the one dark room is the scroll film where a single nigiri is made in four movements. */
+:root{
+  --paper:#ebe9e3; --paper2:#e1ded6; --card:#f4f3ef;
+  --ink:#17150f; --ink2:#4b473e; --dim:#8b867b;
+  --indigo:#25386a; --indigo2:#3a5394; --seal:#b0322a;
+  --wood:#d9c3a0; --wood2:#c4a67c;
+  --night:#0d0c0a; --night2:#16140f; --nightink:#ece8de;
+  --line:rgba(23,21,15,.14); --line2:rgba(23,21,15,.28);
+  --display:"Shippori Mincho","Hiragino Mincho ProN","Yu Mincho",Georgia,serif;
+  --sans:"Zen Kaku Gothic New","Hiragino Sans","Segoe UI",system-ui,sans-serif;
+  --ease:cubic-bezier(.2,.7,.2,1);
+  color-scheme:light;
+}
+*{box-sizing:border-box;margin:0}
+html{scroll-behavior:smooth}
+body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.7;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+img{display:block;max-width:100%}
+button,input,textarea{font:inherit;color:inherit}
+button{background:none;border:0;cursor:pointer;padding:0}
+a{color:inherit;text-decoration:none}
+:focus-visible{outline:2px solid var(--indigo2);outline-offset:3px}
+::selection{background:var(--indigo);color:var(--paper)}
+.wrap{width:min(1240px,100% - 64px);margin-inline:auto}
+h1,h2,h3{font-family:var(--display);font-weight:600;letter-spacing:-.005em;text-wrap:balance}
+h2{font-size:clamp(36px,4.6vw,66px);line-height:1.08}
+em{font-style:normal;color:var(--indigo)}
+.label{font-size:12px;font-weight:700;letter-spacing:.24em;text-transform:uppercase;color:var(--ink2)}
+.time{font-family:var(--display);font-weight:600;font-variant-numeric:tabular-nums;color:var(--indigo)}
+.sub{color:var(--ink2);max-width:52ch}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;padding:15px 28px;border-radius:2px;font-size:13px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;transition:background .3s,color .3s,border-color .3s,transform .3s var(--ease)}
+.btn.solid{background:var(--ink);color:var(--paper)}
+.btn.solid:hover{background:var(--indigo);transform:translateY(-1px)}
+.btn.line{border:1px solid var(--line2)}
+.btn.line:hover{border-color:var(--indigo);color:var(--indigo)}
+.btn[disabled]{opacity:.35;pointer-events:none}
+.link{font-size:13px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;padding-bottom:4px;border-bottom:1px solid currentColor;transition:color .3s}
+.link:hover{color:var(--indigo)}
+.pre{opacity:0;transform:translateY(22px);transition:opacity .9s var(--ease),transform 1s var(--ease);transition-delay:var(--d,0s)}
+.pre.in{opacity:1;transform:none}
+
+/* photo frames: show a labelled placeholder until the file exists */
+.ph{position:relative;overflow:hidden;background:var(--paper2)}
+.ph img{width:100%;height:100%;object-fit:cover}
+.ph.missing{background:repeating-linear-gradient(135deg,var(--paper2) 0 14px,#d8d4ca 14px 15px)}
+.ph.missing img{display:none}
+.ph.missing::after{content:attr(data-label);position:absolute;inset:auto 16px 14px 16px;font-size:11px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--ink2)}
+
+/* ---------- header ---------- */
+.nav{position:fixed;inset:0 0 auto 0;z-index:50;display:flex;align-items:center;justify-content:space-between;gap:20px;padding:18px clamp(20px,4vw,56px);transition:background .4s,color .4s,border-color .4s;border-bottom:1px solid transparent}
+.nav.solid{background:rgba(235,233,227,.86);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-color:var(--line)}
+.nav.dark{color:var(--nightink);background:rgba(13,12,10,.55);border-color:rgba(236,232,222,.1)}
+.brand{display:flex;align-items:center;gap:12px}
+.seal{display:grid;place-items:center;width:34px;height:34px;background:var(--seal);color:#fbf4ea;font-family:var(--display);font-weight:700;font-size:13px;line-height:1.05;writing-mode:vertical-rl;letter-spacing:.06em;border-radius:3px}
+.wordmark{font-family:var(--display);font-weight:600;font-size:19px;letter-spacing:.3em;text-transform:uppercase}
+.links{display:flex;gap:clamp(16px,2.6vw,36px)}
+.links a{font-size:13px;font-weight:500;letter-spacing:.08em;opacity:.75;transition:opacity .3s}
+.links a:hover,.links a.on{opacity:1}
+.nav .btn{padding:11px 20px;font-size:12px}
+.nav.dark .btn.solid{background:var(--nightink);color:var(--night)}
+
+/* ---------- hero ---------- */
+.hero{padding:clamp(120px,15vh,170px) 0 clamp(50px,7vw,90px);position:relative}
+.hero-grid{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:clamp(30px,5vw,80px);align-items:end}
+.hero .wrap{position:relative;z-index:1}
+.kanji{position:absolute;z-index:0;right:max(16px,2vw);top:110px;writing-mode:vertical-rl;font-family:var(--display);font-weight:700;font-size:clamp(70px,9vw,150px);line-height:1;color:var(--ink);opacity:.06;pointer-events:none;user-select:none}
+.hero h1{font-size:clamp(46px,6.4vw,96px);line-height:1.02;margin:22px 0 26px}
+.hero h1 span{display:block}
+.hero .sub{font-size:clamp(16px,1.25vw,18px)}
+.hero-cta{display:flex;flex-wrap:wrap;align-items:center;gap:24px;margin-top:34px}
+.hero-fig{aspect-ratio:3/2}
+.hero-fig figcaption{position:absolute;left:16px;bottom:14px;font-size:11px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:#f3efe6;text-shadow:0 1px 12px rgba(0,0,0,.6)}
+.ph.missing figcaption{display:none}
+.facts{display:grid;grid-template-columns:repeat(4,1fr);margin-top:clamp(40px,6vw,80px);border-top:1px solid var(--line2);border-bottom:1px solid var(--line)}
+.facts div{padding:22px 0 20px}
+.facts div+div{padding-left:24px;border-left:1px solid var(--line)}
+.facts b{display:block;font-family:var(--display);font-weight:600;font-size:clamp(22px,2vw,28px);line-height:1.2}
+.facts span{font-size:13px;color:var(--ink2)}
+
+/* ---------- arrival ---------- */
+section.chapter{padding:clamp(80px,10vw,150px) 0}
+.split{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:clamp(30px,6vw,96px);align-items:center}
+.split.rev{grid-template-columns:minmax(0,5fr) minmax(0,7fr)}
+.split .ph{aspect-ratio:3/2}
+.stamp{display:flex;align-items:baseline;gap:18px;margin-bottom:18px}
+.stamp .time{font-size:clamp(40px,4.4vw,64px);line-height:1}
+.chapter h2{margin-bottom:22px}
+.chapter p+p{margin-top:14px}
+
+/* ---------- film intro + scroll film ---------- */
+.film-intro{padding:clamp(70px,9vw,130px) 0 clamp(50px,6vw,80px);text-align:center}
+.film-intro .stamp{justify-content:center}
+.film-intro h2{margin-bottom:18px}
+.film-intro .sub{margin:0 auto}
+.film{position:relative;height:540vh;background:var(--night)}
+.stage{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden;background:var(--night);color:var(--nightink)}
+#film,#ensō{position:absolute;inset:0;width:100%;height:100%}
+#film{display:none}
+.stage.has-film #film{display:block}
+.stage.has-film #ensō{display:none}
+.shade{position:absolute;inset:0;background:linear-gradient(90deg,rgba(13,12,10,.78) 0,rgba(13,12,10,.25) 42%,rgba(13,12,10,0) 70%),linear-gradient(0deg,rgba(13,12,10,.6) 0,rgba(13,12,10,0) 30%);pointer-events:none}
+.ens{position:absolute;inset:0;display:grid;place-items:center}
+.ens svg{width:min(62vh,70vw);height:auto;overflow:visible}
+.ens path{fill:none;stroke:#e9e2d2;stroke-width:16;stroke-linecap:round;opacity:.9}
+.ens .num{font-family:var(--display);font-weight:700;fill:#e9e2d2;opacity:.12}
+.chap{position:absolute;left:clamp(24px,7vw,110px);bottom:clamp(60px,12vh,130px);max-width:440px;opacity:0;will-change:transform,opacity}
+.chap .n{font-family:var(--display);font-weight:600;font-size:clamp(20px,1.8vw,26px);color:#b9c7ea}
+.chap h3{font-size:clamp(46px,6vw,92px);line-height:1;margin:8px 0 18px;color:var(--nightink)}
+.chap p{color:#c9c3b6;font-size:clamp(15px,1.15vw,17px)}
+.rail{position:absolute;right:clamp(20px,4vw,60px);top:50%;transform:translateY(-50%);display:grid;gap:22px;list-style:none;padding:0}
+.rail li{display:flex;align-items:center;gap:14px;justify-content:flex-end;font-size:12px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#8e877a;transition:color .4s}
+.rail li i{display:block;width:38px;height:2px;background:rgba(236,232,222,.2);position:relative;overflow:hidden}
+.rail li i b{position:absolute;inset:0;background:#b9c7ea;transform-origin:0 50%;transform:scaleX(0)}
+.rail li.on{color:var(--nightink)}
+.film-hint{position:absolute;left:50%;bottom:22px;transform:translateX(-50%);font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:#7d776b}
+
+/* ---------- the evening (sticky clock) ---------- */
+.evening{padding:clamp(90px,11vw,160px) 0}
+.ev-head{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(24px,5vw,80px);align-items:end;margin-bottom:clamp(40px,6vw,80px)}
+.ev-grid{display:grid;grid-template-columns:minmax(0,4fr) minmax(0,8fr);gap:clamp(30px,5vw,80px);align-items:start}
+.clock{position:sticky;top:110px;padding:30px 0;border-top:1px solid var(--line2)}
+.clock .time{display:block;font-size:clamp(64px,8vw,124px);line-height:.95;letter-spacing:-.02em}
+.clock .cnt{display:block;margin-top:16px;font-size:14px;color:var(--ink2)}
+.clock .bar{display:block;height:2px;background:var(--line);margin-top:18px;position:relative;overflow:hidden}
+.clock .bar i{position:absolute;inset:0;background:var(--indigo);transform-origin:0 50%;transform:scaleX(.0667);transition:transform .6s var(--ease)}
+.clock .act{display:block;margin-top:22px;font-family:var(--display);font-size:22px}
+.courses{list-style:none;padding:0;border-top:1px solid var(--line2)}
+.course{display:grid;grid-template-columns:64px minmax(0,1fr) auto;gap:6px 24px;padding:28px 0;border-bottom:1px solid var(--line);transition:background .4s}
+.course .no{font-family:var(--display);font-size:15px;color:var(--dim);padding-top:8px;font-variant-numeric:tabular-nums}
+.course h3{font-size:clamp(26px,2.3vw,34px);line-height:1.15}
+.course h3 small{font-family:var(--sans);font-weight:500;font-size:14px;letter-spacing:.06em;color:var(--dim);margin-left:12px}
+.course p{color:var(--ink2);grid-column:2;max-width:56ch}
+.course .at{font-family:var(--display);font-size:18px;color:var(--dim);padding-top:8px;font-variant-numeric:tabular-nums}
+.course .ph{grid-column:2/4;aspect-ratio:3/2;margin-top:18px;max-width:640px}
+.course.on .no,.course.on .at{color:var(--indigo)}
+.act-label{list-style:none;padding:44px 0 10px}
+.act-label:first-child{padding-top:20px}
+
+/* ---------- pairing + hands ---------- */
+.price-row{display:flex;flex-wrap:wrap;gap:12px 40px;margin-top:28px;padding-top:22px;border-top:1px solid var(--line)}
+.price-row b{display:block;font-family:var(--display);font-size:28px;font-weight:600}
+.price-row span{font-size:13px;color:var(--ink2)}
+.hands{background:var(--night);color:var(--nightink)}
+.hands .sub{color:#c9c3b6}
+.hands em{color:#b9c7ea}
+.hands .time{color:#b9c7ea}
+.hands .ph{background:#1c1a15}
+
+/* ---------- reserve ---------- */
+.reserve{padding:clamp(90px,11vw,160px) 0;background:var(--card);border-block:1px solid var(--line)}
+.res-head{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(24px,5vw,80px);align-items:end;margin-bottom:clamp(36px,5vw,60px)}
+.res-grid{display:grid;grid-template-columns:minmax(0,8fr) minmax(0,4fr);gap:clamp(24px,4vw,56px);align-items:start}
+.step{padding:26px 0;border-top:1px solid var(--line2)}
+.step:first-child{border-top:0;padding-top:0}
+.step-h{display:flex;align-items:baseline;justify-content:space-between;gap:16px;margin-bottom:16px}
+.step-h h3{font-size:24px}
+.step-h h3 span{font-family:var(--sans);font-size:13px;font-weight:700;letter-spacing:.14em;color:var(--indigo);margin-right:12px}
+.step-h small{font-size:13px;color:var(--ink2)}
+.dates{display:flex;gap:10px;overflow-x:auto;padding-bottom:6px;scrollbar-width:thin}
+.date{flex:0 0 auto;min-width:86px;padding:12px 10px;border:1px solid var(--line2);border-radius:2px;text-align:center;transition:border-color .25s,background .25s,color .25s}
+.date b{display:block;font-family:var(--display);font-size:26px;font-weight:600;line-height:1.15}
+.date span{display:block;font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--ink2)}
+.date em{display:block;font-size:12px;margin-top:4px;color:var(--indigo)}
+.date:hover{border-color:var(--indigo)}
+.date[aria-pressed=true]{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+.date[aria-pressed=true] span,.date[aria-pressed=true] em{color:#cfd8f0}
+.date[disabled]{opacity:.4;cursor:not-allowed}
+.date[disabled] em{color:var(--ink2)}
+.counter{border:1px solid var(--line);background:var(--paper);padding:18px 14px 12px;border-radius:2px;overflow-x:auto}
+.counter svg{display:block;width:100%;height:auto}
+.counter .v{display:none}
+@media (max-width:640px){.counter .h{display:none}.counter .v{display:block;max-width:330px;margin:0 auto}}
+.seat{cursor:pointer}
+.seat circle{fill:var(--card);stroke:var(--ink2);stroke-width:1.5;transition:fill .25s,stroke .25s}
+.seat text{font-family:var(--display);font-weight:600;font-size:22px;fill:var(--ink);text-anchor:middle;dominant-baseline:central;pointer-events:none}
+.seat:hover circle,.seat:focus-visible circle{stroke:var(--indigo);stroke-width:3}
+.seat:focus{outline:none}
+.seat.sel circle{fill:var(--indigo);stroke:var(--indigo)}
+.seat.sel text{fill:#f4f3ef}
+.seat.taken{cursor:not-allowed}
+.seat.taken circle{fill:#d6d2c8;stroke:#c3beb2}
+.seat.taken text{fill:#9b968a}
+.legend{display:flex;flex-wrap:wrap;gap:8px 22px;margin-top:12px;font-size:13px;color:var(--ink2)}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:8px;vertical-align:-1px;border:1.5px solid var(--ink2)}
+.legend .t i{background:#d6d2c8;border-color:#c3beb2}
+.legend .s i{background:var(--indigo);border-color:var(--indigo)}
+.opts{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.opt{padding:16px;border:1px solid var(--line2);border-radius:2px;text-align:left;transition:border-color .25s,background .25s}
+.opt b{display:block;font-family:var(--display);font-size:19px;font-weight:600;line-height:1.3}
+.opt span{font-size:13px;color:var(--ink2)}
+.opt[aria-pressed=true]{border-color:var(--indigo);background:rgba(37,56,106,.06);box-shadow:inset 0 0 0 1px var(--indigo)}
+.fields{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.fields label{display:grid;gap:6px;font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--ink2)}
+.fields .wide{grid-column:1/-1}
+.fields input,.fields textarea{width:100%;padding:13px 14px;border:1px solid var(--line2);border-radius:2px;background:var(--paper);font-size:16px;font-weight:400;letter-spacing:0;text-transform:none;color:var(--ink)}
+.fields textarea{min-height:84px;resize:vertical}
+.fields input:focus,.fields textarea:focus{outline:none;border-color:var(--indigo);box-shadow:0 0 0 3px rgba(37,56,106,.12)}
+.summary{position:sticky;top:100px;background:var(--ink);color:var(--paper);padding:clamp(22px,2.4vw,32px);border-radius:2px}
+.summary h3{font-size:26px;margin-bottom:6px}
+.summary .when{color:#cfd8f0;font-size:15px}
+.sum-rows{list-style:none;padding:0;margin:22px 0;border-top:1px solid rgba(235,233,227,.16)}
+.sum-rows li{display:flex;justify-content:space-between;gap:12px;padding:11px 0;border-bottom:1px solid rgba(235,233,227,.12);font-size:15px;font-variant-numeric:tabular-nums}
+.sum-rows li span:first-child{color:#bdb8ad}
+.total{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
+.total span:first-child{font-size:12px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:#bdb8ad}
+.total b{font-family:var(--display);font-size:34px;font-weight:600;font-variant-numeric:tabular-nums}
+.summary small{display:block;color:#a8a397;font-size:13px;margin:4px 0 20px}
+.summary .btn{width:100%;background:var(--paper);color:var(--ink)}
+.summary .btn:hover{background:#cfd8f0}
+.note{min-height:22px;margin-top:12px;font-size:13px;color:#e6b4ae}
+.done{display:none}
+.summary.ok .form-state{display:none}
+.summary.ok .done{display:block}
+.done .ref{display:inline-block;margin:16px 0;padding:8px 14px;border:1px solid rgba(235,233,227,.3);font-family:var(--display);font-size:22px;letter-spacing:.12em}
+.done p{color:#d6d1c6}
+.done .link{color:var(--paper);margin-top:18px;display:inline-block}
+
+/* ---------- private + gift ---------- */
+.duo{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(24px,3vw,44px)}
+.offer .ph{aspect-ratio:3/2}
+.offer h3{font-size:clamp(28px,2.6vw,38px);margin:24px 0 10px}
+.offer .row{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-top:20px;padding-top:18px;border-top:1px solid var(--line)}
+.offer .row b{font-family:var(--display);font-size:22px;font-weight:600}
+.gift-card{aspect-ratio:3/2;display:grid;place-items:center;background:var(--indigo);color:#eef1f8;text-align:center;position:relative;overflow:hidden}
+.gift-card .seal{width:64px;height:64px;font-size:24px;margin:0 auto 18px;border-radius:4px}
+.gift-card b{display:block;font-family:var(--display);font-size:clamp(26px,2.6vw,36px);font-weight:600}
+.gift-card span{font-size:12px;font-weight:700;letter-spacing:.3em;text-transform:uppercase;color:#c3cde8}
+.gift-card::before{content:"";position:absolute;inset:16px;border:1px solid rgba(238,241,248,.35)}
+
+/* ---------- footer ---------- */
+footer{padding:clamp(60px,8vw,100px) 0 34px;background:var(--night);color:#bdb8ad;font-size:15px}
+.foot{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:30px;padding-bottom:44px;border-bottom:1px solid rgba(236,232,222,.12)}
+.foot .brand{color:var(--nightink);margin-bottom:18px}
+.foot h4{color:var(--nightink);font-size:12px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;margin-bottom:14px;font-family:var(--sans)}
+.foot a,.foot p{display:block;padding:3px 0}
+.foot a:hover{color:var(--nightink)}
+.legal{padding-top:22px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-size:13px;color:#8b867b}
+
+.toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,24px);background:var(--ink);color:var(--paper);padding:13px 22px;border-radius:2px;font-size:14px;font-weight:500;opacity:0;transition:.45s var(--ease);z-index:80;pointer-events:none;max-width:92vw;text-align:center}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+
+/* ---------- responsive ---------- */
+@media (max-width:1000px){
+  .links{display:none}
+  .hero-grid,.split,.split.rev,.ev-head,.res-head,.res-grid{grid-template-columns:minmax(0,1fr)}
+  .split.rev .ph{order:-1}
+  .ev-grid{grid-template-columns:minmax(0,1fr)}
+  .clock{top:64px;z-index:5;background:rgba(235,233,227,.94);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);display:grid;grid-template-columns:auto 1fr;gap:4px 18px;align-items:center;padding:12px 0}
+  .clock .time{font-size:44px;grid-row:1/3}
+  .clock .cnt{margin:0}
+  .clock .act{display:none}
+  .clock .bar{grid-column:2;margin:0}
+  .summary{position:relative;top:0}
+  .foot{grid-template-columns:1fr 1fr}
+  .duo{grid-template-columns:minmax(0,1fr)}
+}
+@media (max-width:640px){
+  .wrap{width:calc(100% - 36px)}
+  .nav .btn{display:none}
+  .facts{grid-template-columns:1fr 1fr}
+  .facts div:nth-child(3){padding-left:0;border-left:0}
+  .facts div:nth-child(n+3){border-top:1px solid var(--line)}
+  .course{grid-template-columns:34px minmax(0,1fr) auto;gap:4px 14px}
+  .course h3 small{display:block;margin:2px 0 0}
+  .course p{grid-column:2/4}
+  .course .ph{grid-column:1/-1}
+  .opts{grid-template-columns:1fr}
+  .fields{grid-template-columns:1fr}
+  .rail{display:none}
+  .chap{right:24px;bottom:70px}
+  .shade{background:linear-gradient(0deg,rgba(13,12,10,.85) 0,rgba(13,12,10,.35) 45%,rgba(13,12,10,0) 70%)}
+  .kanji{display:none}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .pre{opacity:1;transform:none;transition:none}
+  .film{height:auto}
+  .stage{position:relative}
+}
+</style>
+</head>
+<body>
+
+<header class="nav" id="nav">
+  <a class="brand" href="#top" aria-label="Shionagi home"><span class="seal" aria-hidden="true">潮凪</span><span class="wordmark">Shionagi</span></a>
+  <nav class="links" aria-label="Main">
+    <a href="#arrival">The evening</a><a href="#craft">The craft</a><a href="#courses">Fifteen courses</a><a href="#private">Private counter</a>
+  </nav>
+  <a class="btn solid" href="#reserve">Reserve a seat</a>
+</header>
+
+<main id="top">
+<!-- ============ HERO ============ -->
+<section class="hero">
+  <div class="kanji" aria-hidden="true">潮凪</div>
+  <div class="wrap">
+    <div class="hero-grid">
+      <div>
+        <span class="label">Omakase · Bucharest</span>
+        <h1><span>Ten seats.</span><span>One chef.</span><span><em>One evening.</em></span></h1>
+        <p class="sub">One seating a night, at a counter of pale hinoki. Fifteen courses, made one piece at a time and handed to you across the wood.</p>
+        <div class="hero-cta"><a class="btn solid" href="#reserve">Choose your seat</a><a class="link" href="#arrival">Walk through the evening</a></div>
+      </div>
+      <figure class="ph hero-fig" data-label="Photo 1 · The counter">
+        <img src="media/hero.webp" width="1536" height="1024" alt="An empty hinoki omakase counter with ten seats under soft pools of light, one piece of tuna nigiri on a black plate" fetchpriority="high">
+        <figcaption>The counter, 18:55</figcaption>
+      </figure>
+    </div>
+    <div class="facts">
+      <div><b>Tue – Sat</b><span>Closed Sunday and Monday</span></div>
+      <div><b>19:00</b><span>One seating, doors at 18:40</span></div>
+      <div><b>15 courses</b><span>About two hours</span></div>
+      <div><b>690 lei</b><span>Per guest, before pairing</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ARRIVAL ============ -->
+<section class="chapter" id="arrival">
+  <div class="wrap split">
+    <figure class="ph pre" data-label="Photo 2 · Arrival">
+      <img src="media/door.webp" width="1536" height="1024" loading="lazy" alt="A sliding wooden door with a white linen curtain, warm light inside, a rain-wet stone path at dusk">
+    </figure>
+    <div class="pre" style="--d:.1s">
+      <div class="stamp"><span class="time">18:40</span><span class="label">Arrival</span></div>
+      <h2>The door slides <em>open at twenty to seven.</em></h2>
+      <p class="sub">Come a few minutes early. Coats go on the hooks by the door, and each guest is shown to the seat they chose when they booked.</p>
+      <p class="sub">At seven the curtain drops behind the last guest and the room goes quiet. Nobody else comes in tonight.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CRAFT: FILM ============ -->
+<section id="craft" aria-label="The craft">
+  <div class="film-intro">
+    <div class="wrap">
+      <div class="stamp"><span class="time">19:00</span><span class="label">The first piece</span></div>
+      <h2>One piece, <em>in four movements.</em></h2>
+      <p class="sub">Every nigiri tonight is made the same way, in front of you. Scroll to watch one being made.</p>
+    </div>
+  </div>
+  <div class="film" id="film-sec">
+    <div class="stage" id="stage">
+      <canvas id="film" aria-hidden="true"></canvas>
+      <div class="ens" id="ensō" aria-hidden="true">
+        <svg viewBox="0 0 400 400"><text class="num" id="ens-num" x="200" y="236" text-anchor="middle" font-size="130">一</text><path id="ens-path" pathLength="1" stroke-dasharray="1" stroke-dashoffset="1" d="M206 54C120 50 58 118 60 204c2 86 72 146 152 140c78-6 132-70 128-146c-3-60-40-104-90-124"/></svg>
+      </div>
+      <div class="shade"></div>
+      <div class="chap" data-i="0"><span class="n">01</span><h3>The Catch</h3><p>Bluefin from the morning market, resting on ice until the moment it is cut.</p></div>
+      <div class="chap" data-i="1"><span class="n">02</span><h3>The Knife</h3><p>One long stroke of the yanagiba. The fish is never sawed and never pressed.</p></div>
+      <div class="chap" data-i="2"><span class="n">03</span><h3>The Rice</h3><p>Rice kept at body temperature, seasoned with red vinegar, shaped by hand.</p></div>
+      <div class="chap" data-i="3"><span class="n">04</span><h3>The Serve</h3><p>Brushed with nikiri soy and set in front of you. Eat it within ten seconds.</p></div>
+      <ol class="rail" id="rail">
+        <li>The Catch<i><b></b></i></li><li>The Knife<i><b></b></i></li><li>The Rice<i><b></b></i></li><li>The Serve<i><b></b></i></li>
+      </ol>
+      <div class="film-hint" id="film-hint">Scroll</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ THE EVENING ============ -->
+<section class="evening" id="courses">
+  <div class="wrap">
+    <div class="ev-head">
+      <div class="pre"><div class="stamp"><span class="time">19:10</span><span class="label">The sequence</span></div><h2>Fifteen courses, <em>minute by minute.</em></h2></div>
+      <p class="sub pre" style="--d:.1s">The menu changes with the market, so this is last Thursday's evening. Scroll through it at the pace it was served; the clock follows you.</p>
+    </div>
+    <div class="ev-grid">
+      <aside class="clock" aria-live="polite">
+        <span class="time" id="clock-time">19:10</span>
+        <span class="cnt" id="clock-cnt">Course 1 of 15</span>
+        <span class="bar"><i id="clock-bar"></i></span>
+        <span class="act" id="clock-act">Opening</span>
+      </aside>
+      <ol class="courses" id="course-list"></ol>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PAIRING ============ -->
+<section class="chapter" id="pairing" style="padding-top:0">
+  <div class="wrap split rev">
+    <div class="pre">
+      <div class="stamp"><span class="time">19:15</span><span class="label">Alongside</span></div>
+      <h2>Six sakes, <em>poured as the fish changes.</em></h2>
+      <p class="sub">A dry junmai with the white fish, a richer yamahai with the tuna, warm aged koshu with the eel. Or five Japanese teas, brewed at the counter, for guests who don't drink.</p>
+      <div class="price-row"><div><b>290 lei</b><span>Sake pairing, per guest</span></div><div><b>140 lei</b><span>Tea pairing, per guest</span></div></div>
+    </div>
+    <figure class="ph pre" style="--d:.1s" data-label="Photo 8 · Sake pairing">
+      <img src="media/sake.webp" width="1536" height="1024" loading="lazy" alt="Unlabelled sake bottles and small ceramic cups on the hinoki counter, sake being poured">
+    </figure>
+  </div>
+</section>
+
+<!-- ============ HANDS ============ -->
+<section class="chapter hands" id="chef">
+  <div class="wrap split">
+    <figure class="ph pre" data-label="Photo 3 · The hands">
+      <img src="media/hands.webp" width="1536" height="1024" loading="lazy" alt="A sushi chef's hands in a white jacket placing nigiri on a black plate">
+    </figure>
+    <div class="pre" style="--d:.1s">
+      <div class="stamp"><span class="time">21:05</span><span class="label">The last word</span></div>
+      <h2>Every piece, <em>the same two hands.</em></h2>
+      <p class="sub">There is no kitchen behind the wall. The chef works alone at the counter, so each piece you eat is made for you, a few seconds before you eat it.</p>
+      <p class="sub">At the end of the evening the chef asks which piece you would like again. That one is on the house.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ RESERVE ============ -->
+<section class="reserve" id="reserve">
+  <div class="wrap">
+    <div class="res-head">
+      <div class="pre"><span class="label">Reservations</span><h2 style="margin-top:16px">Choose <em>your seat.</em></h2></div>
+      <p class="sub pre" style="--d:.1s">Bookings open thirty days ahead. Pick an evening, then the seats you want at the counter; up to four guests online. For five or more, book the private counter.</p>
+    </div>
+    <div class="res-grid">
+      <form id="book" novalidate>
+        <div class="step">
+          <div class="step-h"><h3><span>01</span>The evening</h3><small>All seatings at 19:00</small></div>
+          <div class="dates" id="dates" role="group" aria-label="Choose an evening"></div>
+        </div>
+        <div class="step">
+          <div class="step-h"><h3><span>02</span>Your seats</h3><small id="seats-left">Tap up to four seats</small></div>
+          <div class="counter">
+            <svg class="h" viewBox="0 0 1000 300" role="group" aria-label="Seat map of the counter">
+              <defs><linearGradient id="hinoki" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#e3cfac"/><stop offset="1" stop-color="#c9ab80"/></linearGradient></defs>
+              <rect x="40" y="18" width="920" height="54" rx="4" fill="#d8d4ca"/>
+              <text x="500" y="46" text-anchor="middle" dominant-baseline="central" font-size="15" font-weight="700" letter-spacing="4" fill="#5c574d" font-family="Zen Kaku Gothic New, sans-serif">CHEF'S BOARD</text>
+              <rect x="40" y="84" width="920" height="70" rx="6" fill="url(#hinoki)"/>
+              <path d="M40 150h920" stroke="#b3936a" stroke-width="2"/>
+              <g class="seats" data-o="h"></g>
+            </svg>
+            <svg class="v" viewBox="0 0 320 640" role="group" aria-label="Seat map of the counter">
+              <defs><linearGradient id="hinoki-v" x1="0" x2="1"><stop offset="0" stop-color="#c9ab80"/><stop offset="1" stop-color="#e3cfac"/></linearGradient></defs>
+              <rect x="14" y="12" width="44" height="616" rx="4" fill="#d8d4ca"/>
+              <text x="36" y="320" text-anchor="middle" dominant-baseline="central" font-size="13" font-weight="700" letter-spacing="4" fill="#5c574d" font-family="Zen Kaku Gothic New, sans-serif" transform="rotate(-90 36 320)">CHEF'S BOARD</text>
+              <rect x="68" y="12" width="70" height="616" rx="6" fill="url(#hinoki-v)"/>
+              <g class="seats" data-o="v"></g>
+            </svg>
+          </div>
+          <div class="legend"><span><i></i>Free</span><span class="t"><i></i>Taken</span><span class="s"><i></i>Yours</span><span>Seats 4 to 7 face the chef's board.</span></div>
+        </div>
+        <div class="step">
+          <div class="step-h"><h3><span>03</span>Pairing</h3><small>For the whole party</small></div>
+          <div class="opts" id="pairs" role="group" aria-label="Choose a pairing">
+            <button type="button" class="opt" data-p="0" aria-pressed="true"><b>No pairing</b><span>Order by the glass</span></button>
+            <button type="button" class="opt" data-p="290" aria-pressed="false"><b>Sake pairing</b><span>Six sakes · 290 lei each</span></button>
+            <button type="button" class="opt" data-p="140" aria-pressed="false"><b>Tea pairing</b><span>Five teas · 140 lei each</span></button>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-h"><h3><span>04</span>Your details</h3><small>We confirm by email</small></div>
+          <div class="fields">
+            <label for="f-name">Name<input id="f-name" name="name" autocomplete="name" required></label>
+            <label for="f-email">Email<input id="f-email" name="email" type="email" autocomplete="email" required></label>
+            <label class="wide" for="f-notes">Allergies or occasions<textarea id="f-notes" name="notes" placeholder="Shellfish allergy, a birthday, anything the chef should know"></textarea></label>
+          </div>
+        </div>
+      </form>
+      <aside class="summary" id="summary" aria-live="polite">
+        <div class="form-state">
+          <h3>Your evening</h3>
+          <p class="when" id="sum-when">Choose an evening</p>
+          <ul class="sum-rows">
+            <li><span>Seats</span><span id="sum-seats">None yet</span></li>
+            <li><span>Omakase</span><span id="sum-oma">0 lei</span></li>
+            <li><span>Pairing</span><span id="sum-pair">None</span></li>
+          </ul>
+          <div class="total"><span>Total</span><b id="sum-total">0 lei</b></div>
+          <small id="sum-dep">Seats are held with a 200 lei deposit per guest, refunded up to 48 hours before.</small>
+          <button class="btn" type="submit" form="book" id="hold" disabled>Hold my seats</button>
+          <p class="note" id="note"></p>
+        </div>
+        <div class="done">
+          <h3>Seats held.</h3>
+          <span class="ref" id="done-ref">SN-0000</span>
+          <p id="done-text"></p>
+          <p style="margin-top:12px;font-size:13px;color:#a8a397">Demo booking. Connect your reservation and payment system here.</p>
+          <button class="link" type="button" id="again">Book another evening</button>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PRIVATE + GIFT ============ -->
+<section class="chapter" id="private">
+  <div class="wrap">
+    <div class="ev-head">
+      <div class="pre"><span class="label">Beyond the counter</span><h2 style="margin-top:16px">Make the evening <em>your own.</em></h2></div>
+      <p class="sub pre" style="--d:.1s">For birthdays, proposals and quiet business dinners, or for someone you want to send in your place.</p>
+    </div>
+    <div class="duo">
+      <article class="offer pre">
+        <figure class="ph" data-label="Photo 9 · Private counter"><img src="media/private.webp" width="1536" height="1024" loading="lazy" alt="A private six-seat hinoki counter set with black plates, a small moss garden through the window"></figure>
+        <h3>The private counter</h3>
+        <p class="sub">A six-seat counter in its own room, with the chef cooking for your party alone. Any evening, Tuesday to Saturday.</p>
+        <div class="row"><b>from 4,800 lei</b><button class="link" type="button" data-toast="Private counter enquiry (demo)">Enquire</button></div>
+      </article>
+      <article class="offer pre" style="--d:.1s">
+        <div class="gift-card"><div><span class="seal" aria-hidden="true">潮凪</span><b>An evening at the counter</b><span>Gift card</span></div></div>
+        <h3>Give a seat</h3>
+        <p class="sub">A letterpress card for one or two seats, valid for a year. We post it, or email it the same day.</p>
+        <div class="row"><b>690 lei per seat</b><button class="link" type="button" data-toast="Gift card checkout (demo)">Buy a gift card</button></div>
+      </article>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot">
+      <div><a class="brand" href="#top"><span class="seal" aria-hidden="true">潮凪</span><span class="wordmark">Shionagi</span></a><p style="max-width:32ch">An omakase counter. Ten seats, one chef, one seating a night.</p></div>
+      <div><h4>Visit</h4><p>Bucharest</p><p>Address sent with your booking</p></div>
+      <div><h4>Hours</h4><p>Tuesday to Saturday</p><p>Doors 18:40 · Seating 19:00</p></div>
+      <div><h4>Contact</h4><p>+40 700 000 000</p><p>reserve@example.com</p></div>
+    </div>
+    <div class="legal"><span>Prices include VAT. Service is at your discretion.</span><span>© 2026 Shionagi (demo brand)</span></div>
+  </div>
+</footer>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+(() => {
+/* =====================================================================
+   EDIT THE RESTAURANT HERE: prices, courses and how full evenings are.
+   ===================================================================== */
+const CUR = 'lei', OMAKASE = 690, MAX_ONLINE = 4, SEATS = 10;
+const COURSES = [
+  { act:'Opening' },
+  { t:'19:10', n:'Sakizuke', jp:'先付', d:'A cold opener: silken tofu, salmon roe and dashi jelly.' },
+  { t:'19:18', n:'Chawanmushi', jp:'茶碗蒸し', d:'Warm egg custard with snow crab and mitsuba.' },
+  { t:'19:27', n:'Kinmedai', jp:'金目鯛', d:'Golden-eye snapper, its skin seared over binchotan charcoal.' },
+  { act:'The nigiri' },
+  { t:'19:34', n:'Hotate', jp:'帆立', d:'Hokkaido scallop with yuzu salt.' },
+  { t:'19:41', n:'Akami', jp:'赤身', d:'Lean bluefin, marinated in soy for twenty minutes.' },
+  { t:'19:47', n:'Chutoro', jp:'中トロ', d:'Medium-fat bluefin from the belly’s edge.' },
+  { t:'19:53', n:'Otoro', jp:'大トロ', d:'The fattiest cut of the belly, barely touched by the knife.', img:'otoro.webp', alt:'A piece of otoro nigiri on a black plate' },
+  { t:'20:01', n:'Kohada', jp:'小鰭', d:'Gizzard shad, salted and vinegared over two days.' },
+  { t:'20:08', n:'Uni temaki', jp:'雲丹手巻', d:'Hokkaido sea urchin in a hand roll, passed to you directly.', img:'uni.webp', alt:'A seaweed hand roll filled with golden sea urchin' },
+  { t:'20:16', n:'Botan ebi', jp:'牡丹海老', d:'Sweet prawn with its own roe.' },
+  { t:'20:24', n:'Wagyu aburi', jp:'和牛炙り', d:'A5 wagyu, torched at the counter, finished with salt.', img:'wagyu.webp', alt:'Seared wagyu nigiri with a wisp of smoke' },
+  { t:'20:32', n:'Anago', jp:'穴子', d:'Sea eel, simmered and brushed with sweet tsume sauce.' },
+  { act:'Closing' },
+  { t:'20:39', n:'Tamago', jp:'玉子', d:'A sweet egg cake, baked for an hour.' },
+  { t:'20:45', n:'Akadashi', jp:'赤出汁', d:'Red miso soup with nameko mushrooms.' },
+  { t:'20:52', n:'Yuzu', jp:'柚子', d:'Yuzu sorbet, then a cup of roasted hojicha.', img:'yuzu.webp', alt:'A quenelle of yuzu sorbet in a grey ceramic bowl' },
+];
+
+/* ---------- helpers ---------- */
+const $ = (s, r=document) => r.querySelector(s), $$ = (s, r=document) => [...r.querySelectorAll(s)];
+const clamp = (v, a=0, b=1) => Math.min(b, Math.max(a, v));
+const seg = (p, a, b) => clamp((p - a) / (b - a));
+const eo = t => 1 - Math.pow(1 - t, 3);
+const money = n => n.toLocaleString('en-US') + ' ' + CUR;
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const toastEl = $('#toast'); let toastT;
+const toast = m => { toastEl.textContent = m; toastEl.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => toastEl.classList.remove('show'), 2600); };
+$$('[data-toast]').forEach(b => b.onclick = () => toast(b.dataset.toast));
+const photoFail = img => img.closest('.ph').classList.add('missing');
+const watchPhotos = root => $$('.ph img', root).forEach(img => { if (img.complete && !img.naturalWidth) photoFail(img); img.addEventListener('error', () => photoFail(img)); });
+
+/* ---------- courses ---------- */
+let num = 0;
+$('#course-list').innerHTML = COURSES.map(c => {
+  if (c.act) return `<li class="act-label"><span class="label">${c.act}</span></li>`;
+  num++;
+  return `<li class="course" data-t="${c.t}" data-n="${num}" data-act="">
+    <span class="no">${String(num).padStart(2, '0')}</span>
+    <h3>${c.n}<small lang="ja">${c.jp}</small></h3>
+    <span class="at">${c.t}</span>
+    <p>${c.d}</p>
+    ${c.img ? `<figure class="ph" data-label="Photo · ${c.n}"><img src="media/${c.img}" width="1536" height="1024" loading="lazy" alt="${c.alt}"></figure>` : ''}
+  </li>`;
+}).join('');
+let act = '';
+$$('#course-list li').forEach(li => { if (li.classList.contains('act-label')) act = li.textContent.trim(); else li.dataset.act = act; });
+const TOTAL = num;
+watchPhotos(document);
+
+const courseEls = $$('.course');
+let lastCourse = null;
+function setCourse(li){
+  if (li === lastCourse) return; lastCourse = li;
+  courseEls.forEach(c => c.classList.toggle('on', c === li));
+  $('#clock-time').textContent = li.dataset.t;
+  $('#clock-cnt').textContent = `Course ${li.dataset.n} of ${TOTAL}`;
+  $('#clock-act').textContent = li.dataset.act;
+  $('#clock-bar').style.transform = `scaleX(${(li.dataset.n / TOTAL).toFixed(3)})`;
+}
+function trackCourse(){
+  const line = innerHeight * .42; let cur = courseEls[0];
+  for (const c of courseEls) { if (c.getBoundingClientRect().top < line) cur = c; else break; }
+  setCourse(cur);
+}
+
+/* ---------- reveal ---------- */
+const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { threshold: .12 });
+if (!reduced) $$('.pre').forEach(el => { if (el.getBoundingClientRect().top > innerHeight) io.observe(el); else el.classList.add('in'); });
+else $$('.pre').forEach(el => el.classList.add('in'));
+
+/* ---------- scroll film ---------- */
+const filmSec = $('#film-sec'), stage = $('#stage'), chaps = $$('.chap'), railLi = $$('#rail li'), railBar = $$('#rail b'),
+      ensPath = $('#ens-path'), ensNum = $('#ens-num'), hint = $('#film-hint'), nav = $('#nav');
+const KANJI = ['一', '二', '三', '四'];
+const film = { on:false, n:0, imgs:[], cv:$('#film'), ctx:null, last:-1 };
+function sizeFilm(){ if (!film.on) return; const d = Math.min(devicePixelRatio || 1, 2); film.cv.width = Math.round(film.cv.clientWidth * d); film.cv.height = Math.round(film.cv.clientHeight * d); film.last = -1; }
+function drawFilm(p){
+  const want = Math.round(clamp(p) * (film.n - 1)); let i = -1;
+  for (let d = 0; d < film.n; d++) { if (film.imgs[want - d] && film.imgs[want - d].ok) { i = want - d; break; } if (film.imgs[want + d] && film.imgs[want + d].ok) { i = want + d; break; } }
+  if (i < 0 || i === film.last) return; film.last = i;
+  const im = film.imgs[i].im, cw = film.cv.width, ch = film.cv.height, k = Math.max(cw / im.naturalWidth, ch / im.naturalHeight), w = im.naturalWidth * k, h = im.naturalHeight * k;
+  film.ctx.drawImage(im, (cw - w) / 2, (ch - h) / 2, w, h);
+}
+function startFilm(spec){
+  if (spec.mobile && innerWidth < 760 && innerHeight > innerWidth) spec = Object.assign({}, spec, spec.mobile);
+  film.n = spec.count; film.ctx = film.cv.getContext('2d'); film.on = true; stage.classList.add('has-film'); sizeFilm();
+  const name = i => `media/film/${spec.prefix || 'd_'}${String(i + 1).padStart(4, '0')}.${spec.ext || 'webp'}`;
+  const seen = new Set();
+  for (let step = 16; step >= 1; step /= 2) for (let i = 0; i < film.n; i += step) {
+    if (seen.has(i)) continue; seen.add(i);
+    const o = film.imgs[i] = { im: new Image(), ok: false }; o.im.onload = () => { o.ok = true; film.last = -1; }; o.im.src = name(i);
+  }
+}
+(async () => { try { const r = await fetch('media/media.json', { cache:'no-cache' }); if (!r.ok) return; const m = await r.json(); if (m.film && m.film.count > 1) startFilm(m.film); } catch (e) {} })();
+
+const A = .03, B = .97, Q = (B - A) / 4;     // film runs from A to B; four equal chapters
+function applyFilm(p){
+  const fp = seg(p, A, B);
+  if (film.on) drawFilm(fp);
+  const ci = Math.min(3, Math.floor(fp * 4));
+  chaps.forEach((c, i) => {
+    const s = A + Q * i, e = s + Q;
+    const inn = eo(seg(p, s + .005, s + .045)), out = i === 3 ? 0 : seg(p, e - .04, e - .005);
+    c.style.opacity = (inn * (1 - out)).toFixed(3);
+    c.style.transform = `translateY(${((1 - inn) * 30 - out * 30).toFixed(1)}px)`;
+  });
+  railLi.forEach((li, i) => li.classList.toggle('on', i === ci));
+  railBar.forEach((b, i) => b.style.transform = `scaleX(${clamp(fp * 4 - i).toFixed(3)})`);
+  if (!film.on) { const local = clamp(fp * 4 - ci); ensPath.style.strokeDashoffset = (1 - eo(local)).toFixed(3); ensNum.textContent = KANJI[ci]; }
+  hint.style.opacity = 1 - seg(p, .005, .03);
+}
+let target = 0, cur = 0, vh = innerHeight;
+function measure(){
+  const y = scrollY, top = filmSec.offsetTop, span = filmSec.offsetHeight - vh;
+  target = clamp((y - top) / span);
+  const r = filmSec.getBoundingClientRect(), hands = $('#chef').getBoundingClientRect(), foot = $('footer').getBoundingClientRect();
+  const dark = (r.top < 60 && r.bottom > 60) || (hands.top < 60 && hands.bottom > 60) || foot.top < 60;
+  nav.classList.toggle('dark', dark); nav.classList.toggle('solid', !dark && y > 30);
+  trackCourse();
+  let on = '';
+  ['arrival', 'craft', 'courses', 'private'].forEach(id => { if ($('#' + id).getBoundingClientRect().top < vh * .5) on = id; });
+  $$('.links a').forEach(a => a.classList.toggle('on', a.getAttribute('href') === '#' + on));
+}
+let last = performance.now();
+function frame(now){
+  const dt = Math.min(.25, (now - last) / 1000); last = now;
+  cur += (target - cur) * (reduced ? 1 : 1 - Math.exp(-dt * 10));
+  if (Math.abs(target - cur) < .0002) cur = target;
+  applyFilm(cur);
+  requestAnimationFrame(frame);
+}
+addEventListener('scroll', measure, { passive:true });
+addEventListener('resize', () => { vh = innerHeight; sizeFilm(); measure(); });
+measure(); cur = target; requestAnimationFrame(frame);
+
+/* ---------- reservations ---------- */
+const hash = s => { let h = 2166136261; for (const ch of s) { h ^= ch.charCodeAt(0); h = Math.imul(h, 16777619); } return h >>> 0; };
+const rng = seed => () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+const iso = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+// How full an evening is: a stand-in for your booking system. Weekends fill first.
+function takenFor(key, dow){
+  const r = rng(hash(key)); const base = dow === 5 || dow === 6 ? 6 : 3; let k = Math.min(SEATS, base + Math.floor(r() * 5));
+  if (dow === 6 && r() > .55) k = SEATS;
+  const order = [...Array(SEATS).keys()].sort(() => r() - .5); return new Set(order.slice(0, k).map(i => i + 1));
+}
+const evenings = []; const d0 = new Date(); d0.setHours(12, 0, 0, 0);
+for (let i = 1; evenings.length < 12 && i < 40; i++) { const d = new Date(d0); d.setDate(d0.getDate() + i); const dow = d.getDay(); if (dow >= 2 && dow <= 6) evenings.push({ d, key: iso(d), taken: takenFor(iso(d), dow) }); }
+const fmtDay = d => d.toLocaleDateString('en-GB', { weekday:'short' }), fmtMon = d => d.toLocaleDateString('en-GB', { month:'short' });
+const fmtLong = d => d.toLocaleDateString('en-GB', { weekday:'long', day:'numeric', month:'long' });
+const state = { ev: null, seats: new Set(), pair: 0 };
+$('#dates').innerHTML = evenings.map((e, i) => { const left = SEATS - e.taken.size;
+  return `<button type="button" class="date" data-i="${i}" aria-pressed="false" ${left ? '' : 'disabled'}><span>${fmtDay(e.d)}</span><b>${e.d.getDate()}</b><span>${fmtMon(e.d)}</span><em>${left ? left + ' left' : 'Full'}</em></button>`; }).join('');
+const seatSvg = (o, i) => { const s = i + 1, x = o === 'h' ? 92 + i * 90.7 : 205, y = o === 'h' ? 222 : 44 + i * 61.3, r = o === 'h' ? 34 : 26;
+  return `<g class="seat" data-s="${s}" tabindex="0" role="button"><circle cx="${x}" cy="${y}" r="${r}"/><text x="${x}" y="${y}">${s}</text></g>`; };
+$$('.seats').forEach(g => g.innerHTML = [...Array(SEATS).keys()].map(i => seatSvg(g.dataset.o, i)).join(''));
+const seatEls = $$('.seat');
+function pickEvening(i){
+  state.ev = evenings[i]; state.seats.clear();
+  $$('.date').forEach(b => b.setAttribute('aria-pressed', b.dataset.i == i));
+  render();
+}
+function render(){
+  const ev = state.ev;
+  seatEls.forEach(g => { const s = +g.dataset.s, t = ev && ev.taken.has(s), sel = state.seats.has(s);
+    g.classList.toggle('taken', !!t); g.classList.toggle('sel', sel);
+    g.setAttribute('aria-label', `Seat ${s}, ${t ? 'taken' : sel ? 'selected' : 'free'}`); g.setAttribute('aria-pressed', sel); g.setAttribute('aria-disabled', !!t); });
+  const n = state.seats.size, left = ev ? SEATS - ev.taken.size : 0;
+  $('#seats-left').textContent = ev ? `${left} of ${SEATS} free · up to ${MAX_ONLINE} online` : 'Choose an evening first';
+  $('#sum-when').textContent = ev ? `${fmtLong(ev.d)} · 19:00` : 'Choose an evening';
+  const list = [...state.seats].sort((a, b) => a - b);
+  $('#sum-seats').textContent = n ? `${list.join(', ')} · ${n} guest${n > 1 ? 's' : ''}` : 'None yet';
+  $('#sum-oma').textContent = money(OMAKASE * n);
+  $('#sum-pair').textContent = state.pair ? money(state.pair * n) : 'None';
+  $('#sum-total').textContent = money((OMAKASE + state.pair) * n);
+  $('#sum-dep').textContent = n ? `${money(200 * n)} deposit today, refunded up to 48 hours before.` : 'Seats are held with a 200 lei deposit per guest, refunded up to 48 hours before.';
+  $('#hold').disabled = !n;
+}
+function toggleSeat(s){
+  if (!state.ev) { toast('Choose an evening first'); return; }
+  if (state.ev.taken.has(s)) { toast(`Seat ${s} is taken that evening`); return; }
+  if (state.seats.has(s)) state.seats.delete(s);
+  else if (state.seats.size >= MAX_ONLINE) { toast('Up to four seats online. For more, book the private counter.'); return; }
+  else state.seats.add(s);
+  $('#note').textContent = ''; render();
+}
+$('#dates').addEventListener('click', e => { const b = e.target.closest('.date'); if (b && !b.disabled) pickEvening(+b.dataset.i); });
+$$('.seats').forEach(el => {
+  el.addEventListener('click', e => { const g = e.target.closest('.seat'); if (g) toggleSeat(+g.dataset.s); });
+  el.addEventListener('keydown', e => { const g = e.target.closest('.seat'); if (g && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); toggleSeat(+g.dataset.s); } });
+});
+$$('#pairs .opt').forEach(b => b.onclick = () => { state.pair = +b.dataset.p; $$('#pairs .opt').forEach(x => x.setAttribute('aria-pressed', x === b)); render(); });
+$('#book').addEventListener('submit', e => {
+  e.preventDefault();
+  const name = $('#f-name').value.trim(), email = $('#f-email').value.trim();
+  if (!state.seats.size) { $('#note').textContent = 'Choose at least one seat.'; return; }
+  if (!name) { $('#note').textContent = 'Add the name for the booking.'; $('#f-name').focus(); return; }
+  if (!/^\S+@\S+\.\S+$/.test(email)) { $('#note').textContent = 'Add an email address so we can confirm.'; $('#f-email').focus(); return; }
+  const list = [...state.seats].sort((a, b) => a - b);
+  $('#done-ref').textContent = 'SN-' + String(hash(state.ev.key + list.join() + name) % 9000 + 1000);
+  $('#done-text').textContent = `${list.length > 1 ? 'Seats' : 'Seat'} ${list.join(' and ')} for ${name}, ${fmtLong(state.ev.d)} at 19:00. A confirmation goes to ${email}.`;
+  $('#summary').classList.add('ok');
+});
+$('#again').onclick = () => { $('#summary').classList.remove('ok'); state.seats.clear(); render(); };
+pickEvening(Math.max(0, evenings.findIndex(e => e.taken.size < SEATS)));
+})();
+</script>
+</body>
+</html>

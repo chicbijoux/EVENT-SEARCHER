@@ -802,7 +802,7 @@ const io2 = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersectin
 const watch = (el, cls) => { const trig = el.parentElement; el.classList.add(...cls); revealFor.set(trig, (revealFor.get(trig) || []).concat(el)); io2.observe(trig); };
 if (!reduced) {
   $$('main h2').forEach(h => { if (h.getBoundingClientRect().top > innerHeight) watch(h, ['mask']); });
-  $$('.bleed .ph, .course .ph, .offer .ph').forEach((f, i) => { if (f.getBoundingClientRect().top > innerHeight) watch(f, f.closest('.rev') || i % 2 ? ['wipe', 'from-l'] : ['wipe']); });
+  $$('.bleed .ph, .offer .ph').forEach((f, i) => { if (f.getBoundingClientRect().top > innerHeight) watch(f, f.closest('.rev') || i % 2 ? ['wipe', 'from-l'] : ['wipe']); });
 }
 const heroIn = $('#hero-in'), heroImg = $('#hero-img'), heroSec = $('#hero');
 

@@ -49,24 +49,23 @@ const lerp = (a, b, t) => a + (b - a) * t;
   const at = (sel, off = 0) => async () => (await p.evaluate(s => window.__top(s), sel)) + off;
 
   hold(4.1);                                                        // curtain parts, hero settles
-  go(at('#arrival', -64), 1.0); hold(2.2);                          // 18:40 arrival in the rain
-  go(at('.film-intro', -40), 1.0); hold(1.1);                        // 19:00 one piece, in four movements
+  go(at('#arrival', -64), 1.0); hold(1.9);                          // 18:40 arrival in the rain
+  go(at('.film-intro', -40), .9); hold(.9);                          // 19:00 one piece, in four movements
   go(P(0), .7);
-  for (let i = 0; i < 4; i++) { go(P(A + Q * (i + .62)), 2.0, 'lin'); hold(.5); }   // catch, knife, rice, serve
+  for (let i = 0; i < 4; i++) { go(P(A + Q * (i + .62)), 1.8, 'lin'); hold(.45); }   // catch, knife, rice, serve
   go(P(1), 1.0, 'lin');
-  go(at('#courses', -40), .9); hold(1.0);                          // fifteen courses
-  go(at('.course', -150), .7);
-  go(async () => p.evaluate(() => { const c = [...document.querySelectorAll('.course')].pop(); return c.getBoundingClientRect().top + scrollY - 150; }), 5.8, 'lin'); hold(.4);   // the clock runs through the evening
-  go(at('#reserve', -50), 1.0); hold(.7);                           // choose your seat
+  go(at('#courses', -40), .9); hold(.8);                           // fifteen courses
+  for (let n = 1; n <= 15; n++) { go(at(`.course[data-n="${n}"]`, -150), n === 1 ? .6 : .32); hold(.4); }   // stop at every course so each dish is seen
+  go(at('#reserve', -50), .9); hold(.5);                            // choose your seat
   go(at('#dates', -170), .7);
-  tap('#dates .date:nth-child(3)', 'click', .3); hold(1.0);
+  tap('#dates .date:nth-child(3)', 'click', .3); hold(.8);
   go(at('.counter', -90), .8);
   tap('__seat', 'seat', .3); hold(1.1);                              // a centre seat, the view appears
-  go(at('#seat-view', -150), .8); hold(1.0);
+  go(at('#seat-view', -150), .8); hold(.8);
   go(at('#pairs', -260), .7);
   tap('#pairs .opt:nth-child(2)', 'click', .2); hold(.6);
   tap('#f-name', 'fill', 0); go(at('#summary', -80), 1.0);
-  tap('#hold', 'click', .3); hold(1.3);                              // seats held
+  tap('#hold', 'click', .3); hold(1.1);                              // seats held
   go(async () => { const c = await p.evaluate(() => { const e = document.getElementById('closing'); return { top: e.offsetTop, h: e.offsetHeight }; }); return c.top + (c.h - VH) * .97; }, 1.9);
   hold(Math.max(.8, 45 - t));                                        // the curtain closes; pad to 45 s
   const END = 45;

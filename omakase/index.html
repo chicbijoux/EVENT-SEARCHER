@@ -62,6 +62,37 @@ em{font-style:normal;color:var(--indigo)}
 .ph.missing img{display:none}
 .ph.missing::after{content:attr(data-label);position:absolute;inset:auto 16px 14px 16px;font-size:11px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--ink2)}
 
+/* ---------- opening: the noren parts ---------- */
+.noren{position:fixed;inset:0;z-index:300;pointer-events:none;display:none}
+.intro .noren{display:block}
+.noren .panel{position:absolute;top:0;bottom:0;width:50.4%;background-color:#e7e2d6;
+  background-image:repeating-linear-gradient(90deg,rgba(60,48,30,.035) 0 1px,transparent 1px 3px),repeating-linear-gradient(0deg,rgba(60,48,30,.03) 0 1px,transparent 1px 4px),linear-gradient(180deg,#ece8de 0,#e2dccf 100%);
+  transition:transform 1.25s cubic-bezier(.75,0,.2,1)}
+.noren .l{left:0;box-shadow:inset -18px 0 30px -24px rgba(40,30,15,.45);transform-origin:0 0}
+.noren .r{right:0;box-shadow:inset 18px 0 30px -24px rgba(40,30,15,.45);transform-origin:100% 0}
+.noren .rod{position:absolute;left:0;right:0;top:0;height:10px;background:linear-gradient(#5b4a35,#3c3024);transition:transform .9s cubic-bezier(.75,0,.2,1) .35s}
+.noren .mark{position:absolute;inset:0;display:grid;place-content:center;justify-items:center;gap:18px;transition:opacity .45s ease,transform .6s ease}
+.noren .mark .seal{width:84px;height:84px;font-size:30px;border-radius:6px;opacity:0;transform:scale(.86);animation:stamp .7s cubic-bezier(.3,1.5,.5,1) .15s forwards}
+.noren .mark .wordmark{color:var(--ink);font-size:22px;opacity:0;animation:fadeup .8s ease .45s forwards}
+.noren .mark span.t{font-size:11px;font-weight:700;letter-spacing:.3em;text-transform:uppercase;color:var(--ink2);opacity:0;animation:fadeup .8s ease .6s forwards}
+@keyframes stamp{to{opacity:1;transform:none}}
+@keyframes fadeup{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.noren.open .l{transform:translateX(-101%) skewY(-1.2deg)}
+.noren.open .r{transform:translateX(101%) skewY(1.2deg)}
+.noren.open .rod{transform:translateY(-12px)}
+.noren.open .mark{opacity:0;transform:translateY(-10px)}
+
+/* ---------- reveal details ---------- */
+.mask{clip-path:inset(0 0 100% 0);transform:translateY(34px);transition:clip-path 1.15s var(--ease),transform 1.15s var(--ease)}
+.mask.shown{clip-path:inset(-12% -4% -24% -4%);transform:none}
+.wipe{clip-path:inset(0 0 0 100%);transition:clip-path 1.5s cubic-bezier(.75,0,.2,1)}
+.wipe.from-l{clip-path:inset(0 100% 0 0)}
+.wipe img{transform:scale(1.16);transition:transform 2.2s var(--ease)}
+.wipe.shown{clip-path:inset(0 0 0 0)}
+.wipe.shown img{transform:scale(1)}
+.grain{position:relative}
+.grain::after{content:"";position:absolute;inset:0;z-index:4;pointer-events:none;opacity:.075;mix-blend-mode:overlay;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:180px 180px}
+
 /* ---------- header ---------- */
 .nav{position:fixed;inset:0 0 auto 0;z-index:50;display:flex;align-items:center;justify-content:space-between;gap:20px;padding:18px clamp(20px,4vw,56px);transition:background .4s,color .4s,border-color .4s;border-bottom:1px solid transparent}
 .nav.solid{background:rgba(235,233,227,.86);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-color:var(--line)}
@@ -313,6 +344,9 @@ footer{padding:clamp(60px,8vw,100px) 0 34px;background:var(--night);color:#bdb8a
 }
 @media (prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
+  .noren{display:none!important}
+  .mask,.wipe{clip-path:none!important;transform:none!important}
+  .wipe img{transform:none!important}
   .rise{opacity:1;transform:none;animation:none!important}
   .hero-bg img{transform:none;transition:none}
   .pre{opacity:1;transform:none;transition:none}
@@ -322,6 +356,11 @@ footer{padding:clamp(60px,8vw,100px) 0 34px;background:var(--night);color:#bdb8a
 </style>
 </head>
 <body>
+<div class="noren" id="noren" aria-hidden="true">
+  <div class="panel l"></div><div class="panel r"></div><div class="rod"></div>
+  <div class="mark"><span class="seal">潮凪</span><span class="wordmark">Shionagi</span><span class="t">Omakase · Bucharest</span></div>
+</div>
+<script>try{if(!sessionStorage.getItem('sn-intro')&&!matchMedia('(prefers-reduced-motion: reduce)').matches)document.documentElement.classList.add('intro')}catch(e){}</script>
 
 <header class="nav" id="nav">
   <a class="brand" href="#top" aria-label="Shionagi home"><span class="seal" aria-hidden="true">潮凪</span><span class="wordmark">Shionagi</span></a>
@@ -333,7 +372,7 @@ footer{padding:clamp(60px,8vw,100px) 0 34px;background:var(--night);color:#bdb8a
 
 <main id="top">
 <!-- ============ HERO ============ -->
-<section class="hero" id="hero">
+<section class="hero grain" id="hero">
   <figure class="hero-bg ph" data-label="Photo 1 · The counter">
     <img id="hero-img" src="media/hero.webp" width="1536" height="1024" alt="An empty hinoki omakase counter with ten seats under soft pools of light, one piece of tuna nigiri on a black plate" fetchpriority="high">
   </figure>
@@ -379,7 +418,7 @@ footer{padding:clamp(60px,8vw,100px) 0 34px;background:var(--night);color:#bdb8a
     </div>
   </div>
   <div class="film" id="film-sec">
-    <div class="stage" id="stage">
+    <div class="stage grain" id="stage">
       <canvas id="film" aria-hidden="true"></canvas>
       <div class="ens" id="ensō" aria-hidden="true">
         <svg viewBox="0 0 400 400"><text class="num" id="ens-num" x="200" y="236" text-anchor="middle" font-size="130">一</text><path id="ens-path" pathLength="1" stroke-dasharray="1" stroke-dashoffset="1" d="M206 54C120 50 58 118 60 204c2 86 72 146 152 140c78-6 132-70 128-146c-3-60-40-104-90-124"/></svg>
@@ -432,7 +471,7 @@ footer{padding:clamp(60px,8vw,100px) 0 34px;background:var(--night);color:#bdb8a
 </section>
 
 <!-- ============ HANDS ============ -->
-<section class="chapter hands bleed-sec" id="chef">
+<section class="chapter hands bleed-sec grain" id="chef">
   <div class="split bleed">
     <figure class="ph pre" data-label="Photo 3 · The hands">
       <img src="media/hands.webp" width="1536" height="1024" loading="lazy" alt="A sushi chef's hands in a white jacket placing nigiri on a black plate">
@@ -636,7 +675,45 @@ function trackCourse(){
 }
 
 /* ---------- page ready + hero ---------- */
-requestAnimationFrame(() => document.body.classList.add('ready'));
+const intro = document.documentElement.classList.contains('intro');
+if (intro) {
+  const noren = $('#noren');
+  setTimeout(() => { noren.classList.add('open'); document.body.classList.add('ready'); }, 1250);
+  setTimeout(() => { document.documentElement.classList.remove('intro'); try { sessionStorage.setItem('sn-intro', '1'); } catch (e) {} }, 2700);
+} else requestAnimationFrame(() => document.body.classList.add('ready'));
+
+/* ---------- smooth wheel scrolling (desktop) ---------- */
+let smooth = false;
+if (!reduced && matchMedia('(pointer: fine)').matches) {
+  smooth = true; document.documentElement.style.scrollBehavior = 'auto';
+  let tY = scrollY, sY = scrollY, running = false;
+  const maxY = () => document.documentElement.scrollHeight - innerHeight;
+  const step = () => { sY += (tY - sY) * .095; if (Math.abs(tY - sY) < .4) { sY = tY; running = false; } window.scrollTo(0, sY); if (running) requestAnimationFrame(step); };
+  const go = y => { if (!running) sY = scrollY; tY = clamp(y, 0, maxY()); if (!running) { running = true; requestAnimationFrame(step); } };
+  addEventListener('wheel', e => {
+    if (e.ctrlKey || Math.abs(e.deltaX) > Math.abs(e.deltaY) || document.body.classList.contains('cart')) return;
+    if (e.target.closest('textarea')) return;
+    e.preventDefault();
+    const d = e.deltaMode === 1 ? e.deltaY * 32 : e.deltaMode === 2 ? e.deltaY * innerHeight : e.deltaY;
+    go((running ? tY : scrollY) + d);
+  }, { passive: false });
+  addEventListener('scroll', () => { if (!running) tY = sY = scrollY; }, { passive: true });
+  document.addEventListener('click', e => {
+    const a = e.target.closest('a[href^="#"]'); if (!a) return;
+    const el = a.getAttribute('href') === '#top' ? document.body : document.querySelector(a.getAttribute('href')); if (!el) return;
+    e.preventDefault(); go(el === document.body ? 0 : el.getBoundingClientRect().top + scrollY - 10);
+  });
+}
+
+/* ---------- headings rise from a mask, photos wipe in ---------- */
+// Clipped elements have no visible area, so watch each one's parent block and reveal the element.
+const revealFor = new Map();
+const io2 = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { (revealFor.get(e.target) || []).forEach(t => t.classList.add('shown')); io2.unobserve(e.target); } }), { threshold: .12, rootMargin: '0px 0px -8% 0px' });
+const watch = (el, cls) => { const trig = el.parentElement; el.classList.add(...cls); revealFor.set(trig, (revealFor.get(trig) || []).concat(el)); io2.observe(trig); };
+if (!reduced) {
+  $$('main h2').forEach(h => { if (h.getBoundingClientRect().top > innerHeight) watch(h, ['mask']); });
+  $$('.bleed .ph, .course .ph, .offer .ph').forEach((f, i) => { if (f.getBoundingClientRect().top > innerHeight) watch(f, f.closest('.rev') || i % 2 ? ['wipe', 'from-l'] : ['wipe']); });
+}
 const heroIn = $('#hero-in'), heroImg = $('#hero-img'), heroSec = $('#hero');
 
 /* ---------- reveal ---------- */
@@ -702,7 +779,7 @@ function measure(){
 let last = performance.now();
 function frame(now){
   const dt = Math.min(.25, (now - last) / 1000); last = now;
-  cur += (target - cur) * (reduced ? 1 : 1 - Math.exp(-dt * 10));
+  cur += (target - cur) * (reduced ? 1 : 1 - Math.exp(-dt * (smooth ? 16 : 10)));
   if (Math.abs(target - cur) < .0002) cur = target;
   applyFilm(cur);
   requestAnimationFrame(frame);

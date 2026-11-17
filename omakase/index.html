@@ -29,7 +29,7 @@
 }
 *{box-sizing:border-box;margin:0}
 html{scroll-behavior:smooth}
-body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.7;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+body{background:var(--paper);transition:background-color .2s linear;color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.7;-webkit-font-smoothing:antialiased;overflow-x:hidden}
 img{display:block;max-width:100%}
 button,input,textarea{font:inherit;color:inherit}
 button{background:none;border:0;cursor:pointer;padding:0}
@@ -93,9 +93,54 @@ em{font-style:normal;color:var(--indigo)}
 .grain{position:relative}
 .grain::after{content:"";position:absolute;inset:0;z-index:4;pointer-events:none;opacity:.075;mix-blend-mode:overlay;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:180px 180px}
 
+[hidden]{display:none!important}
+
+/* ---------- 1. living photos ---------- */
+.motes{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;mix-blend-mode:screen}
+body.ready .hero-bg img{animation:kb 30s ease-in-out 2.8s infinite alternate}
+@keyframes kb{from{transform:scale(1)}to{transform:scale(1.07) translate(-1.2%,-.8%)}}
+.rain{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.lantern{position:absolute;left:0;top:0;width:var(--ls,120px);height:var(--ls,120px);transform:translate(-50%,-50%);border-radius:50%;pointer-events:none;mix-blend-mode:screen;
+  background:radial-gradient(circle,rgba(255,200,125,.6) 0,rgba(255,172,92,.2) 38%,rgba(255,160,80,0) 70%)}
+.split .ph.alive:hover img{transform:scale(1)}
+
+/* ---------- 3. the clock shows each course ---------- */
+.clock-ph{position:relative;aspect-ratio:3/2;margin:26px 0 0;overflow:hidden;background:var(--paper2);opacity:0;transform:translateY(10px);transition:opacity .6s var(--ease),transform .6s var(--ease)}
+.clock-ph.has{opacity:1;transform:none}
+.clock-ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transform:scale(1.05);transition:opacity .7s ease,transform 1.4s var(--ease)}
+.clock-ph img.on{opacity:1;transform:none}
+.clock-ph figcaption{position:absolute;left:12px;bottom:10px;font-size:11px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:#f3efe6;text-shadow:0 1px 10px rgba(0,0,0,.7)}
+@media (min-width:1001px){.course .row-ph{display:none}}
+
+/* ---------- 4. brush strokes ---------- */
+.brush{width:min(1000px,84vw);height:84px;margin:0 auto;padding-block:0}
+.brush-wrap{padding:clamp(40px,6vw,80px) 0}
+.brush svg{display:block;width:100%;height:100%;overflow:visible}
+
+/* ---------- 5. closing curtain ---------- */
+.closing{position:relative;height:230vh;background:var(--night)}
+.cl-stage{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden}
+.cl-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:brightness(.55)}
+.cl-panel{position:absolute;top:0;bottom:0;width:50.4%;background-color:#e7e2d6;background-image:repeating-linear-gradient(90deg,rgba(60,48,30,.035) 0 1px,transparent 1px 3px),repeating-linear-gradient(0deg,rgba(60,48,30,.03) 0 1px,transparent 1px 4px),linear-gradient(180deg,#ece8de 0,#e2dccf 100%)}
+.cl-panel.l{left:0;box-shadow:inset -18px 0 30px -24px rgba(40,30,15,.45);transform:translateX(-101%)}
+.cl-panel.r{right:0;box-shadow:inset 18px 0 30px -24px rgba(40,30,15,.45);transform:translateX(101%)}
+.cl-rod{position:absolute;left:0;right:0;top:0;height:10px;background:linear-gradient(#5b4a35,#3c3024)}
+.cl-copy{position:absolute;inset:0;display:grid;place-content:center;justify-items:center;text-align:center;gap:14px;padding:0 24px;opacity:0;color:var(--ink)}
+.cl-copy .seal{width:70px;height:70px;font-size:25px;border-radius:5px}
+.cl-copy .time{font-size:clamp(34px,4vw,52px);line-height:1;margin-top:10px}
+.cl-copy h2{font-size:clamp(38px,5vw,72px);line-height:1.05}
+.cl-copy p{color:var(--ink2);max-width:40ch}
+.cl-copy .btn{margin-top:14px}
+
+/* ---------- 6. the view from your seat ---------- */
+.seat-view{position:relative;margin:16px 0 0;aspect-ratio:3/2;overflow:hidden;background:var(--paper2);border-radius:2px}
+.seat-view img{width:100%;height:100%;object-fit:cover;animation:viewin .8s var(--ease)}
+@keyframes viewin{from{opacity:0;transform:scale(1.04)}to{opacity:1;transform:none}}
+.seat-view figcaption{position:absolute;left:14px;bottom:12px;padding:6px 12px;background:rgba(13,12,10,.6);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);font-size:11px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:#f3efe6}
+
 /* ---------- header ---------- */
 .nav{position:fixed;inset:0 0 auto 0;z-index:50;display:flex;align-items:center;justify-content:space-between;gap:20px;padding:18px clamp(20px,4vw,56px);transition:background .4s,color .4s,border-color .4s;border-bottom:1px solid transparent}
-.nav.solid{background:rgba(235,233,227,.86);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-color:var(--line)}
+.nav.solid{background:var(--navbg,rgba(235,233,227,.86));backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-color:var(--line)}
 .nav.dark{color:var(--nightink);background:rgba(13,12,10,.55);border-color:rgba(236,232,222,.1)}
 .brand{display:flex;align-items:center;gap:12px}
 .seal{display:grid;place-items:center;width:34px;height:34px;background:var(--seal);color:#fbf4ea;font-family:var(--display);font-weight:700;font-size:13px;line-height:1.05;writing-mode:vertical-rl;letter-spacing:.06em;border-radius:3px}
@@ -314,7 +359,8 @@ footer{padding:clamp(60px,8vw,100px) 0 34px;background:var(--night);color:#bdb8a
   .bleed .ph{min-height:0;height:auto;aspect-ratio:4/3}
   .bleed > div{padding:44px max(20px,4vw) 64px}
   .ev-grid{grid-template-columns:minmax(0,1fr)}
-  .clock{top:64px;z-index:5;background:rgba(235,233,227,.94);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);display:grid;grid-template-columns:auto 1fr;gap:4px 18px;align-items:center;padding:12px 0}
+  .clock-ph{display:none}
+  .clock{top:64px;z-index:5;background:var(--clockbg,rgba(235,233,227,.94));backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);display:grid;grid-template-columns:auto 1fr;gap:4px 18px;align-items:center;padding:12px 0}
   .clock .time{font-size:44px;grid-row:1/3}
   .clock .cnt{margin:0}
   .clock .act{display:none}
@@ -344,6 +390,9 @@ footer{padding:clamp(60px,8vw,100px) 0 34px;background:var(--night);color:#bdb8a
 }
 @media (prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
+  .closing{height:auto}
+  .cl-stage{position:relative}
+  body.ready .hero-bg img{animation:none}
   .noren{display:none!important}
   .mask,.wipe{clip-path:none!important;transform:none!important}
   .wipe img{transform:none!important}
@@ -377,6 +426,7 @@ footer{padding:clamp(60px,8vw,100px) 0 34px;background:var(--night);color:#bdb8a
     <img id="hero-img" src="media/hero.webp" width="1536" height="1024" alt="An empty hinoki omakase counter with ten seats under soft pools of light, one piece of tuna nigiri on a black plate" fetchpriority="high">
   </figure>
   <div class="hero-shade"></div>
+  <canvas class="motes" id="motes" aria-hidden="true"></canvas>
   <div class="kanji" aria-hidden="true">潮凪</div>
   <div class="wrap hero-in" id="hero-in">
     <span class="label rise" style="--d:.2s">Omakase · Bucharest</span>
@@ -396,8 +446,10 @@ footer{padding:clamp(60px,8vw,100px) 0 34px;background:var(--night);color:#bdb8a
 <!-- ============ ARRIVAL ============ -->
 <section class="chapter bleed-sec" id="arrival">
   <div class="split bleed">
-    <figure class="ph pre" data-label="Photo 2 · Arrival">
-      <img src="media/door.webp" width="1536" height="1024" loading="lazy" alt="A sliding wooden door with a white linen curtain, warm light inside, a rain-wet stone path at dusk">
+    <figure class="ph pre alive" data-label="Photo 2 · Arrival">
+      <img id="door-img" src="media/door.webp" width="1536" height="1018" loading="lazy" alt="A sliding wooden door with a white linen curtain, warm light inside, a rain-wet stone path at dusk">
+      <span class="lantern" id="lantern" aria-hidden="true"></span>
+      <canvas class="rain" id="rain" aria-hidden="true"></canvas>
     </figure>
     <div class="pre" style="--d:.1s">
       <div class="stamp"><span class="time">18:40</span><span class="label">Arrival</span></div>
@@ -408,6 +460,7 @@ footer{padding:clamp(60px,8vw,100px) 0 34px;background:var(--night);color:#bdb8a
   </div>
 </section>
 
+<div class="brush-wrap"><div class="brush" data-seed="3" aria-hidden="true"></div></div>
 <!-- ============ CRAFT: FILM ============ -->
 <section id="craft" aria-label="The craft">
   <div class="film-intro">
@@ -449,12 +502,14 @@ footer{padding:clamp(60px,8vw,100px) 0 34px;background:var(--night);color:#bdb8a
         <span class="cnt" id="clock-cnt">Course 1 of 15</span>
         <span class="bar"><i id="clock-bar"></i></span>
         <span class="act" id="clock-act">Opening</span>
+        <figure class="clock-ph" id="clock-ph" aria-hidden="true"><img alt=""><img alt=""><figcaption id="clock-cap"></figcaption></figure>
       </aside>
       <ol class="courses" id="course-list"></ol>
     </div>
   </div>
 </section>
 
+<div class="brush-wrap"><div class="brush" data-seed="7" aria-hidden="true"></div></div>
 <!-- ============ PAIRING ============ -->
 <section class="chapter bleed-sec" id="pairing">
   <div class="split rev bleed">
@@ -518,6 +573,7 @@ footer{padding:clamp(60px,8vw,100px) 0 34px;background:var(--night);color:#bdb8a
             </svg>
           </div>
           <div class="legend"><span><i></i>Free</span><span class="t"><i></i>Taken</span><span class="s"><i></i>Yours</span><span>Seats 4 to 7 face the chef's board.</span></div>
+          <figure class="seat-view" id="seat-view" hidden><img id="seat-view-img" alt=""><figcaption id="seat-view-cap"></figcaption></figure>
         </div>
         <div class="step">
           <div class="step-h"><h3><span>03</span>Pairing</h3><small>For the whole party</small></div>
@@ -585,6 +641,22 @@ footer{padding:clamp(60px,8vw,100px) 0 34px;background:var(--night);color:#bdb8a
     </div>
   </div>
 </section>
+<div class="brush-wrap"><div class="brush" data-seed="11" aria-hidden="true"></div></div>
+
+<!-- ============ CLOSING ============ -->
+<section class="closing" id="closing" aria-label="End of the evening">
+  <div class="cl-stage">
+    <img class="cl-bg" src="media/door.webp" alt="" loading="lazy">
+    <div class="cl-panel l" id="cl-l"></div><div class="cl-panel r" id="cl-r"></div><div class="cl-rod"></div>
+    <div class="cl-copy" id="cl-copy">
+      <span class="seal" aria-hidden="true">潮凪</span>
+      <span class="time">21:10</span>
+      <h2>The curtain comes down.</h2>
+      <p>Thank you for coming. Tomorrow at twenty to seven, the door slides open again.</p>
+      <a class="btn solid" href="#reserve">Choose your seat</a>
+    </div>
+  </div>
+</section>
 </main>
 
 <footer>
@@ -606,6 +678,7 @@ footer{padding:clamp(60px,8vw,100px) 0 34px;background:var(--night);color:#bdb8a
    EDIT THE RESTAURANT HERE: prices, courses and how full evenings are.
    ===================================================================== */
 const CUR = 'lei', OMAKASE = 690, MAX_ONLINE = 4, SEATS = 10;
+const slug = n => n.toLowerCase().replace(/[^a-z]+/g, '-').replace(/^-|-$/g, '');
 const COURSES = [
   { act:'Opening' },
   { t:'19:10', n:'Sakizuke', jp:'先付', d:'A cold opener: silken tofu, salmon roe and dashi jelly.' },
@@ -638,19 +711,19 @@ const toastEl = $('#toast'); let toastT;
 const toast = m => { toastEl.textContent = m; toastEl.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => toastEl.classList.remove('show'), 2600); };
 $$('[data-toast]').forEach(b => b.onclick = () => toast(b.dataset.toast));
 const photoFail = img => img.closest('.ph').classList.add('missing');
-const watchPhotos = root => $$('.ph img', root).forEach(img => { if (img.complete && !img.naturalWidth) photoFail(img); img.addEventListener('error', () => photoFail(img)); });
+const watchPhotos = root => $$('.ph:not(.row-ph) img', root).forEach(img => { if (img.complete && !img.naturalWidth) photoFail(img); img.addEventListener('error', () => photoFail(img)); });
 
 /* ---------- courses ---------- */
 let num = 0;
 $('#course-list').innerHTML = COURSES.map(c => {
   if (c.act) return `<li class="act-label"><span class="label">${c.act}</span></li>`;
   num++;
-  return `<li class="course" data-t="${c.t}" data-n="${num}" data-act="">
+  return `<li class="course" data-t="${c.t}" data-n="${num}" data-act="" data-slug="${slug(c.n)}" data-name="${c.n}">
     <span class="no">${String(num).padStart(2, '0')}</span>
     <h3>${c.n}<small lang="ja">${c.jp}</small></h3>
     <span class="at">${c.t}</span>
     <p>${c.d}</p>
-    ${c.img ? `<figure class="ph" data-label="Photo · ${c.n}"><img src="media/${c.img}" width="1536" height="1024" loading="lazy" alt="${c.alt}"></figure>` : ''}
+    <figure class="ph row-ph"><img src="media/courses/${slug(c.n)}.webp" width="1536" height="1024" loading="lazy" alt="${c.alt || c.n + ': ' + c.d}" onerror="this.parentNode.remove()"></figure>
   </li>`;
 }).join('');
 let act = '';
@@ -659,6 +732,22 @@ const TOTAL = num;
 watchPhotos(document);
 
 const courseEls = $$('.course');
+// Course photos in the clock: use whichever files exist in media/courses/
+const courseOK = {};
+let clockShown = '', clockLayer = 0;
+function showClockPhoto(li){
+  const idx = courseEls.indexOf(li); let pick = null;
+  for (let i = idx; i >= 0; i--) if (courseOK[courseEls[i].dataset.slug]) { pick = courseEls[i]; break; }
+  const fig = $('#clock-ph');
+  if (!pick) { fig.classList.remove('has'); clockShown = ''; return; }
+  fig.classList.add('has');
+  const src = `media/courses/${pick.dataset.slug}.webp`;
+  if (src === clockShown) return; clockShown = src;
+  const imgs = $$('#clock-ph img'); clockLayer ^= 1;
+  imgs[clockLayer].src = src; imgs[clockLayer].classList.add('on'); imgs[clockLayer ^ 1].classList.remove('on');
+  $('#clock-cap').textContent = pick.dataset.name;
+}
+courseEls.forEach(li => { const im = new Image(); im.onload = () => { courseOK[li.dataset.slug] = true; if (lastCourse) showClockPhoto(lastCourse); }; im.src = `media/courses/${li.dataset.slug}.webp`; });
 let lastCourse = null;
 function setCourse(li){
   if (li === lastCourse) return; lastCourse = li;
@@ -667,6 +756,7 @@ function setCourse(li){
   $('#clock-cnt').textContent = `Course ${li.dataset.n} of ${TOTAL}`;
   $('#clock-act').textContent = li.dataset.act;
   $('#clock-bar').style.transform = `scaleX(${(li.dataset.n / TOTAL).toFixed(3)})`;
+  showClockPhoto(li);
 }
 function trackCourse(){
   const line = innerHeight * .42; let cur = courseEls[0];
@@ -721,6 +811,119 @@ const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting
 if (!reduced) $$('.pre').forEach(el => { if (el.getBoundingClientRect().top > innerHeight) io.observe(el); else el.classList.add('in'); });
 else $$('.pre').forEach(el => el.classList.add('in'));
 
+/* ---------- 1. living photos ---------- */
+const seeded = n => () => (n = (n * 16807) % 2147483647) / 2147483647;
+const motes = $('#motes');
+if (motes && !reduced) {
+  const mc = motes.getContext('2d'), r = seeded(7), parts = [];
+  for (let i = 0; i < 64; i++) parts.push({ x: r(), y: r(), z: .6 + r() * 2.4, v: .006 + r() * .014, a: .08 + r() * .3, ph: r() * 6.28 });
+  let mw = 0, mh = 0, heroVis = true;
+  const sizeM = () => { const d = Math.min(devicePixelRatio || 1, 1.5); mw = motes.width = Math.round(motes.clientWidth * d); mh = motes.height = Math.round(motes.clientHeight * d); };
+  sizeM(); addEventListener('resize', sizeM);
+  new IntersectionObserver(e => heroVis = e[0].isIntersecting).observe(motes);
+  let lt = performance.now();
+  (function tick(now){
+    const dt = Math.min(.05, (now - lt) / 1000); lt = now;
+    if (heroVis) {
+      mc.clearRect(0, 0, mw, mh);
+      for (const q of parts) {
+        q.y -= q.v * dt; q.ph += dt * .5; if (q.y < -.05) { q.y = 1.05; q.x = r(); }
+        const x = (q.x + Math.sin(q.ph) * .012) * mw, y = q.y * mh, rad = q.z * mw / 900;
+        const g = mc.createRadialGradient(x, y, 0, x, y, rad * 3);
+        g.addColorStop(0, `rgba(255,226,182,${q.a})`); g.addColorStop(1, 'rgba(255,226,182,0)');
+        mc.fillStyle = g; mc.beginPath(); mc.arc(x, y, rad * 3, 0, 6.283); mc.fill();
+      }
+    }
+    requestAnimationFrame(tick);
+  })(lt);
+}
+const rainCv = $('#rain'), lantern = $('#lantern'), doorImg = $('#door-img');
+function placeLantern(){
+  // the lantern sits at 82.8% / 71% of the door photo; follow it through object-fit: cover
+  const f = doorImg.parentNode.getBoundingClientRect(), nw = 1536, nh = 1018, k = Math.max(f.width / nw, f.height / nh);
+  const w = nw * k, h = nh * k, ox = (f.width - w) / 2, oy = (f.height - h) / 2;
+  lantern.style.left = (ox + .828 * w) + 'px'; lantern.style.top = (oy + .71 * h) + 'px'; lantern.style.setProperty('--ls', (.13 * w) + 'px');
+}
+if (rainCv) {
+  placeLantern(); addEventListener('resize', placeLantern);
+  if (!reduced) {
+    const rc = rainCv.getContext('2d'), r = seeded(11), drops = [], splashes = [];
+    for (let i = 0; i < 170; i++) drops.push({ x: r(), y: r(), l: .018 + r() * .03, v: .85 + r() * .6, a: .1 + r() * .22 });
+    let rw = 0, rh = 0, dpr = 1, vis = false, lt = performance.now(), fl = 0;
+    const sizeR = () => { dpr = Math.min(devicePixelRatio || 1, 1.5); rw = rainCv.width = Math.round(rainCv.clientWidth * dpr); rh = rainCv.height = Math.round(rainCv.clientHeight * dpr); };
+    sizeR(); addEventListener('resize', sizeR);
+    new IntersectionObserver(e => { vis = e[0].isIntersecting; if (vis) { sizeR(); placeLantern(); } }).observe(rainCv);
+    (function tick(now){
+      const dt = Math.min(.05, (now - lt) / 1000); lt = now;
+      if (vis) {
+        rc.clearRect(0, 0, rw, rh); rc.lineCap = 'round'; rc.lineWidth = dpr;
+        for (const d of drops) {
+          d.y += d.v * dt;
+          if (d.y > 1.05) { d.y = -.05; d.x = r(); if (r() < .55) splashes.push({ x: r(), y: .74 + r() * .24, t: 0 }); }
+          const x = d.x * rw, y = d.y * rh, l = d.l * rh;
+          rc.strokeStyle = `rgba(230,236,244,${(d.a * 1.25).toFixed(3)})`; rc.beginPath(); rc.moveTo(x, y); rc.lineTo(x - l * .09, y - l); rc.stroke();
+        }
+        for (let i = splashes.length - 1; i >= 0; i--) {
+          const sp = splashes[i]; sp.t += dt; const k = sp.t / .55; if (k >= 1) { splashes.splice(i, 1); continue; }
+          rc.strokeStyle = `rgba(240,218,186,${.32 * (1 - k)})`; rc.beginPath(); rc.ellipse(sp.x * rw, sp.y * rh, (2 + k * 15) * dpr, (.6 + k * 3.6) * dpr, 0, 0, 6.283); rc.stroke();
+        }
+        fl += dt; lantern.style.opacity = (.8 + .1 * Math.sin(fl * 7.3) + .07 * Math.sin(fl * 13.1 + 1) + .05 * Math.sin(fl * 29.7 + 2)).toFixed(3);
+      }
+      requestAnimationFrame(tick);
+    })(lt);
+  }
+}
+
+/* ---------- 4. brush strokes ---------- */
+$$('.brush').forEach((el, bi) => {
+  const r = seeded(+el.dataset.seed * 977 + 13), N = 72, top = [], bot = [];
+  for (let i = 0; i <= N; i++) {
+    const u = i / N, x = 30 + u * 1140;
+    const press = 1 + .35 * Math.exp(-Math.pow((u - .05) / .045, 2));
+    const env = Math.sqrt(Math.min(1, u / .028)) * (u > .62 ? 1 - (u - .62) / .38 * .88 : 1) * press;
+    const w = (46 + r() * 6) * env * (.9 + .16 * Math.sin(u * 9 + bi));
+    const yc = 45 + Math.sin(u * 2.6 + bi * 1.7) * 6;
+    top.push([x, yc - w / 2 + r() * 1.2]); bot.push([x, yc + w / 2 + r() * 2.2]);
+  }
+  const pt = p => p[0].toFixed(1) + ' ' + p[1].toFixed(1);
+  const d = 'M' + top.map(pt).join(' L') + ' L' + bot.reverse().map(pt).join(' L') + ' Z';
+  el.innerHTML = `<svg viewBox="0 0 1200 90" preserveAspectRatio="none"><defs>
+    <filter id="bfa${bi}" x="-2%" y="-40%" width="104%" height="180%">
+      <feTurbulence type="fractalNoise" baseFrequency=".03 .4" numOctaves="2" seed="${bi + 3}" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="7" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+    <filter id="bfb${bi}" x="-2%" y="-40%" width="104%" height="180%">
+      <feTurbulence type="fractalNoise" baseFrequency=".03 .4" numOctaves="2" seed="${bi + 3}" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="7" xChannelSelector="R" yChannelSelector="G" result="d"/>
+      <feTurbulence type="fractalNoise" baseFrequency=".004 .5" numOctaves="2" seed="${bi + 8}" result="s"/>
+      <feColorMatrix in="s" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -5 3.4" result="sa"/>
+      <feComposite in="d" in2="sa" operator="in"/>
+    </filter>
+    <clipPath id="bc${bi}"><rect width="${reduced ? 1200 : 0}" height="90"/></clipPath>
+    <linearGradient id="bg${bi}" gradientUnits="userSpaceOnUse" x1="0" x2="1200" y1="0" y2="0"><stop offset=".56" stop-color="#fff"/><stop offset=".76" stop-color="#000"/></linearGradient>
+    <mask id="bm${bi}" maskUnits="userSpaceOnUse" x="0" y="-20" width="1200" height="130"><rect y="-20" width="1200" height="130" fill="url(#bg${bi})"/></mask></defs>
+    <g clip-path="url(#bc${bi})" opacity=".9">
+      <path d="${d}" fill="#17150f" filter="url(#bfb${bi})"/>
+      <g mask="url(#bm${bi})"><path d="${d}" fill="#17150f" filter="url(#bfa${bi})"/></g>
+    </g></svg>`;
+});
+const brushes = $$('.brush').map(el => ({ el, rect: el.querySelector('clipPath rect') }));
+
+/* ---------- 2. the evening darkens; 5. the curtain closes ---------- */
+const root = document.documentElement, DAY = [235, 233, 227], DUSK = [194, 183, 162];
+const closing = $('#closing'), clL = $('#cl-l'), clR = $('#cl-r'), clCopy = $('#cl-copy');
+function evening(y){
+  const mid = y + innerHeight * .5, a = $('#arrival').offsetTop, c = $('#chef').offsetTop, rs = $('#reserve').offsetTop;
+  let t = mid < rs ? clamp((mid - a) / (c - a)) : 0; t = t * t * (3 - 2 * t);
+  const col = DAY.map((v, i) => Math.round(v + (DUSK[i] - v) * t)).join(',');
+  document.body.style.backgroundColor = `rgb(${col})`;
+  root.style.setProperty('--navbg', `rgba(${col},.86)`); root.style.setProperty('--clockbg', `rgba(${col},.94)`);
+  for (const b of brushes) { const r = b.el.getBoundingClientRect(); if (!reduced) b.rect.setAttribute('width', (1200 * eo(clamp((innerHeight * .95 - r.top) / (innerHeight * .5)))).toFixed(1)); }
+  const cp = reduced ? 1 : clamp((y - closing.offsetTop) / Math.max(1, closing.offsetHeight - innerHeight)), k = reduced ? 1 : eo(seg(cp, 0, .6));
+  clL.style.transform = `translateX(${(-101 + 101 * k).toFixed(2)}%)`; clR.style.transform = `translateX(${(101 - 101 * k).toFixed(2)}%)`;
+  const ci = reduced ? 1 : seg(cp, .5, .8); clCopy.style.opacity = ci.toFixed(3); clCopy.style.transform = `translateY(${((1 - ci) * 24).toFixed(1)}px)`;
+}
+
 /* ---------- scroll film ---------- */
 const filmSec = $('#film-sec'), stage = $('#stage'), chaps = $$('.chap'), railLi = $$('#rail li'), railBar = $$('#rail b'),
       ensPath = $('#ens-path'), ensNum = $('#ens-num'), hint = $('#film-hint'), nav = $('#nav');
@@ -768,10 +971,11 @@ function measure(){
   target = clamp((y - top) / span);
   const r = filmSec.getBoundingClientRect(), hands = $('#chef').getBoundingClientRect(), foot = $('footer').getBoundingClientRect();
   const hb = heroSec.getBoundingClientRect();
-  const dark = hb.bottom > 60 || (r.top < 60 && r.bottom > 60) || (hands.top < 60 && hands.bottom > 60) || foot.top < 60;
+  const cl = closing.getBoundingClientRect();
+  const dark = hb.bottom > 60 || (cl.top < 60 && cl.bottom > 60) || (r.top < 60 && r.bottom > 60) || (hands.top < 60 && hands.bottom > 60) || foot.top < 60;
   if (!reduced && hb.bottom > 0) { const k = clamp(y / Math.max(1, hb.height)); heroIn.style.transform = `translateY(${(k * -60).toFixed(1)}px)`; heroIn.style.opacity = (1 - k * 1.3).toFixed(3); heroImg.parentNode.style.transform = `translateY(${(k * 90).toFixed(1)}px)`; }
   nav.classList.toggle('dark', dark); nav.classList.toggle('solid', !dark && y > 30);
-  trackCourse();
+  trackCourse(); evening(y);
   let on = '';
   ['arrival', 'craft', 'courses', 'private'].forEach(id => { if ($('#' + id).getBoundingClientRect().top < vh * .5) on = id; });
   $$('.links a').forEach(a => a.classList.toggle('on', a.getAttribute('href') === '#' + on));
@@ -829,14 +1033,27 @@ function render(){
   $('#sum-total').textContent = money((OMAKASE + state.pair) * n);
   $('#sum-dep').textContent = n ? `${money(200 * n)} deposit today, refunded up to 48 hours before.` : 'Seats are held with a 200 lei deposit per guest, refunded up to 48 hours before.';
   $('#hold').disabled = !n;
+  if (typeof updateView === 'function') updateView();
 }
 function toggleSeat(s){
   if (!state.ev) { toast('Choose an evening first'); return; }
   if (state.ev.taken.has(s)) { toast(`Seat ${s} is taken that evening`); return; }
   if (state.seats.has(s)) state.seats.delete(s);
   else if (state.seats.size >= MAX_ONLINE) { toast('Up to four seats online. For more, book the private counter.'); return; }
-  else state.seats.add(s);
+  else { state.seats.add(s); lastSeat = s; }
   $('#note').textContent = ''; render();
+}
+// 6. The view from your seat: media/views/left.webp (seats 1-3), center.webp (4-7), right.webp (8-10)
+let lastSeat = null; const viewOK = {};
+const viewOf = n => n <= 3 ? 'left' : n <= 7 ? 'center' : 'right';
+['left', 'center', 'right'].forEach(k => { const im = new Image(); im.onload = () => { viewOK[k] = true; updateView(); }; im.src = `media/views/${k}.webp`; });
+function updateView(){
+  const fig = $('#seat-view'), list = [...state.seats];
+  const n = lastSeat && state.seats.has(lastSeat) ? lastSeat : list[list.length - 1];
+  if (!n || !viewOK[viewOf(n)]) { fig.hidden = true; return; }
+  fig.hidden = false; const img = $('#seat-view-img'), src = `media/views/${viewOf(n)}.webp`;
+  if (!img.getAttribute('src') || !img.getAttribute('src').endsWith(src)) { img.src = src; img.style.animation = 'none'; img.offsetWidth; img.style.animation = ''; }
+  img.alt = `The view of the counter from seat ${n}`; $('#seat-view-cap').textContent = `The view from seat ${n}`;
 }
 $('#dates').addEventListener('click', e => { const b = e.target.closest('.date'); if (b && !b.disabled) pickEvening(+b.dataset.i); });
 $$('.seats').forEach(el => {

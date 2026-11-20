@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Tacet One — Noise-cancelling earbuds</title>
 <meta name="description" content="Tacet One earbuds cancel up to 48 dB of city noise and play for nine hours on a charge.">
-<meta name="theme-color" content="#0d0c0b">
+<meta name="theme-color" content="#ebe7e0">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..600&family=Geist:wght@400;500&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -26,12 +26,14 @@
   --sans:"Geist","Helvetica Neue",Arial,sans-serif;
   --mono:"Geist Mono",ui-monospace,Menlo,monospace;
   --ease:cubic-bezier(.2,.7,.2,1);
-  --ground:var(--night);
-  color-scheme:dark;
+  /* the page ground and its text colours are animated by scroll: light studio, dark inside, light again */
+  --ground:#ebe7e0; --ground-a:rgba(235,231,224,.72);
+  --fg1:#171512; --fg2:#5c574f; --fg3:#8a847a; --hair:rgba(23,21,18,.1);
+  color-scheme:light;
 }
 *{box-sizing:border-box;margin:0}
 html{scroll-behavior:smooth}
-body{background:var(--ground);color:var(--on-dark-1);font-family:var(--sans);font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+body{background:var(--ground);color:var(--fg1);font-family:var(--sans);font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
 img,svg{display:block}
 button,input{font:inherit;color:inherit}
 button{background:none;border:0;cursor:pointer;padding:0}
@@ -40,31 +42,25 @@ a{color:inherit;text-decoration:none}
 .wrap{width:min(1280px,100% - 64px);margin-inline:auto}
 h1,h2,h3{font-family:var(--display);font-weight:500;font-stretch:112%;letter-spacing:-.01em;text-wrap:balance;line-height:1.02}
 h2{font-size:clamp(36px,4.4vw,64px)}
-.meta{font-family:var(--mono);font-size:13px;color:var(--on-dark-2);font-variant-numeric:tabular-nums}
-.sub{color:var(--on-dark-2);font-size:clamp(16px,1.2vw,18px);max-width:44ch}
-.light{color:var(--on-light-1)}
-.light .meta{color:var(--on-light-2)}
-.light .sub{color:var(--on-light-2)}
+.meta{font-family:var(--mono);font-size:13px;color:var(--fg2);font-variant-numeric:tabular-nums}
+.sub{color:var(--fg2);font-size:clamp(16px,1.2vw,18px);max-width:44ch}
 .btn{display:inline-flex;align-items:center;gap:10px;height:48px;padding:0 22px;border-radius:24px;font-size:15px;font-weight:500;transition:background-color .25s,color .25s,transform .15s}
 .btn:active{transform:scale(.97)}
-.btn.primary{background:var(--on-dark-1);color:var(--night)}
-.btn.primary:hover{background:#fff}
-.light .btn.primary{background:var(--on-light-1);color:var(--stone)}
-.light .btn.primary:hover{background:#000}
+.btn.primary{background:var(--fg1);color:var(--ground)}
+.btn.primary:hover{opacity:.86}
 .link{font-size:15px;font-weight:500;background:linear-gradient(currentColor,currentColor) 0 100%/100% 1px no-repeat;padding-bottom:2px;transition:background-size .3s var(--ease)}
 .link:hover{background-size:0 1px}
 .led{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--led);box-shadow:0 0 0 3px rgba(255,91,58,.18)}
 
 /* ---------- 3D layer ---------- */
+#glow{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:0;background:radial-gradient(56vmax 46vmax at var(--gx,68%) var(--gy,50%),rgba(255,253,249,.95),rgba(255,253,249,0) 70%)}
 #gl{position:fixed;inset:0;width:100%;height:100%;z-index:2;pointer-events:none}
 .layer-back{position:relative;z-index:1}
 .layer-front{position:relative;z-index:3}
 
 /* ---------- nav ---------- */
 .nav{position:fixed;inset:0 0 auto 0;z-index:20;display:flex;align-items:center;justify-content:space-between;gap:24px;padding:18px clamp(20px,4vw,48px);transition:color .4s,background-color .4s,border-color .4s;border-bottom:1px solid transparent}
-.nav.solid{background:rgba(13,12,11,.62);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-color:var(--hair-d)}
-.nav.on-light{color:var(--on-light-1)}
-.nav.on-light.solid{background:rgba(235,231,224,.7);border-color:var(--hair-l)}
+.nav.solid{background:var(--ground-a);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-color:var(--hair)}
 .brand{display:flex;align-items:center;gap:10px}
 .brand svg{width:26px;height:26px}
 .brand span{font-family:var(--display);font-stretch:118%;font-weight:500;font-size:19px;letter-spacing:.01em}
@@ -73,7 +69,6 @@ h2{font-size:clamp(36px,4.4vw,64px)}
 .links a:hover,.links a.on{opacity:1}
 .tools{display:flex;align-items:center;gap:8px}
 .tools .btn{height:40px;padding:0 18px;font-size:14px}
-.nav.on-light .btn.primary{background:var(--on-light-1);color:var(--stone)}
 .bagbtn{position:relative;width:40px;height:40px;display:grid;place-items:center;border-radius:20px;transition:background-color .2s}
 .bagbtn:hover{background:rgba(127,127,127,.14)}
 .bagbtn svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.5}
@@ -96,11 +91,11 @@ h2{font-size:clamp(36px,4.4vw,64px)}
 #inside{height:380vh}
 .chapters{position:absolute;left:max(32px,calc((100vw - 1280px)/2));top:50%;transform:translateY(-50%);width:min(420px,38vw)}
 .chapter{position:absolute;left:0;top:0;transform:translateY(-50%);opacity:0;will-change:opacity,transform}
-.chapter .n{font-family:var(--mono);font-size:13px;color:var(--on-dark-2)}
+.chapter .n{font-family:var(--mono);font-size:13px;color:var(--fg2)}
 .chapter h2{margin:12px 0 16px}
 .progress{position:absolute;left:max(32px,calc((100vw - 1280px)/2));bottom:40px;display:flex;gap:6px}
-.progress i{display:block;width:40px;height:2px;background:var(--hair-d);position:relative;overflow:hidden}
-.progress i b{position:absolute;inset:0;background:var(--on-dark-1);transform-origin:0 50%;transform:scaleX(0)}
+.progress i{display:block;width:40px;height:2px;background:var(--hair);position:relative;overflow:hidden}
+.progress i b{position:absolute;inset:0;background:var(--fg1);transform-origin:0 50%;transform:scaleX(0)}
 .inside-head{position:absolute;left:max(32px,calc((100vw - 1280px)/2));top:104px}
 .inside-head h2{margin-top:10px;max-width:14ch}
 #callouts{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
@@ -220,7 +215,11 @@ body.bag .scrim{opacity:1;visibility:visible}
 }
 @media (max-width:600px){
   .wrap{width:calc(100% - 40px)}
-  .hero h1{font-size:46px}
+  .hero h1{font-size:48px;margin:14px 0 0}
+  .hero{padding:92px 0 28px;align-items:stretch}
+  .hero .wrap > div{display:flex;flex-direction:column;min-height:calc(100svh - 120px)}
+  .hero .sub{margin-top:auto}
+  .hero .actions{margin-top:20px}
   .tools .btn{display:none}
   .figures{grid-template-columns:repeat(2,auto);gap:24px 32px}
   .spec{grid-template-columns:120px minmax(0,1fr)}
@@ -244,6 +243,7 @@ body.bag .scrim{opacity:1;visibility:visible}
   </symbol>
 </svg>
 
+<div id="glow" aria-hidden="true"></div>
 <canvas id="gl" aria-hidden="true"></canvas>
 <p class="nogl" id="nogl">The 3D view needs WebGL, which this browser has turned off.</p>
 
@@ -683,14 +683,14 @@ if (THREE) try {
               ex:0, chaos:1, dots:1, ped:-9, sh:0 };
   // [section id, fraction through it, state, phone overrides]
   const KF = [
-    ['hero', 0,    { cx:2.4, cy:-.25, cs:1.15, crx:.3, cry:-.6, led:.0 }, { cx:0, cy:-1.75, cs:.72 }],
+    ['hero', 0,    { cx:2.4, cy:-.25, cs:1.15, crx:.3, cry:-.6, led:.0, sh:1 }, { cx:0, cy:-.15, cs:1.05, crx:.34 }],
     ['open', 0,    { cx:1.9, cy:-.35, cs:1.2, crx:.32, cry:-.22 }, { cx:0, cy:-1.45, cs:.8 }],
     ['open', .2,   { lid:1, crx:.5, cry:-.12, led:1 }, {}],
     ['open', .44,  { cy:-1.0, lseat:0, lx:1.15, ly:1.4, lz:.8, lrx:.05, lry:1.0, lrz:.15, ls:1.15, rseat:0, rx:2.6, ry:1.55, rz:.7, rrx:-.05, rry:-1.0, rrz:-.15, rs:1.15 },
                    { cy:-2.2, lx:-.55, ly:.15, rx:.55, ry:.3, ls:.85, rs:.85 }],
     ['open', .72,  { cy:-3.2, cs:1, lid:.5, lx:.7, ly:.4, lz:1.6, lrx:.35, lry:1.7, lrz:.3, ls:1.55, rx:3.2, ry:.9, rz:.6, rrx:-.25, rry:-1.25, rrz:-.35, rs:1.35 },
                    { cy:-4.2, lx:-.7, ly:-.3, ls:1.05, rx:.75, ry:.1, rs:.95 }],
-    ['inside', 0,  { cy:-6, cs:.8, ls:0, lx:-3, ly:0, rx:.6, ry:.15, rz:0, rrx:.12, rry:-1.05, rrz:.05, rs:1.75, chaos:.75 },
+    ['inside', 0,  { sh:0, cy:-6, cs:.8, ls:0, lx:-3, ly:0, rx:.6, ry:.15, rz:0, rrx:.12, rry:-1.05, rrz:.05, rs:1.75, chaos:.75 },
                    { rx:.7, ry:-.2, rs:1.3 }],
     ['inside', .22,{ ex:0, rry:-1.1 }, {}],
     ['inside', .6, { ex:1, rry:-1.35, rrx:.18 }, {}],
@@ -784,14 +784,22 @@ if (THREE) try {
   }
 
   const nav = $('#nav'), root = document.documentElement;
-  const DARK = [13, 12, 11], LIGHT = [235, 231, 224];
+  const DARK = { g:[13, 12, 11], f1:[236, 232, 225], f2:[166, 160, 151], f3:[111, 106, 99] };
+  const LIGHT = { g:[235, 231, 224], f1:[23, 21, 18], f2:[92, 87, 79], f3:[138, 132, 122] };
+  const glow = $('#glow');
   function ground(y){
-    const s = $('#silence'), b = $('#battery'), vh = innerHeight;
-    const t = smooth(clamp((y - (s.offsetTop + s.offsetHeight - vh * 1.05)) / (vh * .85)));
-    const c = DARK.map((v, i) => Math.round(lerp(v, LIGHT[i], t)));
-    root.style.setProperty('--ground', `rgb(${c})`);
-    const onLight = t > .5 && y < $('footer').offsetTop - 60;
-    nav.classList.toggle('on-light', onLight); nav.classList.toggle('solid', y > 40);
+    const s = $('#silence'), ins = $('#inside'), vh = innerHeight;
+    const into = smooth(clamp((y - (ins.offsetTop - vh * .95)) / (vh * .75)));
+    const out = smooth(clamp((y - (s.offsetTop + s.offsetHeight - vh * 1.05)) / (vh * .85)));
+    const t = 1 - into * (1 - out);
+    const mix = k => DARK[k].map((v, i) => Math.round(lerp(v, LIGHT[k][i], t)));
+    const g = mix('g'), f1 = mix('f1');
+    root.style.setProperty('--ground', `rgb(${g})`); root.style.setProperty('--ground-a', `rgba(${g},.72)`);
+    root.style.setProperty('--fg1', `rgb(${f1})`); root.style.setProperty('--fg2', `rgb(${mix('f2')})`); root.style.setProperty('--fg3', `rgb(${mix('f3')})`);
+    root.style.setProperty('--hair', `rgba(${f1},.1)`); root.style.colorScheme = t > .5 ? 'light' : 'dark';
+    glow.style.opacity = (y < ins.offsetTop ? t : 0).toFixed(3);
+    if (narrow()) { glow.style.setProperty('--gx', '50%'); glow.style.setProperty('--gy', '50%'); } else { glow.style.setProperty('--gx', y < vh * .5 ? '70%' : '68%'); glow.style.setProperty('--gy', '50%'); }
+    nav.classList.toggle('solid', y > 40);
     return t;
   }
 

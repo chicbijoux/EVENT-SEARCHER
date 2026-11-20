@@ -1,0 +1,857 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tacet One — Noise-cancelling earbuds</title>
+<meta name="description" content="Tacet One earbuds cancel up to 48 dB of city noise and play for nine hours on a charge.">
+<meta name="theme-color" content="#0d0c0b">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..600&family=Geist:wght@400;500&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Direction
+   Product: noise-cancelling earbuds for people who live and travel in loud cities.
+   Character: hushed, exact, a little warm.
+   World: a loud night street that goes quiet; matte black, warm stone, one small status light.
+   Moment: the earbuds and case, rendered live in 3D, opening and coming apart as you scroll.
+   Signature: the case's coral status light, used only where something is on. */
+:root{
+  --night:#0d0c0b; --night-2:#161513; --stone:#ebe7e0; --stone-2:#e0dbd2;
+  --on-dark-1:#ece8e1; --on-dark-2:#a6a097; --on-dark-3:#6f6a63;
+  --on-light-1:#171512; --on-light-2:#5c574f; --on-light-3:#8a847a;
+  --led:#ff5b3a; --led-ink:#c9401f;
+  --hair-d:rgba(236,232,225,.09); --hair-l:rgba(23,21,18,.1);
+  --display:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --sans:"Geist","Helvetica Neue",Arial,sans-serif;
+  --mono:"Geist Mono",ui-monospace,Menlo,monospace;
+  --ease:cubic-bezier(.2,.7,.2,1);
+  --ground:var(--night);
+  color-scheme:dark;
+}
+*{box-sizing:border-box;margin:0}
+html{scroll-behavior:smooth}
+body{background:var(--ground);color:var(--on-dark-1);font-family:var(--sans);font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+img,svg{display:block}
+button,input{font:inherit;color:inherit}
+button{background:none;border:0;cursor:pointer;padding:0}
+a{color:inherit;text-decoration:none}
+:focus-visible{outline:2px solid var(--led);outline-offset:3px;border-radius:4px}
+.wrap{width:min(1280px,100% - 64px);margin-inline:auto}
+h1,h2,h3{font-family:var(--display);font-weight:500;font-stretch:112%;letter-spacing:-.01em;text-wrap:balance;line-height:1.02}
+h2{font-size:clamp(36px,4.4vw,64px)}
+.meta{font-family:var(--mono);font-size:13px;color:var(--on-dark-2);font-variant-numeric:tabular-nums}
+.sub{color:var(--on-dark-2);font-size:clamp(16px,1.2vw,18px);max-width:44ch}
+.light{color:var(--on-light-1)}
+.light .meta{color:var(--on-light-2)}
+.light .sub{color:var(--on-light-2)}
+.btn{display:inline-flex;align-items:center;gap:10px;height:48px;padding:0 22px;border-radius:24px;font-size:15px;font-weight:500;transition:background-color .25s,color .25s,transform .15s}
+.btn:active{transform:scale(.97)}
+.btn.primary{background:var(--on-dark-1);color:var(--night)}
+.btn.primary:hover{background:#fff}
+.light .btn.primary{background:var(--on-light-1);color:var(--stone)}
+.light .btn.primary:hover{background:#000}
+.link{font-size:15px;font-weight:500;background:linear-gradient(currentColor,currentColor) 0 100%/100% 1px no-repeat;padding-bottom:2px;transition:background-size .3s var(--ease)}
+.link:hover{background-size:0 1px}
+.led{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--led);box-shadow:0 0 0 3px rgba(255,91,58,.18)}
+
+/* ---------- 3D layer ---------- */
+#gl{position:fixed;inset:0;width:100%;height:100%;z-index:2;pointer-events:none}
+.layer-back{position:relative;z-index:1}
+.layer-front{position:relative;z-index:3}
+
+/* ---------- nav ---------- */
+.nav{position:fixed;inset:0 0 auto 0;z-index:20;display:flex;align-items:center;justify-content:space-between;gap:24px;padding:18px clamp(20px,4vw,48px);transition:color .4s,background-color .4s,border-color .4s;border-bottom:1px solid transparent}
+.nav.solid{background:rgba(13,12,11,.62);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-color:var(--hair-d)}
+.nav.on-light{color:var(--on-light-1)}
+.nav.on-light.solid{background:rgba(235,231,224,.7);border-color:var(--hair-l)}
+.brand{display:flex;align-items:center;gap:10px}
+.brand svg{width:26px;height:26px}
+.brand span{font-family:var(--display);font-stretch:118%;font-weight:500;font-size:19px;letter-spacing:.01em}
+.links{display:flex;gap:28px;font-size:14px}
+.links a{opacity:.7;transition:opacity .2s}
+.links a:hover,.links a.on{opacity:1}
+.tools{display:flex;align-items:center;gap:8px}
+.tools .btn{height:40px;padding:0 18px;font-size:14px}
+.nav.on-light .btn.primary{background:var(--on-light-1);color:var(--stone)}
+.bagbtn{position:relative;width:40px;height:40px;display:grid;place-items:center;border-radius:20px;transition:background-color .2s}
+.bagbtn:hover{background:rgba(127,127,127,.14)}
+.bagbtn svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.5}
+.bagbtn i{position:absolute;top:6px;right:6px;width:8px;height:8px;border-radius:50%;background:var(--led);transform:scale(0);transition:transform .3s var(--ease)}
+.bagbtn.has i{transform:scale(1)}
+
+/* ---------- hero ---------- */
+.hero{min-height:100vh;min-height:100svh;display:grid;align-items:center;padding-top:72px}
+.hero .wrap{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr)}
+.hero h1{font-size:clamp(48px,6.4vw,104px);margin:20px 0 24px}
+.hero .actions{display:flex;align-items:center;gap:24px;margin-top:36px}
+.enter{opacity:0;transform:translateY(16px);animation:enter .9s var(--ease) forwards;animation-delay:var(--d,0s)}
+@keyframes enter{to{opacity:1;transform:none}}
+.hero .meta{display:flex;align-items:center;gap:10px}
+
+/* ---------- pinned chapters ---------- */
+.pin{position:relative}
+.pin .stage{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden;z-index:3}
+#open{height:420vh}
+#inside{height:380vh}
+.chapters{position:absolute;left:max(32px,calc((100vw - 1280px)/2));top:50%;transform:translateY(-50%);width:min(420px,38vw)}
+.chapter{position:absolute;left:0;top:0;transform:translateY(-50%);opacity:0;will-change:opacity,transform}
+.chapter .n{font-family:var(--mono);font-size:13px;color:var(--on-dark-2)}
+.chapter h2{margin:12px 0 16px}
+.progress{position:absolute;left:max(32px,calc((100vw - 1280px)/2));bottom:40px;display:flex;gap:6px}
+.progress i{display:block;width:40px;height:2px;background:var(--hair-d);position:relative;overflow:hidden}
+.progress i b{position:absolute;inset:0;background:var(--on-dark-1);transform-origin:0 50%;transform:scaleX(0)}
+.inside-head{position:absolute;left:max(32px,calc((100vw - 1280px)/2));top:104px}
+.inside-head h2{margin-top:10px;max-width:14ch}
+#callouts{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+#callouts line{stroke:var(--on-dark-3);stroke-width:1}
+#callouts circle{fill:var(--night);stroke:var(--on-dark-1);stroke-width:1.5}
+#callouts text{font-family:var(--mono);font-size:11px;fill:var(--on-dark-1);text-anchor:middle;dominant-baseline:central}
+.parts{position:absolute;inset:0;pointer-events:none}
+.part{position:absolute;width:220px;opacity:0}
+.part b{display:flex;align-items:baseline;gap:10px;font-weight:500;font-size:15px}
+.part b span{font-family:var(--mono);font-size:12px;color:var(--on-dark-2);font-weight:400}
+.part p{font-size:14px;color:var(--on-dark-2);margin-top:4px;line-height:1.5}
+
+/* ---------- silence ---------- */
+.section{min-height:100vh;min-height:100svh;display:grid;align-items:center;padding:120px 0}
+.split{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:48px;align-items:center}
+.split.rev{grid-template-columns:minmax(0,7fr) minmax(0,5fr)}
+.split > .copy h2{margin:12px 0 20px}
+.panel{margin-top:32px;border:1px solid var(--hair-d);border-radius:16px;padding:20px;background:rgba(22,21,19,.6);max-width:460px}
+.modes{display:flex;gap:4px;padding:4px;border-radius:12px;background:var(--night);border:1px solid var(--hair-d)}
+.modes button{flex:1;height:36px;border-radius:8px;font-size:14px;color:var(--on-dark-2);transition:background-color .2s,color .2s}
+.modes button[aria-pressed=true]{background:var(--night-2);color:var(--on-dark-1);box-shadow:inset 0 0 0 1px var(--hair-d)}
+.wave{display:block;width:100%;height:96px;margin:16px 0 12px}
+.readout{display:flex;justify-content:space-between;align-items:baseline;gap:16px}
+.readout div{display:grid;gap:2px}
+.readout b{font-family:var(--display);font-weight:500;font-size:32px;font-variant-numeric:tabular-nums;line-height:1.1}
+.readout span{font-size:13px;color:var(--on-dark-2)}
+.play{display:inline-flex;align-items:center;gap:10px;margin-top:16px;height:40px;padding:0 16px 0 12px;border-radius:20px;border:1px solid var(--hair-d);font-size:14px;transition:background-color .2s}
+.play:hover{background:var(--night-2)}
+.play svg{width:16px;height:16px;fill:currentColor}
+.note{font-size:12px;color:var(--on-dark-3);margin-top:10px}
+
+/* ---------- battery ---------- */
+.figures{display:grid;grid-template-columns:repeat(3,auto);justify-content:start;gap:12px 48px;margin-top:40px}
+.figures b{display:block;white-space:nowrap;font-family:var(--display);font-weight:500;font-stretch:118%;font-size:clamp(44px,5vw,72px);line-height:1;font-variant-numeric:tabular-nums}
+.figures span{display:block;margin-top:8px;font-size:14px;color:var(--on-light-2);max-width:20ch}
+
+/* ---------- finishes ---------- */
+.swatches{display:flex;gap:12px;margin-top:32px}
+.sw{display:grid;justify-items:center;gap:10px;font-size:14px;color:var(--on-light-2)}
+.sw i{display:block;width:48px;height:48px;border-radius:24px;box-shadow:inset 0 0 0 1px var(--hair-l);transition:box-shadow .2s}
+.sw[aria-pressed=true]{color:var(--on-light-1)}
+.sw[aria-pressed=true] i{box-shadow:0 0 0 2px var(--stone),0 0 0 3px var(--on-light-1)}
+.sw:hover i{box-shadow:0 0 0 2px var(--stone),0 0 0 3px var(--on-light-3)}
+.finish-note{margin-top:20px;font-size:15px;color:var(--on-light-2);min-height:48px;max-width:36ch}
+
+/* ---------- specs ---------- */
+.specs{padding:140px 0 120px}
+.specs h2{margin:12px 0 48px}
+.spec-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 64px;border-top:1px solid var(--hair-l)}
+.spec{display:grid;grid-template-columns:200px minmax(0,1fr);gap:16px;padding:18px 0;border-bottom:1px solid var(--hair-l)}
+.spec dt{font-size:14px;color:var(--on-light-2)}
+.spec dd{font-size:15px;font-variant-numeric:tabular-nums}
+
+/* ---------- buy ---------- */
+.buy{position:relative;min-height:100vh;min-height:100svh;overflow:hidden;display:grid;align-items:end;padding:0 0 64px}
+.bigword{position:absolute;left:0;right:0;top:12vh;text-align:center;font-family:var(--display);font-weight:600;font-stretch:62%;font-size:clamp(120px,24vw,380px);line-height:.82;letter-spacing:-.01em;color:var(--on-light-1);white-space:nowrap;user-select:none}
+.buy .wrap{display:flex;justify-content:space-between;align-items:end;gap:32px}
+.buy-card{display:grid;gap:4px;max-width:360px}
+.buy-card h3{font-size:28px}
+.price{font-family:var(--display);font-weight:500;font-size:28px;font-variant-numeric:tabular-nums}
+.buy-card .row{display:flex;align-items:center;gap:16px;margin-top:16px}
+.buy-fine{font-size:14px;color:var(--on-light-2);max-width:30ch;text-align:right}
+
+/* ---------- footer ---------- */
+footer{position:relative;z-index:3;background:var(--night);color:var(--on-dark-2);font-size:14px;padding:64px 0 32px}
+.foot{display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr;gap:32px;padding-bottom:40px;border-bottom:1px solid var(--hair-d)}
+.foot h4{font-weight:500;color:var(--on-dark-1);font-size:14px;margin-bottom:12px}
+.foot a{display:block;padding:3px 0;transition:color .2s}
+.foot a:hover{color:var(--on-dark-1)}
+.foot .brand{color:var(--on-dark-1);margin-bottom:14px}
+.legal{padding-top:20px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-size:13px;color:var(--on-dark-3)}
+
+/* ---------- bag ---------- */
+.scrim{position:fixed;inset:0;z-index:40;background:rgba(0,0,0,.5);opacity:0;visibility:hidden;transition:opacity .3s,visibility .3s}
+.drawer{position:fixed;inset:0 0 0 auto;z-index:41;width:min(400px,100vw);background:var(--night-2);color:var(--on-dark-1);border-left:1px solid var(--hair-d);transform:translateX(100%);transition:transform .45s var(--ease);display:flex;flex-direction:column;padding:24px}
+body.bag .drawer{transform:none}
+body.bag .scrim{opacity:1;visibility:visible}
+.drawer header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+.drawer h3{font-size:24px}
+.x{width:36px;height:36px;border-radius:18px;display:grid;place-items:center}
+.x:hover{background:rgba(255,255,255,.06)}
+.x svg{width:16px;height:16px;stroke:currentColor;stroke-width:1.5;fill:none}
+.items{flex:1;overflow:auto}
+.item{display:grid;grid-template-columns:48px minmax(0,1fr) auto;gap:4px 14px;align-items:center;padding:14px 0;border-bottom:1px solid var(--hair-d)}
+.item i{grid-row:1/3;width:48px;height:48px;border-radius:12px;box-shadow:inset 0 0 0 1px var(--hair-d)}
+.item span{font-size:13px;color:var(--on-dark-2)}
+.item button{grid-row:1/3;grid-column:3;font-size:13px;color:var(--on-dark-2)}
+.item button:hover{color:var(--on-dark-1)}
+.empty{color:var(--on-dark-3);padding:32px 0;text-align:center}
+.total{display:flex;justify-content:space-between;align-items:baseline;padding:20px 0}
+.total b{font-family:var(--display);font-weight:500;font-size:26px;font-variant-numeric:tabular-nums}
+.drawer .btn{justify-content:center}
+.drawer small{color:var(--on-dark-3);font-size:12px;text-align:center;margin-top:12px}
+.toast{position:fixed;left:50%;bottom:24px;z-index:50;transform:translate(-50%,20px);opacity:0;transition:opacity .35s,transform .35s var(--ease);background:var(--on-dark-1);color:var(--night);padding:12px 20px;border-radius:24px;font-size:14px;font-weight:500;pointer-events:none;max-width:92vw;text-align:center}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.gap3d{display:none}
+.nogl{position:fixed;right:24px;bottom:24px;z-index:30;font-size:13px;color:var(--on-dark-2);display:none}
+
+/* ---------- responsive ---------- */
+@media (max-width:960px){
+  .links{display:none}
+  .hero{align-items:start;padding-top:120px}
+  .hero .wrap,.split,.split.rev{grid-template-columns:minmax(0,1fr)}
+  .split.rev > .copy{order:-1}
+  .chapters{left:24px;right:24px;width:auto;top:96px;transform:none}
+  .chapter{transform:none}
+  .chapter h2{font-size:34px}
+  .progress{left:24px}
+  .inside-head{left:24px;top:88px}
+  .part{width:auto}
+  .section{align-items:start;padding-top:112px}
+  .panel{max-width:none}
+  .spec-grid{grid-template-columns:minmax(0,1fr)}
+  .buy .wrap{flex-direction:column;align-items:start}
+  .buy-fine{text-align:left}
+  .foot{grid-template-columns:1fr 1fr}
+}
+@media (max-width:600px){
+  .wrap{width:calc(100% - 40px)}
+  .hero h1{font-size:46px}
+  .tools .btn{display:none}
+  .figures{grid-template-columns:repeat(2,auto);gap:24px 32px}
+  .spec{grid-template-columns:120px minmax(0,1fr)}
+  .bigword{top:16vh}
+  .gap3d{display:block;height:min(380px,48svh)}
+  .buy-card{background:rgba(235,231,224,.86);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);padding:16px;border-radius:16px;margin:0 -16px}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .enter{opacity:1;transform:none;animation:none}
+}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="mark" viewBox="0 0 256 256">
+    <!-- Tacet mark: an ear-shaped ring holding a whole rest, the musical sign for silence -->
+    <path fill-rule="evenodd" d="M128 16a112 112 0 1 1 0 224a112 112 0 1 1 0-224zM128 40a88 88 0 1 0 0 176a88 88 0 1 0 0-176z"/>
+    <rect x="72" y="104" width="112" height="16"/>
+    <rect x="96" y="120" width="64" height="32"/>
+  </symbol>
+</svg>
+
+<canvas id="gl" aria-hidden="true"></canvas>
+<p class="nogl" id="nogl">The 3D view needs WebGL, which this browser has turned off.</p>
+
+<header class="nav" id="nav">
+  <a class="brand" href="#top" aria-label="Tacet home"><svg fill="currentColor" aria-hidden="true"><use href="#mark"/></svg><span>tacet</span></a>
+  <nav class="links" aria-label="Main">
+    <a href="#open">Open</a><a href="#inside">Inside</a><a href="#silence">Silence</a><a href="#battery">Battery</a><a href="#finishes">Finishes</a><a href="#specs">Specs</a>
+  </nav>
+  <div class="tools">
+    <a class="btn primary" href="#buy">Buy</a>
+    <button class="bagbtn" id="bag-btn" aria-label="Open your bag"><svg viewBox="0 0 24 24"><path d="M5 8h14l-1 12H6zM9 8V6a3 3 0 0 1 6 0v2"/></svg><i></i></button>
+  </div>
+</header>
+
+<main id="top">
+<!-- ============ HERO ============ -->
+<section class="hero layer-front" id="hero">
+  <div class="wrap">
+    <div>
+      <p class="meta enter" style="--d:.1s"><span class="led" aria-hidden="true"></span>Tacet One · noise-cancelling earbuds</p>
+      <h1 class="enter" style="--d:.2s">Turn the city down.</h1>
+      <p class="sub enter" style="--d:.35s">Adaptive noise cancelling takes out up to 48 dB of traffic, trains and open-plan talk. Nine hours on a charge, thirty-six with the case.</p>
+      <div class="actions enter" style="--d:.5s"><a class="btn primary" href="#buy">Buy · 1,149 lei</a><a class="link" href="#open">See it open</a></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ OPEN ============ -->
+<section class="pin" id="open" aria-label="Opening the case">
+  <div class="stage">
+    <div class="chapters">
+      <div class="chapter" data-i="0"><span class="n">01 / 03</span><h2>Lift the lid.</h2><p class="sub">They pair with your phone the moment the case opens. No menus, no button to hold.</p></div>
+      <div class="chapter" data-i="1"><span class="n">02 / 03</span><h2>4.8 grams each.</h2><p class="sub">Light enough to forget about, shaped to sit in the ear rather than on it.</p></div>
+      <div class="chapter" data-i="2"><span class="n">03 / 03</span><h2>A seal that fits.</h2><p class="sub">Small, medium and large tips in the box. The app plays a short tone and tells you which size seals best.</p></div>
+    </div>
+    <div class="progress" aria-hidden="true"><i><b></b></i><i><b></b></i><i><b></b></i></div>
+  </div>
+</section>
+
+<!-- ============ INSIDE ============ -->
+<section class="pin" id="inside" aria-label="What is inside">
+  <div class="stage">
+    <div class="inside-head"><p class="meta">Inside</p><h2>What fits into 4.8 grams.</h2></div>
+    <svg id="callouts" aria-hidden="true"></svg>
+    <div class="parts" id="parts"></div>
+  </div>
+</section>
+
+<!-- ============ SILENCE ============ -->
+<section class="section layer-front" id="silence">
+  <div class="wrap split">
+    <div class="copy">
+      <p class="meta">Noise cancelling</p>
+      <h2>Hear the difference.</h2>
+      <p class="sub">Six microphones listen to the street and play its opposite. Press play for a crossing at rush hour, then switch modes.</p>
+      <div class="panel">
+        <div class="modes" role="group" aria-label="Listening mode">
+          <button type="button" data-m="off" aria-pressed="true">Off</button>
+          <button type="button" data-m="aware" aria-pressed="false">Transparency</button>
+          <button type="button" data-m="anc" aria-pressed="false">Noise cancelling</button>
+        </div>
+        <canvas class="wave" id="wave" aria-hidden="true"></canvas>
+        <div class="readout">
+          <div><b id="db-out">78 dB</b><span>Around you</span></div>
+          <div style="text-align:right"><b id="db-in">78 dB</b><span>In your ear</span></div>
+        </div>
+        <button class="play" type="button" id="play"><svg viewBox="0 0 16 16" id="play-ico"><path d="M4 2.5v11l9-5.5z"/></svg><span id="play-txt">Play the street</span></button>
+        <p class="note">The sound is generated in your browser to show the effect. Levels are illustrative.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ BATTERY ============ -->
+<section class="section layer-front light" id="battery">
+  <div class="wrap split">
+    <div class="copy">
+      <p class="meta">Battery</p>
+      <h2>Five minutes in, an hour out.</h2>
+      <p class="sub">A short charge before you leave gives you the whole commute. The light on the case shows the charge at a glance.</p>
+      <div class="gap3d" aria-hidden="true"></div>
+      <div class="figures">
+        <div><b data-count="9">0 h</b><span>Playback with noise cancelling on</span></div>
+        <div><b data-count="36">0 h</b><span>Total with the case</span></div>
+        <div><b data-count="5">0 min</b><span>For one hour of play</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FINISHES ============ -->
+<section class="section layer-front light" id="finishes">
+  <div class="wrap split rev">
+    <div></div>
+    <div class="copy">
+      <p class="meta">Finishes</p>
+      <h2>Three finishes.</h2>
+      <p class="sub">Each one is a single material, through and through, so scratches stay the same colour.</p>
+      <div class="gap3d" aria-hidden="true"></div>
+      <div class="swatches" id="swatches" role="group" aria-label="Choose a finish"></div>
+      <p class="finish-note" id="finish-note"></p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SPECS ============ -->
+<section class="specs layer-front light" id="specs">
+  <div class="wrap">
+    <p class="meta">Specifications</p>
+    <h2>The details.</h2>
+    <dl class="spec-grid">
+      <div class="spec"><dt>Driver</dt><dd>11 mm dynamic, graphene-coated</dd></div>
+      <div class="spec"><dt>Noise cancelling</dt><dd>Adaptive, up to 48 dB</dd></div>
+      <div class="spec"><dt>Microphones</dt><dd>Six, three per earbud</dd></div>
+      <div class="spec"><dt>Battery</dt><dd>9 h earbuds, 36 h with the case</dd></div>
+      <div class="spec"><dt>Charging</dt><dd>USB-C and Qi wireless</dd></div>
+      <div class="spec"><dt>Water resistance</dt><dd>IPX4, sweat and rain</dd></div>
+      <div class="spec"><dt>Weight</dt><dd>4.8 g each, case 41 g</dd></div>
+      <div class="spec"><dt>Bluetooth</dt><dd>5.4, two devices at once</dd></div>
+      <div class="spec"><dt>Codecs</dt><dd>LC3, AAC, SBC</dd></div>
+      <div class="spec"><dt>In the box</dt><dd>Tips in S, M and L, USB-C cable</dd></div>
+    </dl>
+  </div>
+</section>
+
+<!-- ============ BUY ============ -->
+<section class="buy light" id="buy">
+  <div class="bigword layer-back" aria-hidden="true">Hear less</div>
+  <div class="wrap layer-front">
+    <div class="buy-card">
+      <p class="meta" id="buy-finish">Graphite</p>
+      <h3>Tacet One</h3>
+      <span class="price">1,149 lei</span>
+      <div class="row"><button class="btn primary" type="button" id="add">Add to bag</button><a class="link" href="#finishes">Change finish</a></div>
+    </div>
+    <p class="buy-fine">Free delivery in Romania within two working days. Thirty days to return them.</p>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot">
+      <div><a class="brand" href="#top"><svg fill="currentColor" aria-hidden="true"><use href="#mark"/></svg><span>tacet</span></a><p style="max-width:30ch">Earbuds for loud places. Designed in Bucharest.</p></div>
+      <div><h4>Product</h4><a href="#open">Open</a><a href="#inside">Inside</a><a href="#specs">Specs</a></div>
+      <div><h4>Help</h4><a href="#">Pairing</a><a href="#">Warranty</a><a href="#">Returns</a></div>
+      <div><h4>Contact</h4><p>hello@tacet.example</p></div>
+    </div>
+    <div class="legal"><span>Prices include VAT.</span><span>© 2026 Tacet (demo brand)</span></div>
+  </div>
+</footer>
+
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" aria-label="Your bag" aria-hidden="true">
+  <header><h3>Your bag</h3><button class="x" id="bag-close" aria-label="Close"><svg viewBox="0 0 16 16"><path d="M3 3l10 10M13 3L3 13"/></svg></button></header>
+  <div class="items" id="items"></div>
+  <div class="total"><span>Total</span><b id="total">0 lei</b></div>
+  <button class="btn primary" type="button" id="checkout">Check out</button>
+  <small>Demo checkout. Connect your shop here.</small>
+</aside>
+<div class="toast" id="toast" role="status"></div>
+
+<script type="module">
+/* =====================================================================
+   EDIT THE PRODUCT HERE
+   ===================================================================== */
+const PRICE = 1149, CUR = 'lei';
+const FINISHES = [
+  { id:'graphite', name:'Graphite', body:0x17171a, tip:0x1c1c1f, swatch:'#1a1a1d', note:'Graphite. A deep, glossy black that keeps its shine.' },
+  { id:'chalk',    name:'Chalk',    body:0xe6e2da, tip:0xd9d4cb, swatch:'#e9e5dd', note:'Chalk. A warm white with a soft satin finish.' },
+  { id:'clay',     name:'Clay',     body:0xa55a40, tip:0x8e4c36, swatch:'#a85d43', note:'Clay. A fired terracotta tone, matte to the touch.' },
+];
+const PARTS = [
+  { k:'tip',     t:'Silicone tip',      d:'Three sizes. The seal does half the quiet.' },
+  { k:'mesh',    t:'Acoustic mesh',     d:'Keeps out dust and earwax, lets sound through.' },
+  { k:'driver',  t:'11 mm driver',      d:'Graphene-coated, clean from deep bass to 20 kHz.' },
+  { k:'chip',    t:'Noise processor',   d:'Reads the street 48,000 times a second.' },
+  { k:'battery', t:'Battery cell',      d:'Nine hours of play with noise cancelling on.' },
+  { k:'mic',     t:'Beam microphones',  d:'Aimed at your mouth for clear calls in wind.' },
+];
+
+/* ---------- helpers ---------- */
+const $ = (s, r = document) => r.querySelector(s), $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
+const lerp = (a, b, t) => a + (b - a) * t;
+const smooth = t => t * t * (3 - 2 * t);
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const money = n => n.toLocaleString('en-US') + ' ' + CUR;
+const toastEl = $('#toast'); let toastT;
+const toast = m => { toastEl.textContent = m; toastEl.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => toastEl.classList.remove('show'), 2400); };
+
+/* ---------- bag ---------- */
+let finish = FINISHES[0];
+const bag = [];
+function drawBag(){
+  $('#items').innerHTML = bag.length ? bag.map((it, i) => `<div class="item"><i style="background:${it.swatch}"></i><b>Tacet One</b><span>${it.name} · ${money(PRICE)}</span><button data-rm="${i}">Remove</button></div>`).join('') : '<p class="empty">Your bag is empty.</p>';
+  $('#total').textContent = money(bag.length * PRICE);
+  $('#bag-btn').classList.toggle('has', bag.length > 0);
+}
+const openBag = on => { document.body.classList.toggle('bag', on); $('#drawer').setAttribute('aria-hidden', !on); };
+$('#add').onclick = () => { bag.push({ name: finish.name, swatch: finish.swatch }); drawBag(); toast(`Tacet One in ${finish.name} added to your bag`); };
+$('#bag-btn').onclick = () => openBag(true);
+$('#bag-close').onclick = $('#scrim').onclick = () => openBag(false);
+$('#items').addEventListener('click', e => { const b = e.target.closest('[data-rm]'); if (b) { bag.splice(+b.dataset.rm, 1); drawBag(); } });
+$('#checkout').onclick = () => toast(bag.length ? 'Demo checkout: connect your shop here' : 'Your bag is empty');
+addEventListener('keydown', e => { if (e.key === 'Escape') openBag(false); });
+drawBag();
+
+/* ---------- finishes ---------- */
+$('#swatches').innerHTML = FINISHES.map((f, i) => `<button class="sw" type="button" data-i="${i}" aria-pressed="${i === 0}"><i style="background:${f.swatch}"></i>${f.name}</button>`).join('');
+let setFinish3D = () => {};
+function chooseFinish(i){
+  finish = FINISHES[i];
+  $$('.sw').forEach(b => b.setAttribute('aria-pressed', b.dataset.i == i));
+  $('#finish-note').textContent = finish.note; $('#buy-finish').textContent = finish.name;
+  setFinish3D(finish);
+}
+$('#swatches').addEventListener('click', e => { const b = e.target.closest('.sw'); if (b) chooseFinish(+b.dataset.i); });
+$('#finish-note').textContent = finish.note;
+
+/* ---------- teardown labels ---------- */
+$('#parts').innerHTML = PARTS.map((p, i) => `<div class="part" data-k="${p.k}"><b>${p.t}<span>0${i + 1}</span></b><p>${p.d}</p></div>`).join('');
+
+/* ---------- battery count-up ---------- */
+const countIO = new IntersectionObserver(es => es.forEach(e => {
+  if (!e.isIntersecting) return; countIO.unobserve(e.target);
+  const el = e.target, to = +el.dataset.count, unit = to === 5 ? ' min' : ' h', t0 = performance.now();
+  const tick = now => { const k = reduced ? 1 : clamp((now - t0) / 1200); el.textContent = Math.round(to * (1 - Math.pow(1 - k, 3))) + unit; if (k < 1) requestAnimationFrame(tick); };
+  requestAnimationFrame(tick);
+}), { threshold: .6 });
+$$('[data-count]').forEach(el => countIO.observe(el));
+
+/* ---------- listening modes + generated street sound ---------- */
+const MODES = { off: { out:78, inn:78, chaos:1 }, aware: { out:78, inn:64, chaos:.55 }, anc: { out:78, inn:30, chaos:.06 } };
+let mode = 'off', audio = null, playing = false;
+function buildAudio(){
+  const ctx = new (window.AudioContext || window.webkitAudioContext)();
+  const len = ctx.sampleRate * 4, buf = ctx.createBuffer(1, len, ctx.sampleRate), d = buf.getChannelData(0);
+  let b0 = 0, b1 = 0, b2 = 0; for (let i = 0; i < len; i++) { const w = Math.random() * 2 - 1; b0 = .99765 * b0 + w * .099046; b1 = .963 * b1 + w * .2965164; b2 = .57 * b2 + w * 1.0526913; d[i] = (b0 + b1 + b2 + w * .1848) * .2; }
+  const src = ctx.createBufferSource(); src.buffer = buf; src.loop = true;
+  const rumble = ctx.createBiquadFilter(); rumble.type = 'lowpass'; rumble.frequency.value = 320;
+  const rumbleG = ctx.createGain(); rumbleG.gain.value = .9;
+  const voices = ctx.createBiquadFilter(); voices.type = 'bandpass'; voices.frequency.value = 900; voices.Q.value = .9;
+  const voicesG = ctx.createGain(); voicesG.gain.value = .35;
+  const anc = ctx.createBiquadFilter(); anc.type = 'lowpass'; anc.frequency.value = 18000;
+  const noiseG = ctx.createGain(); noiseG.gain.value = 1;
+  src.connect(rumble).connect(rumbleG).connect(anc); src.connect(voices).connect(voicesG).connect(anc);
+  anc.connect(noiseG);
+  // a soft chord, the music you would be listening to
+  const music = ctx.createGain(); music.gain.value = .05;
+  [220, 261.63, 329.63, 392].forEach((f, i) => { const o = ctx.createOscillator(); o.type = 'triangle'; o.frequency.value = f; const g = ctx.createGain(); g.gain.value = .25; o.connect(g).connect(music); o.start(); const l = ctx.createOscillator(); l.frequency.value = .2 + i * .07; const lg = ctx.createGain(); lg.gain.value = .12; l.connect(lg).connect(g.gain); l.start(); });
+  const musicLP = ctx.createBiquadFilter(); musicLP.type = 'lowpass'; musicLP.frequency.value = 1400; music.connect(musicLP);
+  const master = ctx.createGain(); master.gain.value = .0001;
+  const an = ctx.createAnalyser(); an.fftSize = 1024;
+  noiseG.connect(master); musicLP.connect(master); master.connect(an); an.connect(ctx.destination);
+  // passing traffic and voices come and go
+  const swell = () => { if (!audio) return; const t = ctx.currentTime; voicesG.gain.setTargetAtTime(.15 + Math.random() * .45, t, .4); rumbleG.gain.setTargetAtTime(.6 + Math.random() * .6, t, .8); setTimeout(swell, 900 + Math.random() * 1600); };
+  src.start();
+  audio = { ctx, an, master, noiseG, anc, rumbleG, voicesG, data: new Uint8Array(an.fftSize) };
+  swell();
+}
+function applyMode(){
+  const m = MODES[mode];
+  $('#db-out').textContent = m.out + ' dB'; $('#db-in').textContent = m.inn + ' dB';
+  $$('.modes button').forEach(b => b.setAttribute('aria-pressed', b.dataset.m === mode));
+  if (!audio) return;
+  const t = audio.ctx.currentTime;
+  if (mode === 'off') { audio.anc.frequency.setTargetAtTime(18000, t, .15); audio.noiseG.gain.setTargetAtTime(1, t, .15); }
+  if (mode === 'aware') { audio.anc.frequency.setTargetAtTime(9000, t, .15); audio.noiseG.gain.setTargetAtTime(.5, t, .2); }
+  if (mode === 'anc') { audio.anc.frequency.setTargetAtTime(240, t, .3); audio.noiseG.gain.setTargetAtTime(.07, t, .4); }
+}
+$$('.modes button').forEach(b => b.onclick = () => { mode = b.dataset.m; applyMode(); });
+$('#play').onclick = async () => {
+  if (!audio) buildAudio();
+  if (audio.ctx.state === 'suspended') await audio.ctx.resume();
+  playing = !playing;
+  audio.master.gain.setTargetAtTime(playing ? .55 : .0001, audio.ctx.currentTime, .12);
+  $('#play-txt').textContent = playing ? 'Pause' : 'Play the street';
+  $('#play-ico').innerHTML = playing ? '<path d="M4 2.5h3v11H4zM9 2.5h3v11H9z"/>' : '<path d="M4 2.5v11l9-5.5z"/>';
+  applyMode();
+};
+applyMode();
+const wave = $('#wave'), wc = wave.getContext('2d');
+let waveAmp = 1;
+function drawWave(now){
+  const d = Math.min(devicePixelRatio || 1, 2), w = wave.clientWidth, h = wave.clientHeight;
+  if (wave.width !== Math.round(w * d)) { wave.width = Math.round(w * d); wave.height = Math.round(h * d); }
+  wc.setTransform(d, 0, 0, d, 0, 0); wc.clearRect(0, 0, w, h);
+  wc.strokeStyle = '#ece8e1'; wc.lineWidth = 1.25; wc.beginPath();
+  waveAmp += (MODES[mode].chaos - waveAmp) * .08;
+  if (audio && playing) {
+    audio.an.getByteTimeDomainData(audio.data);
+    for (let i = 0; i < audio.data.length; i++) { const x = i / (audio.data.length - 1) * w, y = h / 2 + (audio.data[i] - 128) / 128 * h * 1.6; i ? wc.lineTo(x, y) : wc.moveTo(x, y); }
+  } else {
+    const t = now / 1000;
+    for (let i = 0; i <= 160; i++) { const u = i / 160, x = u * w; const n = Math.sin(u * 90 + t * 9) * .45 + Math.sin(u * 37 - t * 5) * .35 + Math.sin(u * 211 + t * 17) * .2; const y = h / 2 + n * h * .42 * waveAmp + Math.sin(u * 8 - t * 1.4) * h * .08 * (1 - waveAmp); i ? wc.lineTo(x, y) : wc.moveTo(x, y); }
+  }
+  wc.stroke();
+}
+
+/* =====================================================================
+   3D
+   ===================================================================== */
+let THREE = null;
+try { THREE = await import('./vendor/three.module.min.js'); }
+catch (e) { try { THREE = await import('https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.min.js'); } catch (e2) { THREE = null; } }
+
+const narrow = () => innerWidth < 760;
+let render3D = () => {};
+if (THREE) try {
+  const canvas = $('#gl');
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: 'high-performance' });
+  renderer.setClearColor(0x000000, 0);
+  renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.05;
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
+  renderer.localClippingEnabled = true;
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(30, 1, .1, 100); camera.position.set(0, 0, 12);
+
+  /* studio reflections: a small room of soft light panels baked into an environment map */
+  const pmrem = new THREE.PMREMGenerator(renderer);
+  const room = new THREE.Scene();
+  const roomBox = new THREE.Mesh(new THREE.BoxGeometry(20, 12, 20), new THREE.MeshStandardMaterial({ color: 0x3a3632, side: THREE.BackSide, roughness: 1 }));
+  room.add(roomBox);
+  const panel = (w, h, x, y, z, ry, rx, v, col = 0xffffff) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ color: new THREE.Color(col).multiplyScalar(v), side: THREE.DoubleSide })); m.position.set(x, y, z); m.rotation.set(rx, ry, 0); room.add(m); };
+  panel(10, 3, 0, 5.8, 0, 0, Math.PI / 2, 6);           // big softbox overhead
+  panel(1.2, 8, -9.8, 0, -2, Math.PI / 2, 0, 9);        // strip light left
+  panel(1.2, 8, 9.8, 1, 1, -Math.PI / 2, 0, 7, 0xffe9d8); // warm strip right
+  panel(6, 2, 0, 1, -9.8, 0, 0, 3);                      // back fill
+  room.add(new THREE.HemisphereLight(0xffffff, 0x222222, .6));
+  scene.environment = pmrem.fromScene(room, .035).texture;
+  const key = new THREE.DirectionalLight(0xfff1e4, 1.6); key.position.set(-4, 6, 6); scene.add(key);
+  const rim = new THREE.DirectionalLight(0xdfe8ff, 2.2); rim.position.set(5, 3, -6); scene.add(rim);
+  const fill = new THREE.DirectionalLight(0xfff6ee, 1.3); fill.position.set(1, -.5, 9); scene.add(fill);
+
+  /* materials */
+  const M = {
+    body: new THREE.MeshPhysicalMaterial({ color: FINISHES[0].body, roughness: .3, metalness: 0, clearcoat: 1, clearcoatRoughness: .08 }),
+    inner: new THREE.MeshStandardMaterial({ color: 0x0b0b0c, roughness: .8, side: THREE.BackSide }),
+    insert: new THREE.MeshStandardMaterial({ color: 0x050506, roughness: .9, envMapIntensity: .25 }),
+    well: new THREE.MeshStandardMaterial({ color: 0x050505, roughness: .9 }),
+    tip: new THREE.MeshStandardMaterial({ color: FINISHES[0].tip, roughness: .85 }),
+    mesh: new THREE.MeshStandardMaterial({ color: 0x3a3a3e, roughness: .55, metalness: .5 }),
+    metal: new THREE.MeshStandardMaterial({ color: 0xcfcac2, roughness: .25, metalness: 1 }),
+    dark: new THREE.MeshStandardMaterial({ color: 0x101012, roughness: .4, metalness: .3 }),
+    board: new THREE.MeshStandardMaterial({ color: 0x24302a, roughness: .5, metalness: .2 }),
+    gold: new THREE.MeshStandardMaterial({ color: 0xc8a25a, roughness: .3, metalness: 1 }),
+    cell: new THREE.MeshStandardMaterial({ color: 0x8d8a85, roughness: .35, metalness: .9 }),
+    led: new THREE.MeshBasicMaterial({ color: 0xff5b3a }),
+  };
+
+  /* rounded box: push every vertex of a dense box out to a rounded surface */
+  function roundedBox(w, h, d, r, seg = 28){
+    const g = new THREE.BoxGeometry(w, h, d, seg, seg, seg), p = g.attributes.position, n = g.attributes.normal;
+    const hx = w / 2 - r, hy = h / 2 - r, hz = d / 2 - r, v = new THREE.Vector3(), c = new THREE.Vector3();
+    for (let i = 0; i < p.count; i++) {
+      v.fromBufferAttribute(p, i); c.set(clamp(v.x, -hx, hx), clamp(v.y, -hy, hy), clamp(v.z, -hz, hz));
+      const nn = v.clone().sub(c).normalize(); v.copy(c).addScaledVector(nn, r); p.setXYZ(i, v.x, v.y, v.z); n.setXYZ(i, nn.x, nn.y, nn.z);
+    }
+    return g;
+  }
+
+  /* ---- the case: one rounded body split at the seam by clipping planes ---- */
+  const CW = 2.6, CH = 2.0, CD = 1.05, SEAM = .4;
+  const caseGeo = roundedBox(CW, CH, CD, .5);
+  const caseG = new THREE.Group(); scene.add(caseG);
+  const clipBase = [new THREE.Plane()], clipLid = [new THREE.Plane()];
+  const bodyBase = M.body.clone(); bodyBase.clippingPlanes = clipBase;
+  const bodyLid = M.body.clone(); bodyLid.clippingPlanes = clipLid;
+  const innerBase = M.inner.clone(); innerBase.clippingPlanes = clipBase;
+  const innerLid = M.inner.clone(); innerLid.clippingPlanes = clipLid;
+  const base = new THREE.Group(); caseG.add(base);
+  base.add(new THREE.Mesh(caseGeo, bodyBase), new THREE.Mesh(caseGeo, innerBase));
+  // insert plate with two wells
+  const plateShape = new THREE.Shape(); { const w = CW - .34, d = CD - .3, r = .32; plateShape.moveTo(-w / 2 + r, -d / 2); plateShape.lineTo(w / 2 - r, -d / 2); plateShape.quadraticCurveTo(w / 2, -d / 2, w / 2, -d / 2 + r); plateShape.lineTo(w / 2, d / 2 - r); plateShape.quadraticCurveTo(w / 2, d / 2, w / 2 - r, d / 2); plateShape.lineTo(-w / 2 + r, d / 2); plateShape.quadraticCurveTo(-w / 2, d / 2, -w / 2, d / 2 - r); plateShape.lineTo(-w / 2, -d / 2 + r); plateShape.quadraticCurveTo(-w / 2, -d / 2, -w / 2 + r, -d / 2); }
+  const plate = new THREE.Mesh(new THREE.ShapeGeometry(plateShape, 8), M.insert); plate.rotation.x = -Math.PI / 2; plate.position.y = SEAM - .1; base.add(plate);
+  [-.62, .62].forEach(x => { const w = new THREE.Mesh(new THREE.CircleGeometry(.2, 32), M.well); w.rotation.x = -Math.PI / 2; w.position.set(x, SEAM - .095, 0); base.add(w); });
+  const led = new THREE.Mesh(new THREE.CircleGeometry(.035, 24), M.led); led.position.set(0, -.15, CD / 2 + .002); base.add(led);
+  const lidPivot = new THREE.Group(); lidPivot.position.set(0, SEAM, -CD / 2 + .04); caseG.add(lidPivot);
+  const lid = new THREE.Group(); lid.position.set(0, -SEAM, CD / 2 - .04); lidPivot.add(lid);
+  lid.add(new THREE.Mesh(caseGeo, bodyLid), new THREE.Mesh(caseGeo, innerLid));
+  const lidPlane = new THREE.Mesh(new THREE.ShapeGeometry(plateShape, 8), M.insert); lidPlane.rotation.x = Math.PI / 2; lidPlane.position.y = SEAM + .12; lid.add(lidPlane);
+
+  /* ---- an earbud: head, tip, stem; inner parts that come out in the teardown ---- */
+  function makeBud(){
+    const g = new THREE.Group(), parts = {}, anchors = {};
+    const shellMat = M.body.clone(), tipMat = M.tip.clone();
+    const head = new THREE.Mesh(new THREE.SphereGeometry(.34, 48, 32), shellMat); head.scale.set(1, .92, 1.05); g.add(head);
+    const nozzle = new THREE.Mesh(new THREE.CylinderGeometry(.13, .15, .16, 32), shellMat); nozzle.rotation.x = Math.PI / 2; nozzle.position.set(0, .02, .3); g.add(nozzle);
+    const stem = new THREE.Mesh(new THREE.CapsuleGeometry(.1, .78, 8, 24), shellMat); stem.position.set(0, -.6, -.07); stem.rotation.x = -.08; g.add(stem);
+    const sensor = new THREE.Mesh(new THREE.CircleGeometry(.05, 24), M.dark); sensor.position.set(-.335, .06, -.02); sensor.rotation.y = -Math.PI / 2; g.add(sensor);
+    const add = (k, mesh, pos, dir, anchorOff = new THREE.Vector3()) => { const holder = new THREE.Group(); holder.position.copy(pos); holder.add(mesh); g.add(holder); parts[k] = { holder, base: pos.clone(), dir }; const a = new THREE.Object3D(); a.position.copy(anchorOff); holder.add(a); anchors[k] = a; };
+    const tip = new THREE.Mesh(new THREE.SphereGeometry(.2, 40, 24), tipMat); tip.scale.set(1, 1, .82);
+    add('tip', tip, new THREE.Vector3(0, .02, .4), new THREE.Vector3(0, .05, 1.35));
+    const mesh = new THREE.Mesh(new THREE.CylinderGeometry(.11, .11, .015, 32), M.mesh); mesh.rotation.x = Math.PI / 2;
+    add('mesh', mesh, new THREE.Vector3(0, .02, .38), new THREE.Vector3(0, .02, .92));
+    const driver = new THREE.Group(); { const ring = new THREE.Mesh(new THREE.CylinderGeometry(.21, .21, .05, 40), M.metal); ring.rotation.x = Math.PI / 2; const cone = new THREE.Mesh(new THREE.ConeGeometry(.17, .06, 40, 1, true), M.dark); cone.rotation.x = Math.PI / 2; cone.position.z = .04; driver.add(ring, cone); }
+    add('driver', driver, new THREE.Vector3(0, .02, .1), new THREE.Vector3(0, 0, .55));
+    const chip = new THREE.Group(); { const b = new THREE.Mesh(new THREE.BoxGeometry(.3, .22, .03), M.board); const c = new THREE.Mesh(new THREE.BoxGeometry(.11, .11, .02), M.dark); c.position.z = .025; const pads = new THREE.Mesh(new THREE.BoxGeometry(.24, .02, .032), M.gold); pads.position.y = -.08; chip.add(b, c, pads); }
+    add('chip', chip, new THREE.Vector3(0, .04, -.12), new THREE.Vector3(.95, .25, -.25));
+    const cell = new THREE.Mesh(new THREE.CylinderGeometry(.075, .075, .42, 32), M.cell);
+    add('battery', cell, new THREE.Vector3(0, -.55, -.07), new THREE.Vector3(-.95, -.1, .1));
+    const mic = new THREE.Mesh(new THREE.CylinderGeometry(.102, .102, .07, 32), M.metal);
+    add('mic', mic, new THREE.Vector3(0, -1.06, -.11), new THREE.Vector3(0, -.48, 0));
+    g.userData = { parts, anchors, shellMat, tipMat };
+    return g;
+  }
+  const budL = makeBud(), budR = makeBud(); scene.add(budL, budR);
+
+  /* ---- pedestal and a soft contact shadow for the light sections ---- */
+  const ped = new THREE.Mesh(new THREE.CylinderGeometry(1.9, 1.9, 6, 72), new THREE.MeshStandardMaterial({ color: 0xd8d2c8, roughness: .9 }));
+  scene.add(ped);
+  const shTex = (() => { const c = document.createElement('canvas'); c.width = c.height = 128; const x = c.getContext('2d'); const gr = x.createRadialGradient(64, 64, 0, 64, 64, 64); gr.addColorStop(0, 'rgba(0,0,0,.55)'); gr.addColorStop(1, 'rgba(0,0,0,0)'); x.fillStyle = gr; x.fillRect(0, 0, 128, 128); return new THREE.CanvasTexture(c); })();
+  const shadow = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial({ map: shTex, transparent: true, depthWrite: false, opacity: 0 }));
+  shadow.rotation.x = -Math.PI / 2; scene.add(shadow);
+
+  /* ---- noise: specks that jitter in the loud part and settle in the quiet part ---- */
+  const N = 900, pos = new Float32Array(N * 3), seed = new Float32Array(N * 4);
+  for (let i = 0; i < N; i++) { const r = (k) => { const s = Math.sin(i * 12.9898 + k * 78.233) * 43758.5453; return s - Math.floor(s); };
+    seed.set([(r(1) - .5) * 18, (r(2) - .5) * 9, -1.5 - r(3) * 7, r(4) * 6.28], i * 4); }
+  const pgeo = new THREE.BufferGeometry(); pgeo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  const pmat = new THREE.PointsMaterial({ color: 0xd9d3c9, size: .035, transparent: true, opacity: .5, depthWrite: false });
+  const points = new THREE.Points(pgeo, pmat); scene.add(points);
+
+  setFinish3D = f => {
+    [M.body].forEach(m => m.color.setHex(f.body));
+    bodyBase.color.setHex(f.body); bodyLid.color.setHex(f.body);
+    [budL, budR].forEach(b => { b.userData.shellMat.color.setHex(f.body); b.userData.tipMat.color.setHex(f.tip); });
+    const matte = f.id === 'clay', satin = f.id === 'chalk';
+    [bodyBase, bodyLid, budL.userData.shellMat, budR.userData.shellMat].forEach(m => { m.roughness = matte ? .62 : satin ? .42 : .3; m.clearcoat = matte ? 0 : satin ? .5 : 1; });
+  };
+
+  /* =================== choreography: states keyed to scroll =================== */
+  const D = { cx:0, cy:0, cz:0, crx:.25, cry:-.5, crz:0, cs:1, lid:0, led:0,
+              ls:1, lseat:1, lx:0, ly:0, lz:0, lrx:0, lry:0, lrz:0,
+              rs:1, rseat:1, rx:0, ry:0, rz:0, rrx:0, rry:0, rrz:0,
+              ex:0, chaos:1, dots:1, ped:-9, sh:0 };
+  // [section id, fraction through it, state, phone overrides]
+  const KF = [
+    ['hero', 0,    { cx:2.4, cy:-.25, cs:1.15, crx:.3, cry:-.6, led:.0 }, { cx:0, cy:-1.75, cs:.72 }],
+    ['open', 0,    { cx:1.9, cy:-.35, cs:1.2, crx:.32, cry:-.22 }, { cx:0, cy:-1.45, cs:.8 }],
+    ['open', .2,   { lid:1, crx:.5, cry:-.12, led:1 }, {}],
+    ['open', .44,  { cy:-1.0, lseat:0, lx:1.15, ly:1.4, lz:.8, lrx:.05, lry:1.0, lrz:.15, ls:1.15, rseat:0, rx:2.6, ry:1.55, rz:.7, rrx:-.05, rry:-1.0, rrz:-.15, rs:1.15 },
+                   { cy:-2.2, lx:-.55, ly:.15, rx:.55, ry:.3, ls:.85, rs:.85 }],
+    ['open', .72,  { cy:-3.2, cs:1, lid:.5, lx:.7, ly:.4, lz:1.6, lrx:.35, lry:1.7, lrz:.3, ls:1.55, rx:3.2, ry:.9, rz:.6, rrx:-.25, rry:-1.25, rrz:-.35, rs:1.35 },
+                   { cy:-4.2, lx:-.7, ly:-.3, ls:1.05, rx:.75, ry:.1, rs:.95 }],
+    ['inside', 0,  { cy:-6, cs:.8, ls:0, lx:-3, ly:0, rx:.6, ry:.15, rz:0, rrx:.12, rry:-1.05, rrz:.05, rs:1.75, chaos:.75 },
+                   { rx:.7, ry:-.2, rs:1.3 }],
+    ['inside', .22,{ ex:0, rry:-1.1 }, {}],
+    ['inside', .6, { ex:1, rry:-1.35, rrx:.18 }, {}],
+    ['inside', .85,{ ex:1, rry:-1.5 }, {}],
+    ['silence', 0, { ex:0, cy:-6, rx:2.9, ry:.35, rz:0, rrx:.15, rry:-.7, rrz:.25, rs:1.35, lseat:0, ls:1.35, lx:1.7, ly:-.55, lz:.4, lrx:.2, lry:.75, lrz:-.15, chaos:1 },
+                   { rx:.55, ry:-3.4, rs:.001, lx:-.55, ly:-3.4, ls:.001 }],
+    ['battery', 0, { cx:2.3, cy:-.25, cz:0, cs:1.3, crx:.28, cry:-.42, lid:0, led:1, lseat:1, rseat:1, ls:1, rs:1, dots:0, chaos:.2, sh:1 },
+                   { cx:0, cy:-.05, cs:.62, at:'#battery .gap3d' }],
+    ['finishes', 0,{ cx:-2.3, cy:-.3, cs:1.35, crx:.42, cry:.55, lid:1, led:.6 }, { cx:0, cy:-.05, cs:.62, at:'#finishes .gap3d' }],
+    ['specs', 0,   { cx:0, cy:-.3, cs:.001, sh:0 }, {}],
+    ['buy', 0,     { cx:0, cy:-.3, cs:.001, sh:0 }, {}, -.7],
+    ['buy', 0,     { cx:0, cy:-.15, cs:1.2, crx:.18, cry:-.18, lid:1, led:1, ped:-1.35, sh:0 }, { cy:.5, cs:.7, ped:-.2 }],
+  ];
+  let keys = [];
+  function layout(){
+    const vh = innerHeight; let prev = { ...D };
+    keys = KF.map(([id, f, st, mo, off = 0]) => { const el = document.getElementById(id); let y = el.offsetTop + f * Math.max(0, el.offsetHeight - vh) + off * vh;
+      if (narrow() && mo.at) { const g = document.querySelector(mo.at).getBoundingClientRect(); y = g.top + scrollY + g.height / 2 - vh / 2; } prev = { ...prev, ...st, ...(narrow() ? mo : {}) }; return { y, s: { ...prev } }; });
+  }
+  function stateAt(y){
+    if (y <= keys[0].y) return keys[0].s;
+    for (let i = 1; i < keys.length; i++) if (y <= keys[i].y) { const a = keys[i - 1], b = keys[i], t = smooth((y - a.y) / Math.max(1, b.y - a.y)), o = {}; for (const k in D) o[k] = lerp(a.s[k], b.s[k], t); return o; }
+    return keys[keys.length - 1].s;
+  }
+  const cur = { ...D };
+  let tilt = { x: 0, y: 0 }, tiltT = { x: 0, y: 0 };
+  if (!reduced) addEventListener('pointermove', e => { tiltT.x = (e.clientY / innerHeight - .5) * .14; tiltT.y = (e.clientX / innerWidth - .5) * .22; }, { passive: true });
+
+  const seatL = new THREE.Object3D(), seatR = new THREE.Object3D();
+  seatL.position.set(-.62, SEAM - .06, 0); seatL.rotation.set(0, Math.PI / 2, 0);
+  seatR.position.set(.62, SEAM - .06, 0); seatR.rotation.set(0, -Math.PI / 2, 0);
+  base.add(seatL, seatR);
+  const tmpQ = new THREE.Quaternion(), tmpP = new THREE.Vector3(), tmpS = new THREE.Vector3(), freeQ = new THREE.Quaternion(), e3 = new THREE.Euler();
+  function placeBud(bud, seat, s, p){
+    seat.updateWorldMatrix(true, false); seat.matrixWorld.decompose(tmpP, tmpQ, tmpS);
+    e3.set(p.rx + tilt.x * .6, p.ry + tilt.y, p.rz); freeQ.setFromEuler(e3);
+    const k = 1 - s.seat;
+    bud.position.set(lerp(tmpP.x, p.x, k), lerp(tmpP.y, p.y, k), lerp(tmpP.z, p.z, k));
+    bud.quaternion.copy(tmpQ).slerp(freeQ, k);
+    const sc = lerp(tmpS.x * .9, p.s, k); bud.scale.setScalar(Math.max(.0001, sc));
+    bud.visible = sc > .002;
+  }
+  const lidN = new THREE.Vector3(), lidP = new THREE.Vector3();
+  function updateClip(){
+    caseG.updateMatrixWorld(true);
+    const nb = new THREE.Vector3(0, -1, 0).transformDirection(base.matrixWorld), pb = new THREE.Vector3(0, SEAM - .012, 0).applyMatrix4(base.matrixWorld);
+    clipBase[0].setFromNormalAndCoplanarPoint(nb, pb);
+    lidN.set(0, 1, 0).transformDirection(lid.matrixWorld); lidP.set(0, SEAM + .012, 0).applyMatrix4(lid.matrixWorld);
+    clipLid[0].setFromNormalAndCoplanarPoint(lidN, lidP);
+  }
+
+  // callouts
+  const svg = $('#callouts'), partEls = $$('.part');
+  svg.innerHTML = PARTS.map((p, i) => `<g data-k="${p.k}" opacity="0"><line/><circle r="11"/><text>${i + 1}</text></g>`).join('');
+  const calls = PARTS.map((p, i) => ({ k: p.k, g: svg.children[i], line: svg.children[i].children[0], circ: svg.children[i].children[1], txt: svg.children[i].children[2], el: partEls[i] }));
+  const proj = new THREE.Vector3();
+  function updateCallouts(ex, vis){
+    const W = innerWidth, H = innerHeight, phone = narrow(), edge = Math.max(32, (W - 1280) / 2);
+    budR.getWorldPosition(proj); proj.project(camera); const midX = (proj.x * .5 + .5) * W;
+    const pts = calls.map((c, i) => { budR.userData.anchors[c.k].getWorldPosition(proj); proj.project(camera); return { c, i, x: (proj.x * .5 + .5) * W, y: (-proj.y * .5 + .5) * H }; });
+    if (!phone) for (const left of [true, false]) {
+      const side = pts.filter(q => (q.x < midX) === left).sort((a, b) => a.y - b.y), gap = 104, top = 220, bottom = H - 96;
+      let prev = -1e9; side.forEach(q => { q.ty = Math.max(q.y - 24, prev + gap, top); prev = q.ty; });
+      for (let j = side.length - 1, lim = bottom; j >= 0; j--) { side[j].ty = Math.min(side[j].ty, lim); lim = side[j].ty - gap; }
+      side.forEach(q => { q.left = left; });
+    }
+    pts.forEach(({ c, i, x, y, ty, left }) => {
+      const show = clamp((ex - .35 - i * .06) / .25) * vis;
+      c.g.setAttribute('opacity', show.toFixed(3)); c.el.style.opacity = show.toFixed(3);
+      c.circ.setAttribute('cx', x); c.circ.setAttribute('cy', y); c.txt.setAttribute('x', x); c.txt.setAttribute('y', y);
+      let lx = x, ly = y;
+      if (phone) { const col = i % 2, row = Math.floor(i / 2); c.el.style.left = (20 + col * (W - 40) / 2) + 'px'; c.el.style.top = (H - 196 + row * 60) + 'px'; c.el.style.width = ((W - 56) / 2) + 'px'; c.el.querySelector('p').style.display = 'none'; }
+      else {
+        const colX = left ? edge : W - edge - 220;
+        c.el.style.left = colX + 'px'; c.el.style.top = ty + 'px'; c.el.style.textAlign = '';
+        lx = left ? colX + 220 + 12 : colX - 12; ly = ty + 10;
+      }
+      c.line.setAttribute('x1', lx); c.line.setAttribute('y1', ly); c.line.setAttribute('x2', x); c.line.setAttribute('y2', y);
+      c.line.style.display = phone ? 'none' : '';
+    });
+  }
+
+  // chapter text in the opening sequence
+  const chapterEls = $$('.chapter'), barEls = $$('.progress b');
+  const openSec = $('#open');
+  function updateChapters(){
+    const r = openSec.getBoundingClientRect(), p = clamp(-r.top / Math.max(1, r.height - innerHeight));
+    const pts = [[.0, .3], [.36, .62], [.68, .98]];
+    chapterEls.forEach((el, i) => { const [a, b] = pts[i]; const inn = clamp((p - a) / .06), out = i === 2 ? clamp((p - .99) / .01) : clamp((p - (b - .04)) / .06); const o = inn * (1 - out); el.style.opacity = o.toFixed(3); el.style.translate = `0 ${((1 - inn) * 24 - out * 24).toFixed(1)}px`; });
+    barEls.forEach((b, i) => { const [a, bb] = pts[i]; b.style.transform = `scaleX(${clamp((p - a) / (bb - a)).toFixed(3)})`; });
+  }
+
+  const nav = $('#nav'), root = document.documentElement;
+  const DARK = [13, 12, 11], LIGHT = [235, 231, 224];
+  function ground(y){
+    const s = $('#silence'), b = $('#battery'), vh = innerHeight;
+    const t = smooth(clamp((y - (s.offsetTop + s.offsetHeight - vh * 1.05)) / (vh * .85)));
+    const c = DARK.map((v, i) => Math.round(lerp(v, LIGHT[i], t)));
+    root.style.setProperty('--ground', `rgb(${c})`);
+    const onLight = t > .5 && y < $('footer').offsetTop - 60;
+    nav.classList.toggle('on-light', onLight); nav.classList.toggle('solid', y > 40);
+    return t;
+  }
+
+  function resize(){
+    const w = innerWidth, h = innerHeight; renderer.setPixelRatio(Math.min(devicePixelRatio || 1, narrow() ? 1.5 : 2)); renderer.setSize(w, h, false);
+    camera.aspect = w / h; camera.fov = w / h < .8 ? 40 : 30; camera.updateProjectionMatrix(); layout();
+  }
+  addEventListener('resize', resize); resize();
+  if (document.fonts) document.fonts.ready.then(layout);
+
+  let last = performance.now(), t0 = last;
+  render3D = (now) => {
+    const dt = Math.min(.05, (now - last) / 1000); last = now; const time = (now - t0) / 1000;
+    const y = scrollY, tgt = { ...stateAt(y) };
+    // the listening mode drives the noise while its section is on screen
+    const sil = $('#silence').getBoundingClientRect(), inView = clamp(1 - Math.abs(sil.top + sil.height / 2 - innerHeight / 2) / innerHeight);
+    tgt.chaos = lerp(tgt.chaos, MODES[mode].chaos, inView);
+    const k = reduced ? 1 : 1 - Math.exp(-dt * 7);
+    for (const key in D) cur[key] += (tgt[key] - cur[key]) * k;
+    tilt.x += (tiltT.x - tilt.x) * k; tilt.y += (tiltT.y - tilt.y) * k;
+    const lightT = ground(y);
+    // the footer pushes the product up with the page
+    const ft = $('footer').offsetTop - innerHeight;
+    scene.position.y = Math.max(0, y - ft) * 2 * camera.position.z * Math.tan(camera.fov * Math.PI / 360) / innerHeight;
+
+    caseG.position.set(cur.cx, cur.cy, cur.cz); caseG.rotation.set(cur.crx + tilt.x, cur.cry + tilt.y, cur.crz); caseG.scale.setScalar(Math.max(.0001, cur.cs)); caseG.visible = cur.cs > .005;
+    lidPivot.rotation.x = -cur.lid * 1.95;
+    M.led.color.setRGB(1 * cur.led + .08, .36 * cur.led + .03, .23 * cur.led + .03);
+    updateClip();
+    placeBud(budL, seatL, { seat: cur.lseat }, { x: cur.lx, y: cur.ly, z: cur.lz, rx: cur.lrx, ry: cur.lry, rz: cur.lrz, s: cur.ls * (cur.lseat > .5 ? cur.cs : 1) });
+    placeBud(budR, seatR, { seat: cur.rseat }, { x: cur.rx, y: cur.ry, z: cur.rz, rx: cur.rrx, ry: cur.rry, rz: cur.rrz, s: cur.rs * (cur.rseat > .5 ? cur.cs : 1) });
+    // teardown
+    const ex = cur.ex;
+    for (const b of [budL, budR]) for (const kk in b.userData.parts) { const p = b.userData.parts[kk]; const e = b === budR ? ex : 0; p.holder.position.copy(p.base).addScaledVector(p.dir, e); }
+    const insideR = $('#inside').getBoundingClientRect(); const vis = insideR.top < innerHeight * .5 && insideR.bottom > innerHeight * .5 ? 1 : 0;
+    updateCallouts(ex, vis);
+    updateChapters();
+    // pedestal and shadow
+    ped.position.set(cur.cx, cur.ped - 3, 0); ped.visible = cur.ped > -8;
+    shadow.position.set(cur.cx, cur.cy - CH / 2 * cur.cs - .02, cur.cz); shadow.scale.set(CW * cur.cs * 1.15, CD * cur.cs * 1.9, 1); shadow.material.opacity = cur.sh * .7 * lightT;
+    // noise specks
+    const a = pgeo.attributes.position.array, ch = cur.chaos;
+    for (let i = 0; i < N; i++) { const s = i * 4, ph = seed[s + 3]; a[i * 3] = seed[s] + Math.sin(time * (.3 + ch * 18) + ph * 7) * (.03 + ch * .14) + Math.sin(time * .12 + ph) * .3; a[i * 3 + 1] = seed[s + 1] + Math.cos(time * (.25 + ch * 21) + ph * 5) * (.03 + ch * .14) + Math.sin(time * .09 + ph * 2) * .25; a[i * 3 + 2] = seed[s + 2]; }
+    pgeo.attributes.position.needsUpdate = true;
+    pmat.opacity = .5 * cur.dots * (1 - lightT); points.visible = pmat.opacity > .01;
+    renderer.render(scene, camera);
+  };
+  setFinish3D(FINISHES[0]);
+} catch (err) { console.warn('3D unavailable', err); THREE = null; }
+if (!THREE) $('#nogl').style.display = 'block';
+
+/* ---------- nav state ---------- */
+const navLinks = $$('.links a');
+function navState(){
+  let on = ''; ['open', 'inside', 'silence', 'battery', 'finishes', 'specs'].forEach(id => { if ($('#' + id).getBoundingClientRect().top < innerHeight * .5) on = id; });
+  navLinks.forEach(a => a.classList.toggle('on', a.getAttribute('href') === '#' + on));
+}
+function frame(now){ render3D(now); drawWave(now); navState(); requestAnimationFrame(frame); }
+requestAnimationFrame(frame);
+chooseFinish(0);
+</script>
+</body>
+</html>

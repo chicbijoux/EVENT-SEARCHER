@@ -90,7 +90,7 @@ h2{font-size:clamp(34px,5vw,72px)}
 @keyframes fade{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
 
 /* ---------- the walk ---------- */
-.walk{position:relative;height:620vh;background:var(--night)}
+.walk{position:relative;height:880vh;background:var(--night)}
 .walk .stage{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden;background:var(--night)}
 #walk-cv{position:absolute;inset:0;width:100%;height:100%}
 .walk-still{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0}
@@ -98,14 +98,27 @@ h2{font-size:clamp(34px,5vw,72px)}
 .room{position:absolute;left:var(--gut);bottom:max(36px,env(safe-area-inset-bottom));color:var(--snow);max-width:30ch;opacity:0;transform:translateY(14px);transition:opacity .5s var(--ease),transform .5s var(--ease)}
 .room.on{opacity:1;transform:none}
 .room .label{color:rgba(244,241,234,.75)}
-.room h3{font-size:clamp(30px,4vw,52px);margin:8px 0 10px}
+.room h3{font-size:clamp(36px,5.4vw,84px);font-weight:800;font-stretch:125%;line-height:.9;margin:10px 0 12px}
 .room p{font-size:16px;color:rgba(244,241,234,.85);line-height:1.5}
 .back{position:absolute;right:var(--gut);top:84px;display:inline-flex;align-items:center;gap:8px;height:36px;padding:0 14px;border-radius:18px;background:rgba(13,22,34,.45);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);color:var(--snow);font-size:13px;transition:background-color .2s}
 .back:hover{background:rgba(13,22,34,.7)}
 .back svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.6}
+.index{position:absolute;right:var(--gut);top:50%;transform:translateY(-50%);list-style:none;padding:0;display:grid;gap:4px;color:var(--snow);transition:opacity .4s}
+.index a{display:grid;grid-template-columns:28px auto;align-items:center;gap:10px;padding:6px 0;font-size:14px;opacity:.5;transition:opacity .3s}
+.index a span{font-family:var(--mono);font-size:11px;position:relative}
+.index a span::before{content:"";position:absolute;right:calc(100% + 8px);top:50%;width:0;height:1px;background:var(--snow);transition:width .4s var(--ease)}
+.index a.on{opacity:1}
+.index a.on span::before{width:22px}
+.index a:hover{opacity:.85}
+.walk-bar{position:absolute;left:0;right:0;bottom:0;height:2px;background:rgba(244,241,234,.15)}
+.walk-bar b{display:block;height:100%;background:var(--snow);transform-origin:0 50%;transform:scaleX(0)}
+.tag{position:absolute;display:flex;align-items:center;gap:8px;color:var(--snow);font-size:13px;opacity:0;transition:opacity .35s;pointer-events:none;white-space:nowrap}
+.tag i{width:10px;height:10px;border-radius:50%;background:var(--snow);box-shadow:0 0 0 5px rgba(244,241,234,.25)}
+.tag span{background:rgba(13,22,34,.55);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);padding:5px 10px;border-radius:14px}
 .steps{position:absolute;right:var(--gut);bottom:max(40px,env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:8px}
 .steps i{display:block;width:6px;height:6px;border-radius:3px;background:rgba(244,241,234,.35);transition:height .3s var(--ease),background-color .3s}
 .steps i.on{height:22px;background:var(--snow)}
+@media (min-width:861px){.steps{display:none}}
 /* the laptop screen that opens into the case study */
 .screen{position:absolute;overflow:hidden;opacity:0;border-radius:3px;background:#0b0f14;will-change:left,top,width,height}
 .screen img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:62% 50%}
@@ -258,6 +271,7 @@ footer{background:var(--night);color:rgba(244,241,234,.7);font-size:14px;padding
   .screen img{object-position:66% 50%}
   .case-hero .wrap{display:flex;flex-direction:column;justify-content:flex-end;min-height:100svh;padding:110px 0 calc(16vw + 56px)}
   .room{right:72px}
+  .index{display:none}
   .back{top:76px}
   .env-pics{max-width:440px}
 }
@@ -315,11 +329,11 @@ footer{background:var(--night);color:rgba(244,241,234,.7);font-size:14px;padding
     <canvas id="walk-cv" aria-hidden="true"></canvas>
     <div class="vign"></div>
     <a class="back" href="#top"><svg viewBox="0 0 16 16"><path d="M8 13V3M3.5 7.5L8 3l4.5 4.5"/></svg>Back to the pond</a>
-    <div class="room" data-r="0"><span class="label">01 · The porch</span><h3>Come in.</h3><p>A larch deck, a lantern and a door as tall as two people.</p></div>
-    <div class="room" data-r="1"><span class="label">02 · The hearth</span><h3>Warm first.</h3><p>A limestone fireplace under oak trusses, eight metres up.</p></div>
-    <div class="room" data-r="2"><span class="label">03 · The long window</span><h3>Then the view.</h3><p>One pane of glass, the height of the house, faces the ridge.</p></div>
-    <div class="room" data-r="3"><span class="label">04 · The study</span><h3>Look closer.</h3><p>The house has its own story. Keep scrolling.</p></div>
-    <div class="steps" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="rooms" id="rooms"></div>
+    <ol class="index" id="index" aria-label="Rooms"></ol>
+    <div class="tags" id="tags"></div>
+    <div class="steps" id="steps" aria-hidden="true"></div>
+    <div class="walk-bar" aria-hidden="true"><b id="walk-bar"></b></div>
     <div class="screen" id="screen" aria-hidden="true"><img src="media/summer.webp" alt=""><div class="shade" id="screen-shade"></div><div class="mini" id="mini">CASA<br>MĂGURA</div></div>
   </div>
 </section>
@@ -494,7 +508,27 @@ const rip = $('#ripple-t');
 if (!reduced) { let t0 = performance.now(); const ripple = now => { const t = (now - t0) / 1000; rip.setAttribute('baseFrequency', `${(.004 + Math.sin(t * .4) * .0008).toFixed(5)} ${(.09 + Math.sin(t * .7) * .012).toFixed(4)}`); requestAnimationFrame(ripple); }; requestAnimationFrame(ripple); }
 
 /* ---------- the walk: scroll-scrubbed frames, or two stills until the video is in ---------- */
-const walkSec = $('#walk'), stage = $('#stage'), cv = $('#walk-cv'), rooms = $$('.room'), stepEls = $$('.steps i');
+// The rooms of the walk. "at" is where each room starts, as a fraction of the video.
+let ROOMS = [
+  { at: 0,    name: 'The porch',       text: 'A larch deck, a lantern and an oak door as tall as two people.' },
+  { at: .25,  name: 'The hearth',      text: 'A limestone fireplace under oak trusses, eight metres up.' },
+  { at: .5,   name: 'The long window', text: 'One pane of glass, the height of the house, faces the ridge.' },
+  { at: .75,  name: 'The study',       text: 'The house has its own story. Keep scrolling.' },
+];
+// Labels pinned to things in the video: shown between "from" and "to" (fractions of the video), at u, v (fractions of the frame).
+let TAGS = [];
+const walkSec = $('#walk'), stage = $('#stage'), cv = $('#walk-cv');
+let rooms = [], stepEls = [], idxEls = [], tagEls = [];
+function buildRooms(){
+  const n = ROOMS.length, pad = i => String(i + 1).padStart(2, '0');
+  $('#rooms').innerHTML = ROOMS.map((r, i) => `<div class="room"><span class="label">${pad(i)} / ${pad(n - 1)}</span><h3>${r.name.toUpperCase()}</h3><p>${r.text}</p></div>`).join('');
+  $('#index').innerHTML = ROOMS.map((r, i) => `<li><a href="#walk" data-i="${i}"><span>${pad(i)}</span>${r.name}</a></li>`).join('');
+  $('#steps').innerHTML = ROOMS.map(() => '<i></i>').join('');
+  $('#tags').innerHTML = TAGS.map(t => `<div class="tag"><i></i><span>${t.t}</span></div>`).join('');
+  rooms = $$('.room'); stepEls = $$('#steps i'); idxEls = $$('#index a'); tagEls = $$('.tag');
+  idxEls.forEach(a => a.addEventListener('click', e => { e.preventDefault(); const span = walkSec.offsetHeight - vh; scrollTo({ top: walkSec.offsetTop + span * WALK_END * (ROOMS[+a.dataset.i].at + .02), behavior: reduced ? 'auto' : 'smooth' }); }));
+}
+buildRooms();
 const stillA = $('#still-a'), stillB = $('#still-b'), screen = $('#screen'), mini = $('#mini');
 const film = { on: false, n: 0, imgs: [], ctx: null, last: -1, crop: 1 };
 function sizeCv(){ const d = Math.min(devicePixelRatio || 1, 2); cv.width = Math.round(cv.clientWidth * d); cv.height = Math.round(cv.clientHeight * d); film.last = -1; }
@@ -531,9 +565,13 @@ function applyWalk(){
   const fp = clamp(p / WALK_END);
   if (film.on) drawFilm(fp);
   else { const k = clamp((fp - .35) / .4); stillA.style.opacity = 1 - k; stillB.style.opacity = k; stillA.style.transform = `scale(${1 + fp * .25})`; stillB.style.transform = `scale(${1.2 - k * .2})`; }
-  const ri = Math.min(3, Math.floor(fp * 4 - .0001));
-  rooms.forEach((el, i) => el.classList.toggle('on', i === ri && p < WALK_END + .02 && r.top < vh * .5));
-  stepEls.forEach((el, i) => el.classList.toggle('on', i === ri));
+  let ri = 0; ROOMS.forEach((room, i) => { if (fp >= room.at) ri = i; });
+  const inView = r.top < vh * .5 && r.bottom > vh * .5;
+  rooms.forEach((el, i) => el.classList.toggle('on', i === ri && p < WALK_END + .02 && inView));
+  stepEls.forEach((el, i) => el.classList.toggle('on', i === ri)); idxEls.forEach((el, i) => el.classList.toggle('on', i === ri));
+  $('#index').style.opacity = p < WALK_END ? 1 : 0;
+  $('#walk-bar').style.transform = `scaleX(${fp.toFixed(4)})`;
+  TAGS.forEach((t, i) => { const on = fp >= t.from && fp <= t.to && inView; const el = tagEls[i]; if (!el) return; el.style.opacity = on ? 1 : 0; if (on) { const q = frameRect({ u0: t.u, v0: t.v, u1: t.u, v1: t.v }); const fits = q.x > 12 && q.x < stage.clientWidth - 180; el.style.opacity = fits ? 1 : 0; el.style.left = (q.x - 5) + 'px'; el.style.top = (q.y - 5) + 'px'; } });
   // the laptop screen lights up, then opens to fill the page
   const glow = clamp((p - (WALK_END - .04)) / .04), grow = ease(clamp((p - WALK_END) / (1 - WALK_END)));
   const a = frameRect(LAPTOP), W = stage.clientWidth, H = stage.clientHeight;
@@ -543,7 +581,7 @@ function applyWalk(){
   screen.style.borderRadius = lerp(3, 0, grow) + 'px';
   mini.style.opacity = (1 - grow).toFixed(3); $('#screen-shade').style.opacity = grow.toFixed(3); mini.style.fontSize = Math.max(6, a.h * .14) + 'px';
 }
-(async () => { try { const r = await fetch('media/media.json', { cache: 'no-cache' }); if (!r.ok) throw 0; const m = await r.json(); if (m.walk && m.walk.count > 1) startFilm(m.walk); } catch (e) { stillA.style.opacity = 1; } })();
+(async () => { try { const r = await fetch('media/media.json', { cache: 'no-cache' }); if (!r.ok) throw 0; const m = await r.json(); if (m.walk && m.walk.count > 1) { if (m.walk.rooms) ROOMS = m.walk.rooms; if (m.walk.tags) TAGS = m.walk.tags; buildRooms(); startFilm(m.walk); } } catch (e) { stillA.style.opacity = 1; } })();
 
 /* ---------- nav colour follows the section under it ---------- */
 const nav = $('#nav'), toned = $$('[data-tone]');

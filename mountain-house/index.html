@@ -1,0 +1,663 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Casa Măgura — A mountain house above the pond</title>
+<meta name="description" content="A private mountain house for eight in Măgura, Brașov County, facing the Piatra Craiului ridge. Walk through it, then book your dates.">
+<meta name="theme-color" content="#0d1622">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=Instrument+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Direction
+   Product: a private mountain house for rent in Măgura, a village in the Carpathians near Bran.
+   Character: quiet, crafted, a little proud of its place.
+   World: blue-hour pond, larch shingles, grey limestone, red-and-black woven wool.
+   Moment: you walk in through the front door, down the hall to the study, and the laptop on the desk opens the house's own case study.
+   Signature: the name written across the sky and mirrored in the pond. */
+:root{
+  --night:#0d1622; --night-2:#16212f;
+  --paper:#f1ece3; --paper-2:#e7e0d4;
+  --ink:#1b1915; --ink-2:#5b554b; --ink-3:#8c8578;
+  --snow:#f4f1ea; --snow-2:#b9c0c8;
+  --larch:#7b5d45; --larch-2:#a07f63;
+  --wool:#b33a2b;
+  --hair:rgba(27,25,21,.14); --hair-d:rgba(244,241,234,.16);
+  --display:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --sans:"Instrument Sans","Helvetica Neue",Arial,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  --ease:cubic-bezier(.2,.7,.2,1);
+  --gut:clamp(20px,4vw,56px);
+  color-scheme:light;
+}
+*{box-sizing:border-box;margin:0}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+img{display:block;max-width:100%}
+button,input,select{font:inherit;color:inherit}
+button{background:none;border:0;cursor:pointer;padding:0}
+a{color:inherit;text-decoration:none}
+:focus-visible{outline:2px solid var(--wool);outline-offset:3px;border-radius:4px}
+.wrap{width:calc(100% - var(--gut) * 2);max-width:1280px;margin-inline:auto}
+h1,h2,h3{font-family:var(--display);font-weight:700;font-stretch:118%;letter-spacing:-.01em;line-height:1;text-wrap:balance}
+h2{font-size:clamp(34px,5vw,72px)}
+.label{font-family:var(--mono);font-size:12px;letter-spacing:.02em;color:var(--ink-2);font-variant-numeric:tabular-nums}
+.lede{font-size:clamp(17px,1.35vw,20px);line-height:1.55;color:var(--ink-2);max-width:40ch}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;height:50px;padding:0 24px;border-radius:25px;font-weight:500;font-size:15px;transition:background-color .25s,color .25s,transform .15s}
+.btn:active{transform:scale(.97)}
+.btn.light{background:var(--snow);color:var(--night)}
+.btn.light:hover{background:#fff}
+.btn.dark{background:var(--ink);color:var(--paper)}
+.btn.dark:hover{background:#000}
+.btn.ghost{box-shadow:inset 0 0 0 1px rgba(244,241,234,.5);color:var(--snow)}
+.btn.ghost:hover{background:rgba(244,241,234,.12)}
+.btn svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.6}
+.shot{width:100%;height:100%;object-fit:cover}
+
+/* ---------- nav ---------- */
+.nav{position:fixed;inset:0 0 auto;z-index:30;display:flex;align-items:center;justify-content:space-between;gap:20px;padding:14px var(--gut);padding-top:max(14px,env(safe-area-inset-top));color:var(--snow);transition:color .35s,background-color .35s,box-shadow .35s}
+.nav.solid{background:rgba(13,22,34,.55);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+.nav.paper{color:var(--ink)}
+.nav.paper.solid{background:rgba(241,236,227,.82);box-shadow:0 1px 0 var(--hair)}
+.brand{display:flex;align-items:center;gap:10px}
+.brand svg{width:28px;height:28px}
+.brand b{font-family:var(--display);font-weight:700;font-stretch:125%;font-size:15px;letter-spacing:.06em}
+.nav-links{display:flex;gap:28px;font-size:14px}
+.nav-links a{opacity:.75;transition:opacity .2s}
+.nav-links a:hover{opacity:1}
+.nav .btn{height:40px;padding:0 18px;font-size:14px}
+.nav .btn.book{background:currentColor}
+.nav .btn.book span{color:var(--night)}
+.nav.paper .btn.book span{color:var(--paper)}
+
+/* ---------- hero: the name across the sky, mirrored in the pond ---------- */
+.hero{position:relative;height:100vh;height:100svh;min-height:560px;overflow:hidden;background:var(--night);color:var(--snow)}
+.hero .bg{position:absolute;inset:0}
+.hero .bg img{width:100%;height:100%;object-fit:cover;object-position:50% 50%;transform:scale(1.06);animation:settle 2.4s var(--ease) forwards}
+@keyframes settle{to{transform:none}}
+.word{position:absolute;left:0;right:0;width:max-content;margin-inline:auto;text-align:center;font-family:var(--display);font-weight:800;font-stretch:125%;line-height:.8;letter-spacing:-.02em;white-space:nowrap;pointer-events:none;user-select:none}
+.word.top{top:var(--sky,20%);color:var(--snow)}
+.word.top span{display:inline-block;opacity:0;transform:translateY(40%);animation:rise 1.1s var(--ease) forwards;animation-delay:calc(.25s + var(--i) * .06s)}
+@keyframes rise{to{opacity:1;transform:none}}
+.word.mirror{top:var(--water,58%);color:var(--snow);transform:scaleY(-1);transform-origin:50% 50%;opacity:.28;filter:url(#ripple) blur(.6px);-webkit-mask-image:linear-gradient(to bottom,transparent 5%,#000 100%);mask-image:linear-gradient(to bottom,transparent 5%,#000 100%);mix-blend-mode:screen}
+.hero .shade{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(13,22,34,.55),rgba(13,22,34,0) 30%,rgba(13,22,34,0) 62%,rgba(13,22,34,.7))}
+.hero-foot{position:absolute;left:0;right:0;bottom:0;padding:0 var(--gut) max(28px,env(safe-area-inset-bottom));display:flex;justify-content:space-between;align-items:flex-end;gap:24px}
+.hero-foot p{max-width:34ch;font-size:17px;line-height:1.5;color:rgba(244,241,234,.86)}
+.hero-foot .label{color:rgba(244,241,234,.7);display:block;margin-bottom:8px}
+.hero-foot .acts{display:flex;gap:10px;flex-wrap:wrap}
+.fade{opacity:0;animation:fade 1s var(--ease) forwards;animation-delay:var(--d,.8s)}
+@keyframes fade{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+
+/* ---------- the walk ---------- */
+.walk{position:relative;height:620vh;background:var(--night)}
+.walk .stage{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden;background:var(--night)}
+#walk-cv{position:absolute;inset:0;width:100%;height:100%}
+.walk-still{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0}
+.walk .vign{position:absolute;inset:0;background:linear-gradient(to top,rgba(10,14,20,.6),rgba(10,14,20,0) 38%);pointer-events:none}
+.room{position:absolute;left:var(--gut);bottom:max(36px,env(safe-area-inset-bottom));color:var(--snow);max-width:30ch;opacity:0;transform:translateY(14px);transition:opacity .5s var(--ease),transform .5s var(--ease)}
+.room.on{opacity:1;transform:none}
+.room .label{color:rgba(244,241,234,.75)}
+.room h3{font-size:clamp(30px,4vw,52px);margin:8px 0 10px}
+.room p{font-size:16px;color:rgba(244,241,234,.85);line-height:1.5}
+.back{position:absolute;right:var(--gut);top:84px;display:inline-flex;align-items:center;gap:8px;height:36px;padding:0 14px;border-radius:18px;background:rgba(13,22,34,.45);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);color:var(--snow);font-size:13px;transition:background-color .2s}
+.back:hover{background:rgba(13,22,34,.7)}
+.back svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.6}
+.steps{position:absolute;right:var(--gut);bottom:max(40px,env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:8px}
+.steps i{display:block;width:6px;height:6px;border-radius:3px;background:rgba(244,241,234,.35);transition:height .3s var(--ease),background-color .3s}
+.steps i.on{height:22px;background:var(--snow)}
+/* the laptop screen that opens into the case study */
+.screen{position:absolute;overflow:hidden;opacity:0;border-radius:3px;background:#0b0f14;will-change:left,top,width,height}
+.screen img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.screen .mini{position:absolute;left:6%;bottom:9%;color:var(--snow);font-family:var(--display);font-weight:800;font-stretch:125%;line-height:.9;font-size:10px;transform-origin:0 100%}
+
+/* ---------- case study ---------- */
+.case-hero{position:relative;min-height:100vh;min-height:100svh;color:var(--snow);background:var(--night);overflow:hidden}
+.case-hero > img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:62% 50%}
+.case-hero .shade{position:absolute;inset:0;background:linear-gradient(100deg,rgba(13,22,34,.78) 0%,rgba(13,22,34,.35) 45%,rgba(13,22,34,0) 70%),linear-gradient(to top,rgba(13,22,34,.55),rgba(13,22,34,0) 40%)}
+.case-hero .wrap{position:relative;padding:max(120px,18vh) 0 140px}
+.case-hero .label{color:rgba(244,241,234,.75)}
+.case-hero h1{font-size:clamp(52px,9vw,148px);font-weight:800;font-stretch:125%;line-height:.86;margin:14px 0 24px}
+.case-hero p.lede{color:rgba(244,241,234,.88)}
+.facts{display:flex;flex-wrap:wrap;gap:12px 40px;margin-top:40px}
+.facts div{display:grid}
+.facts b{font-family:var(--display);font-weight:700;font-stretch:118%;font-size:clamp(28px,3vw,40px);line-height:1.05;font-variant-numeric:tabular-nums}
+.facts span{font-size:13px;color:rgba(244,241,234,.75)}
+
+/* diagonal panels, as on an architect's presentation board */
+.slant{position:relative;margin-top:-12vw;clip-path:polygon(0 12vw,100% 0,100% 100%,0 100%);padding-top:calc(12vw + 72px)}
+.slant.rev{clip-path:polygon(0 0,100% 12vw,100% 100%,0 100%)}
+.sec{padding-bottom:clamp(80px,10vw,140px)}
+.sec-head{display:flex;align-items:baseline;gap:16px;margin-bottom:28px}
+.sec-head .n{font-family:var(--mono);font-size:13px;color:var(--ink-3)}
+.paper-bg{background:var(--paper)}
+.larch-bg{background:var(--larch);color:var(--snow)}
+.larch-bg .label,.larch-bg .sec-head .n{color:rgba(244,241,234,.7)}
+.larch-bg .lede{color:rgba(244,241,234,.88)}
+.night-bg{background:var(--night);color:var(--snow)}
+.night-bg .label,.night-bg .sec-head .n{color:rgba(244,241,234,.65)}
+.night-bg .lede{color:rgba(244,241,234,.82)}
+
+/* analysis */
+.analysis{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:clamp(32px,5vw,80px);align-items:center}
+.map{width:100%;height:auto;aspect-ratio:4/3}
+.map path.c{fill:none;stroke:var(--ink-3);stroke-width:.8;opacity:.55}
+.map path.c.idx{stroke:var(--ink-2);stroke-width:1.2;opacity:.9}
+.map .pond{fill:#c9d3d6;stroke:var(--ink-3);stroke-width:.8}
+.map .road{fill:none;stroke:var(--ink-2);stroke-width:1.2;stroke-dasharray:5 4}
+.map text{font-family:var(--mono);font-size:11px;fill:var(--ink-2)}
+.map .here{fill:var(--wool)}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-top:1px solid var(--hair);margin-top:40px}
+.stats div{padding:18px 16px 0 0}
+.stats b{display:block;white-space:nowrap;font-family:var(--display);font-weight:700;font-stretch:118%;font-size:clamp(26px,2.6vw,36px);line-height:1.1;font-variant-numeric:tabular-nums}
+.stats span{font-size:13px;color:var(--ink-2)}
+
+/* idea */
+.idea{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:clamp(32px,5vw,80px);align-items:center}
+.idea h2{font-size:clamp(32px,4.4vw,64px);font-stretch:112%;font-weight:600;line-height:1.04;margin-bottom:24px}
+.idea figure{aspect-ratio:4/5;overflow:hidden;border-radius:4px}
+
+/* function */
+.func{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:clamp(32px,5vw,80px);align-items:center}
+#axo{width:100%;height:auto}
+#axo .ln{fill:none;stroke:var(--ink);stroke-width:1.2;stroke-linejoin:round;stroke-linecap:round}
+#axo .thin{stroke-width:.7;stroke:var(--ink-2)}
+#axo .dash{stroke-dasharray:4 4;stroke:var(--ink-3)}
+#axo .band{fill:var(--wool);opacity:0;transition:opacity .35s}
+#axo .band.on{opacity:.16}
+#axo text{font-family:var(--mono);font-size:11px;fill:var(--ink-2)}
+.draw .ln{stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset 1.6s var(--ease)}
+.draw.in .ln{stroke-dashoffset:0}
+.draw .dash{stroke-dasharray:none}
+.floors{display:grid;border-top:1px solid var(--hair)}
+.floor{display:grid;grid-template-columns:36px minmax(0,1fr);gap:4px 12px;text-align:left;padding:18px 0;border-bottom:1px solid var(--hair);transition:background-color .2s}
+.floor .n{font-family:var(--mono);font-size:12px;color:var(--ink-3);padding-top:5px}
+.floor b{font-family:var(--display);font-stretch:112%;font-weight:600;font-size:22px;line-height:1.2}
+.floor p{grid-column:2;font-size:15px;color:var(--ink-2);line-height:1.5}
+.floor[aria-pressed=true] b{color:var(--wool)}
+.floor:hover b{color:var(--wool)}
+
+/* interior */
+.rail-head{display:flex;justify-content:space-between;align-items:end;gap:20px;margin-bottom:28px}
+.arrows{display:flex;gap:8px}
+.arrows button{width:44px;height:44px;border-radius:22px;display:grid;place-items:center;box-shadow:inset 0 0 0 1px var(--hair-d);transition:background-color .2s}
+.arrows button:hover{background:rgba(244,241,234,.1)}
+.arrows svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.6}
+.rail{display:grid;grid-auto-flow:column;grid-auto-columns:min(78vw,520px);gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;padding:0 var(--gut) 8px;scrollbar-width:none;scroll-padding-inline:var(--gut)}
+.rail::-webkit-scrollbar{display:none}
+.rail figure{scroll-snap-align:start}
+.rail .ph{aspect-ratio:4/5;overflow:hidden;border-radius:4px;background:var(--night-2)}
+.rail figcaption{margin-top:14px}
+.rail figcaption b{display:block;font-family:var(--display);font-stretch:112%;font-weight:600;font-size:20px}
+.rail figcaption span{font-size:14px;color:rgba(244,241,234,.72)}
+
+/* environment */
+.env{display:grid;grid-template-columns:minmax(0,6fr) minmax(0,6fr);gap:clamp(32px,5vw,80px);align-items:center}
+.env ol{list-style:none;padding:0;margin-top:32px;border-top:1px solid var(--hair)}
+.env li{display:grid;grid-template-columns:36px minmax(0,1fr);gap:2px 12px;padding:16px 0;border-bottom:1px solid var(--hair)}
+.env li .n{font-family:var(--mono);font-size:12px;color:var(--ink-3);padding-top:4px}
+.env li b{font-weight:600;font-size:17px}
+.env li p{grid-column:2;font-size:15px;color:var(--ink-2);line-height:1.5}
+.env-pics{position:relative;aspect-ratio:1/1}
+.env-pics .sq{position:absolute;left:0;top:0;width:72%;aspect-ratio:4/5;overflow:hidden;border-radius:4px}
+.env-pics .circle{position:absolute;right:0;bottom:0;width:58%;aspect-ratio:1;border-radius:50%;overflow:hidden;box-shadow:0 0 0 8px var(--paper)}
+
+/* stay */
+.stay{position:relative;color:var(--snow);background:var(--night);overflow:hidden}
+.stay > img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.stay .shade{position:absolute;inset:0;background:linear-gradient(to right,rgba(13,22,34,.85),rgba(13,22,34,.45) 55%,rgba(13,22,34,.2))}
+.stay .wrap{position:relative;display:grid;grid-template-columns:minmax(0,6fr) minmax(0,5fr);gap:clamp(32px,5vw,80px);align-items:center;padding:clamp(110px,14vw,180px) 0}
+.stay h2{margin:12px 0 20px}
+.stay .lede{color:rgba(244,241,234,.85)}
+.stay ul{list-style:none;padding:0;margin-top:28px;display:grid;gap:8px;font-size:15px;color:rgba(244,241,234,.85)}
+.stay ul li::before{content:"";display:inline-block;width:6px;height:6px;border-radius:3px;background:var(--wool);margin-right:12px;vertical-align:2px}
+.card{background:var(--paper);color:var(--ink);border-radius:16px;padding:24px;box-shadow:0 30px 80px -30px rgba(0,0,0,.6)}
+.card .price{display:flex;align-items:baseline;gap:8px;margin-bottom:18px}
+.card .price b{font-family:var(--display);font-weight:700;font-stretch:118%;font-size:30px;font-variant-numeric:tabular-nums}
+.card .price span{color:var(--ink-2);font-size:14px}
+.fields{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--hair);border-radius:12px;overflow:hidden}
+.fields label{display:grid;gap:2px;padding:10px 14px;font-size:12px;color:var(--ink-2)}
+.fields label + label{border-left:1px solid var(--hair)}
+.fields .full{grid-column:1/-1;border-left:0!important;border-top:1px solid var(--hair)}
+.fields input,.fields select{border:0;background:none;padding:0;font-size:15px;color:var(--ink);outline:none;min-width:0;width:100%}
+.sum{margin:16px 0;display:grid;gap:6px;font-size:14px;color:var(--ink-2)}
+.sum div{display:flex;justify-content:space-between}
+.sum .tot{color:var(--ink);font-weight:600;font-size:16px;padding-top:8px;border-top:1px solid var(--hair)}
+.card .btn{width:100%}
+.card .err{font-size:13px;color:var(--wool);min-height:18px;margin-top:8px}
+.card small{display:block;text-align:center;font-size:12px;color:var(--ink-3);margin-top:8px}
+
+/* footer */
+footer{background:var(--night);color:rgba(244,241,234,.7);font-size:14px;padding:64px 0 max(32px,env(safe-area-inset-bottom))}
+.foot{display:flex;justify-content:space-between;gap:32px;flex-wrap:wrap;padding-bottom:36px;border-bottom:1px solid var(--hair-d)}
+.foot .brand{color:var(--snow);margin-bottom:12px}
+.foot h4{color:var(--snow);font-weight:500;font-size:14px;margin-bottom:10px}
+.foot a{display:block;padding:2px 0}
+.foot a:hover{color:var(--snow)}
+.legal{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;padding-top:20px;font-size:13px;color:rgba(244,241,234,.5)}
+.toast{position:fixed;left:50%;bottom:max(24px,env(safe-area-inset-bottom));z-index:60;transform:translate(-50%,20px);opacity:0;background:var(--ink);color:var(--paper);padding:12px 20px;border-radius:24px;font-size:14px;transition:opacity .3s,transform .3s var(--ease);pointer-events:none;max-width:90vw;text-align:center}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .9s var(--ease),transform .9s var(--ease)}
+.reveal.in{opacity:1;transform:none}
+
+/* ---------- phones ---------- */
+@media (max-width:860px){
+  .nav-links{display:none}
+  .hero-foot{flex-direction:column;align-items:stretch;gap:14px}
+  .hero-foot p{display:none}
+  .hero-foot .label{margin:0}
+  .hero-foot .acts .btn{flex:1}
+  .analysis,.idea,.func,.env,.stay .wrap{grid-template-columns:minmax(0,1fr)}
+  .idea figure{aspect-ratio:4/3}
+  .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .slant{margin-top:-16vw;clip-path:polygon(0 16vw,100% 0,100% 100%,0 100%);padding-top:calc(16vw + 48px)}
+  .slant.rev{clip-path:polygon(0 0,100% 16vw,100% 100%,0 100%)}
+  .case-hero > img{object-position:66% 50%}
+  .case-hero .shade{background:linear-gradient(to top,rgba(13,22,34,.85) 0%,rgba(13,22,34,.45) 45%,rgba(13,22,34,.25) 100%)}
+  .case-hero .wrap{display:flex;flex-direction:column;justify-content:flex-end;min-height:100svh;padding:110px 0 calc(16vw + 56px)}
+  .room{right:72px}
+  .back{top:76px}
+  .env-pics{max-width:440px}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .fade,.word.top span,.hero .bg img{animation:none;opacity:1;transform:none}
+  .reveal{opacity:1;transform:none;transition:none}
+  .draw .ln{stroke-dashoffset:0;transition:none}
+}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <filter id="ripple" x="-5%" y="-20%" width="110%" height="140%">
+      <feTurbulence id="ripple-t" type="fractalNoise" baseFrequency="0.004 0.09" numOctaves="2" seed="3" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="14" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+  </defs>
+  <symbol id="mark" viewBox="0 0 256 256">
+    <title>Măgura</title>
+    <!-- A gable roof standing on the waterline, and its reflection breaking into ripples -->
+    <path d="M128 24L224 120H32z"/>
+    <rect x="32" y="136" width="192" height="16"/>
+    <rect x="64" y="168" width="128" height="16"/>
+    <rect x="96" y="200" width="64" height="16"/>
+  </symbol>
+</svg>
+
+<header class="nav" id="nav">
+  <a class="brand" href="#top" aria-label="Casa Măgura, back to the top"><svg fill="currentColor" aria-hidden="true"><use href="#mark"/></svg><b>MĂGURA</b></a>
+  <nav class="nav-links" aria-label="Main"><a href="#walk">The walk</a><a href="#house">The house</a><a href="#interior">Inside</a><a href="#stay">Stay</a></nav>
+  <a class="btn book" href="#stay"><span>Book</span></a>
+</header>
+
+<main id="top">
+<!-- ================= HERO ================= -->
+<section class="hero" id="hero" data-tone="night">
+  <div class="bg"><img src="media/hero.webp" alt="The house at blue hour, its lit windows mirrored in the pond below, the Piatra Craiului ridge behind" fetchpriority="high"></div>
+  <div class="shade"></div>
+  <div class="word top" id="word" aria-hidden="true"></div>
+  <div class="word mirror" id="word-m" aria-hidden="true"></div>
+  <h1 class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Casa Măgura, a mountain house in Măgura, Romania</h1>
+  <div class="hero-foot">
+    <div class="fade" style="--d:.9s"><span class="label">Măgura · Brașov County · 1,040 m</span><p>A house for eight above a still pond, facing the Piatra Craiului ridge.</p></div>
+    <div class="acts fade" style="--d:1.05s"><a class="btn light" href="#walk">Walk through<svg viewBox="0 0 16 16"><path d="M8 3v10M3.5 8.5L8 13l4.5-4.5"/></svg></a><a class="btn ghost" href="#stay">Book a stay</a></div>
+  </div>
+</section>
+
+<!-- ================= THE WALK ================= -->
+<section class="walk" id="walk" data-tone="night" aria-label="A walk through the house">
+  <div class="stage" id="stage">
+    <img class="walk-still" id="still-a" src="media/door.webp" alt="">
+    <img class="walk-still" id="still-b" src="media/desk.webp" alt="">
+    <canvas id="walk-cv" aria-hidden="true"></canvas>
+    <div class="vign"></div>
+    <a class="back" href="#top"><svg viewBox="0 0 16 16"><path d="M8 13V3M3.5 7.5L8 3l4.5 4.5"/></svg>Back to the pond</a>
+    <div class="room" data-r="0"><span class="label">01 · The porch</span><h3>Come in.</h3><p>A larch deck, a lantern and a door as tall as two people.</p></div>
+    <div class="room" data-r="1"><span class="label">02 · The hearth</span><h3>Warm first.</h3><p>A limestone fireplace under oak trusses, eight metres up.</p></div>
+    <div class="room" data-r="2"><span class="label">03 · The long window</span><h3>Then the view.</h3><p>One pane of glass, the height of the house, faces the ridge.</p></div>
+    <div class="room" data-r="3"><span class="label">04 · The study</span><h3>Look closer.</h3><p>The house has its own story. Keep scrolling.</p></div>
+    <div class="steps" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="screen" id="screen" aria-hidden="true"><img src="media/summer.webp" alt=""><div class="mini" id="mini">CASA<br>MĂGURA</div></div>
+  </div>
+</section>
+
+<!-- ================= CASE STUDY ================= -->
+<section class="case-hero" id="house" data-tone="night">
+  <img src="media/summer.webp" alt="The house in early summer on a hay meadow, haystacks in the foreground, fir forest and the ridge behind">
+  <div class="shade"></div>
+  <div class="wrap">
+    <span class="label">The house · Măgura, Romania</span>
+    <h1>CASA<br>MĂGURA</h1>
+    <p class="lede">A barn-shaped house of stone, larch and glass, built on a hay meadow at the edge of the village.</p>
+    <div class="facts">
+      <div><b>260 m²</b><span>Inside</span></div>
+      <div><b>4</b><span>Bedrooms</span></div>
+      <div><b>8</b><span>Guests</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="slant paper-bg sec" id="analysis" data-tone="paper">
+  <div class="wrap analysis">
+    <div>
+      <div class="sec-head"><span class="n">01</span><h2>The site</h2></div>
+      <p class="lede">A south-facing meadow on the shoulder of the hill, above the village and below the forest. The pond collects the rain from the roof.</p>
+      <div class="stats">
+        <div><b>1,040 m</b><span>Altitude</span></div>
+        <div><b>0.4 ha</b><span>Land</span></div>
+        <div><b>8 km</b><span>To Bran</span></div>
+      </div>
+    </div>
+    <svg class="map reveal" id="map" viewBox="0 0 640 480" role="img" aria-label="Contour map of the site: the house on the shoulder of the hill, the pond below it, the road to the village to the south-west"></svg>
+  </div>
+</section>
+
+<section class="slant rev larch-bg sec" id="idea" data-tone="night">
+  <div class="wrap idea">
+    <div>
+      <div class="sec-head"><span class="n">02</span><span class="label">The idea</span></div>
+      <h2>A hay barn that learned to look at the mountain.</h2>
+      <p class="lede">The steep roof, the stone base and the timber walls come from the barns of the village. The one big change is the glass gable, turned to face Piatra Craiului.</p>
+    </div>
+    <figure class="reveal"><img class="shot" src="media/detail.webp" alt="Larch shingles and dark larch boards above a base of grey limestone, the ridge behind" loading="lazy"></figure>
+  </div>
+</section>
+
+<section class="slant paper-bg sec" id="function" data-tone="paper">
+  <div class="wrap func">
+    <svg id="axo" class="draw" viewBox="-40 -150 700 700" role="img" aria-label="Axonometric drawing of the house showing its three floors"></svg>
+    <div>
+      <div class="sec-head"><span class="n">03</span><h2>Three floors</h2></div>
+      <div class="floors" role="group" aria-label="Show a floor on the drawing">
+        <button class="floor" type="button" data-f="roof" aria-pressed="false"><span class="n">+2</span><b>Under the roof</b><p>Four bedrooms, each with a window to the trees or the ridge.</p></button>
+        <button class="floor" type="button" data-f="ground" aria-pressed="true"><span class="n">+1</span><b>The hall</b><p>Hearth, long table, kitchen and the study, under one roof.</p></button>
+        <button class="floor" type="button" data-f="stone" aria-pressed="false"><span class="n">0</span><b>The stone floor</b><p>Sauna, ski room and a door straight out to the hot tub.</p></button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slant rev night-bg sec" id="interior" data-tone="night">
+  <div class="wrap rail-head">
+    <div><div class="sec-head" style="margin-bottom:0"><span class="n">04</span><h2>Inside</h2></div></div>
+    <div class="arrows"><button type="button" id="prev" aria-label="Previous room"><svg viewBox="0 0 16 16"><path d="M10 3L5 8l5 5"/></svg></button><button type="button" id="next" aria-label="Next room"><svg viewBox="0 0 16 16"><path d="M6 3l5 5-5 5"/></svg></button></div>
+  </div>
+  <div class="rail" id="rail">
+    <figure><div class="ph"><img class="shot" src="media/great.webp" alt="Double-height living room with oak trusses, a limestone fireplace and a glass gable" loading="lazy"></div><figcaption><b>The hearth</b><span>Fire, sofas and the ridge through the glass</span></figcaption></figure>
+    <figure><div class="ph"><img class="shot" src="media/kitchen.webp" alt="Long oak table with Horezu plates, a limestone island and a window to the snowy forest" loading="lazy"></div><figcaption><b>The table</b><span>Seats ten, plates from Horezu</span></figcaption></figure>
+    <figure><div class="ph"><img class="shot" src="media/bedroom.webp" alt="Bedroom under oak beams with a red-and-black woven blanket and a window to the mountains" loading="lazy"></div><figcaption><b>Under the roof</b><span>Wool blankets woven in the village</span></figcaption></figure>
+    <figure><div class="ph"><img class="shot" src="media/desk.webp" alt="Study with an oak desk in front of a large window facing the ridge" loading="lazy"></div><figcaption><b>The study</b><span>Fast internet, slow view</span></figcaption></figure>
+  </div>
+</section>
+
+<section class="slant paper-bg sec" id="environment" data-tone="paper">
+  <div class="wrap env">
+    <div>
+      <div class="sec-head"><span class="n">05</span><h2>Built from here</h2></div>
+      <p class="lede">Most of the house came from within twenty kilometres. It keeps itself warm in January.</p>
+      <ol>
+        <li><span class="n">01</span><b>Larch from the Bârsa forests</b><p>Shingles and boards left untreated to turn silver.</p></li>
+        <li><span class="n">02</span><b>Stone from the site</b><p>The limestone dug for the foundation became its walls.</p></li>
+        <li><span class="n">03</span><b>Heat pump and wood stove</b><p>Underfloor heating everywhere, a fire when you want one.</p></li>
+        <li><span class="n">04</span><b>Rain into the pond</b><p>The roof fills the pond that mirrors the house.</p></li>
+      </ol>
+    </div>
+    <div class="env-pics reveal">
+      <div class="sq"><img class="shot" src="media/detail.webp" alt="" loading="lazy" style="object-position:80% 50%"></div>
+      <div class="circle"><img class="shot" src="media/winter.webp" alt="The house in deep snow at dusk, smoke from the chimney, the frozen pond below" loading="lazy"></div>
+    </div>
+  </div>
+</section>
+
+<section class="stay" id="stay" data-tone="night">
+  <img src="media/sauna.webp" alt="A steaming cedar hot tub on a snowy terrace at night, the lit house beside it" loading="lazy">
+  <div class="shade"></div>
+  <div class="wrap">
+    <div>
+      <span class="label" style="color:rgba(244,241,234,.7)">Stay</span>
+      <h2>The whole house, just for you.</h2>
+      <p class="lede">For families and friends of up to eight. Two nights or more.</p>
+      <ul>
+        <li>Hot tub and sauna</li>
+        <li>Firewood, linen and breakfast basket included</li>
+        <li>Self check-in from 16:00</li>
+      </ul>
+    </div>
+    <form class="card" id="book" novalidate>
+      <div class="price"><b id="rate">2,400 lei</b><span>a night</span></div>
+      <div class="fields">
+        <label>Arrive<input type="date" id="in" required></label>
+        <label>Leave<input type="date" id="out" required></label>
+        <label class="full">Guests<select id="guests"></select></label>
+        <label class="full">Email<input type="email" id="email" placeholder="you@example.com" autocomplete="email" required></label>
+      </div>
+      <div class="sum" id="sum"></div>
+      <button class="btn dark" type="submit">Request these dates</button>
+      <p class="err" id="err" role="alert"></p>
+      <small>You pay nothing now. We reply within a day.</small>
+    </form>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot">
+      <div><a class="brand" href="#top"><svg fill="currentColor" aria-hidden="true"><use href="#mark"/></svg><b>MĂGURA</b></a><p style="max-width:32ch">Casa Măgura, Măgura village, Moieciu, Brașov County, Romania.</p></div>
+      <div><h4>Visit</h4><a href="#walk">The walk</a><a href="#house">The house</a><a href="#stay">Book a stay</a></div>
+      <div><h4>Contact</h4><p>stay@magura.example</p><p>+40 700 000 000</p></div>
+    </div>
+    <div class="legal"><span>Prices include VAT and tourist tax.</span><span>© 2026 Casa Măgura (demo)</span></div>
+  </div>
+</footer>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+/* =====================================================================
+   EDIT THE HOUSE HERE
+   ===================================================================== */
+const RATE = 2400, CLEANING = 350, MIN_NIGHTS = 2, MAX_GUESTS = 8, CUR = 'lei';
+// Where the laptop screen sits in the last frame of the walk video (fractions of the 16:9 frame).
+// Adjust after replacing the video. The screen grows from here to fill the page.
+const LAPTOP = { u0: .44, v0: .456, u1: .548, v1: .58 };
+
+const $ = (s, r = document) => r.querySelector(s), $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
+const lerp = (a, b, t) => a + (b - a) * t;
+const ease = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const money = n => n.toLocaleString('en-US') + ' ' + CUR;
+const toastEl = $('#toast'); let toastT;
+const toast = m => { toastEl.textContent = m; toastEl.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => toastEl.classList.remove('show'), 3200); };
+let vh = innerHeight;
+
+/* ---------- the name, written across the sky and mirrored in the pond ---------- */
+const NAME = 'MĂGURA';
+$('#word').innerHTML = [...NAME].map((c, i) => `<span style="--i:${i}">${c}</span>`).join('');
+$('#word-m').textContent = NAME;
+function fitWord(){
+  const hero = $('#hero'), w = hero.clientWidth, h = hero.clientHeight, phone = w < 860, el = $('#word');
+  // size the name so it spans the frame with a small margin, but never taller than a third of the sky
+  el.style.fontSize = '100px'; const natural = el.scrollWidth || el.getBoundingClientRect().width;
+  const size = Math.min(100 * (w * (phone ? .92 : .86)) / Math.max(1, natural), h * .26);
+  for (const e of [el, $('#word-m')]) e.style.fontSize = size + 'px';
+  hero.style.setProperty('--sky', (phone ? 13 : 15) + '%');
+  hero.style.setProperty('--water', '71%');
+}
+fitWord();
+if (document.fonts) document.fonts.ready.then(fitWord);
+// slow ripple in the reflection
+const rip = $('#ripple-t');
+if (!reduced) { let t0 = performance.now(); const ripple = now => { const t = (now - t0) / 1000; rip.setAttribute('baseFrequency', `${(.004 + Math.sin(t * .4) * .0008).toFixed(5)} ${(.09 + Math.sin(t * .7) * .012).toFixed(4)}`); requestAnimationFrame(ripple); }; requestAnimationFrame(ripple); }
+
+/* ---------- the walk: scroll-scrubbed frames, or two stills until the video is in ---------- */
+const walkSec = $('#walk'), stage = $('#stage'), cv = $('#walk-cv'), rooms = $$('.room'), stepEls = $$('.steps i');
+const stillA = $('#still-a'), stillB = $('#still-b'), screen = $('#screen'), mini = $('#mini');
+const film = { on: false, n: 0, imgs: [], ctx: null, last: -1, crop: 1 };
+function sizeCv(){ const d = Math.min(devicePixelRatio || 1, 2); cv.width = Math.round(cv.clientWidth * d); cv.height = Math.round(cv.clientHeight * d); film.last = -1; }
+function startFilm(spec){
+  const phone = innerWidth < 760 && spec.mobile;
+  const s = phone ? spec.mobile : spec;
+  film.n = s.count; film.crop = phone ? (s.crop || 1) : 1; film.ctx = cv.getContext('2d'); film.on = true; sizeCv();
+  const name = i => `media/walk/${s.prefix}${String(i + 1).padStart(4, '0')}.${spec.ext || 'webp'}`;
+  // coarse frames first, then fill in, so scrubbing works while it loads
+  for (let step = 16; step >= 1; step /= 2) for (let i = 0; i < film.n; i += step) {
+    if (film.imgs[i]) continue;
+    const o = film.imgs[i] = { im: new Image(), ok: false }; o.im.decoding = 'async'; o.im.onload = () => { o.ok = true; film.last = -1; }; o.im.src = name(i);
+  }
+  stillA.style.display = stillB.style.display = 'none';
+}
+function drawFilm(p){
+  const want = Math.round(clamp(p) * (film.n - 1)); let i = -1;
+  for (let d = 0; d < film.n; d++) { if (film.imgs[want - d]?.ok) { i = want - d; break; } if (film.imgs[want + d]?.ok) { i = want + d; break; } }
+  if (i < 0 || i === film.last) return; film.last = i;
+  const im = film.imgs[i].im, cw = cv.width, ch = cv.height, k = Math.max(cw / im.naturalWidth, ch / im.naturalHeight), w = im.naturalWidth * k, h = im.naturalHeight * k;
+  film.ctx.drawImage(im, (cw - w) / 2, (ch - h) / 2, w, h);
+}
+// Map a rectangle given in fractions of the full 16:9 video frame to page pixels in the stage.
+function frameRect(r){
+  const W = stage.clientWidth, H = stage.clientHeight;
+  let { u0, v0, u1, v1 } = r, aspect = 16 / 9;
+  if (film.on && film.crop < 1) { const c = film.crop, off = (1 - c) / 2; u0 = (u0 - off) / c; u1 = (u1 - off) / c; aspect = 16 / 9 * c; }
+  const k = Math.max(W / aspect, H), fw = aspect * k, fh = k, ox = (W - fw) / 2, oy = (H - fh) / 2;
+  return { x: ox + u0 * fw, y: oy + v0 * fh, w: (u1 - u0) * fw, h: (v1 - v0) * fh };
+}
+const WALK_END = .86;               // the video plays over the first 86% of the section, then the screen opens
+function applyWalk(){
+  const r = walkSec.getBoundingClientRect(), span = Math.max(1, r.height - vh), p = clamp(-r.top / span);
+  const fp = clamp(p / WALK_END);
+  if (film.on) drawFilm(fp);
+  else { const k = clamp((fp - .35) / .4); stillA.style.opacity = 1 - k; stillB.style.opacity = k; stillA.style.transform = `scale(${1 + fp * .25})`; stillB.style.transform = `scale(${1.2 - k * .2})`; }
+  const ri = Math.min(3, Math.floor(fp * 4 - .0001));
+  rooms.forEach((el, i) => el.classList.toggle('on', i === ri && p < WALK_END + .02 && r.top < vh * .5));
+  stepEls.forEach((el, i) => el.classList.toggle('on', i === ri));
+  // the laptop screen lights up, then opens to fill the page
+  const glow = clamp((p - (WALK_END - .04)) / .04), grow = ease(clamp((p - WALK_END) / (1 - WALK_END)));
+  const a = frameRect(LAPTOP), W = stage.clientWidth, H = stage.clientHeight;
+  screen.style.opacity = glow.toFixed(3);
+  screen.style.left = lerp(a.x, 0, grow) + 'px'; screen.style.top = lerp(a.y, 0, grow) + 'px';
+  screen.style.width = lerp(a.w, W, grow) + 'px'; screen.style.height = lerp(a.h, H, grow) + 'px';
+  screen.style.borderRadius = lerp(3, 0, grow) + 'px';
+  mini.style.opacity = (1 - grow).toFixed(3); mini.style.fontSize = Math.max(6, a.h * .14) + 'px';
+}
+(async () => { try { const r = await fetch('media/media.json', { cache: 'no-cache' }); if (!r.ok) throw 0; const m = await r.json(); if (m.walk && m.walk.count > 1) startFilm(m.walk); } catch (e) { stillA.style.opacity = 1; } })();
+
+/* ---------- nav colour follows the section under it ---------- */
+const nav = $('#nav'), toned = $$('[data-tone]');
+function navTone(){
+  const y = 40; let tone = 'night';
+  for (const s of toned) { const b = s.getBoundingClientRect(); if (b.top <= y && b.bottom > y) tone = s.dataset.tone; }
+  nav.classList.toggle('paper', tone === 'paper'); nav.classList.toggle('solid', scrollY > 40);
+}
+
+/* ---------- site map: contour lines around the hill ---------- */
+(function map(){
+  const svg = $('#map'), cx = 380, cy = 170; let out = '';
+  for (let k = 0; k < 13; k++) {
+    const R = 22 + k * 26; let d = '';
+    for (let a = 0; a <= 360; a += 4) {
+      const t = a * Math.PI / 180, r = R * (1 + .16 * Math.sin(3 * t + k * .35) + .08 * Math.sin(5 * t - k * .6) + .05 * Math.cos(2 * t + k * .2));
+      const x = cx + Math.cos(t) * r * 1.25, y = cy + Math.sin(t) * r * .85 + k * 6;
+      d += (a ? 'L' : 'M') + x.toFixed(1) + ' ' + y.toFixed(1);
+    }
+    out += `<path class="c${k % 4 === 0 ? ' idx' : ''}" d="${d}Z"/>`;
+  }
+  out += `<path class="road" d="M0 430 C120 400 190 380 250 330 S330 270 352 262"/>`;
+  out += `<path class="pond" d="M318 300c18-14 58-14 74 0s6 34-22 38-70-22-52-38z"/>`;
+  out += `<rect class="here" x="344" y="246" width="18" height="12" transform="rotate(-18 353 252)"/>`;
+  out += `<text x="372" y="244">Casa Măgura · 1,040 m</text><text x="404" y="326">Pond</text><text x="20" y="418">To the village</text>`;
+  out += `<text x="470" y="40">Forest</text><text x="548" y="462">Ridge, 4 km →</text>`;
+  out += `<g transform="translate(596 64)"><path d="M0 -26L8 0H-8z" fill="currentColor" style="color:var(--ink)"/><text x="-4" y="16">N</text></g>`;
+  out += `<g transform="translate(20 460)"><path d="M0 0H100" stroke="var(--ink)" stroke-width="1.5"/><path d="M0 -4V4M50 -3V3M100 -4V4" stroke="var(--ink)"/><text x="108" y="4">100 m</text></g>`;
+  svg.innerHTML = out;
+})();
+
+/* ---------- axonometric drawing of the house ---------- */
+(function axo(){
+  const svg = $('#axo'), s = 22, cx = 250, cy = 150, c30 = Math.cos(Math.PI / 6), s30 = .5;
+  const P = (x, y, z) => [cx + (x - y) * c30 * s, cy + (x + y) * s30 * s - z * s];
+  const pt = p => p.map(v => v.toFixed(1)).join(' ');
+  const W = 9, D = 14, H0 = 3, H1 = 6.5, R = 12.5;   // width across the gable, depth, stone top, eaves, ridge
+  let out = '';
+  const line = (pts, cls = 'ln') => { out += `<path class="${cls}" pathLength="1" d="M${pts.map(p => pt(P(...p))).join('L')}"/>`; };
+  const poly = (pts, cls) => `<path class="${cls}" d="M${pts.map(p => pt(P(...p))).join('L')}Z"/>`;
+  // floor bands (front gable face y = D, and the long side x = W)
+  const bands = {
+    stone: poly([[0, D, 0], [W, D, 0], [W, D, H0], [0, D, H0]], 'band') + poly([[W, 0, 0], [W, D, 0], [W, D, H0], [W, 0, H0]], 'band'),
+    ground: poly([[0, D, H0], [W, D, H0], [W, D, H1], [0, D, H1]], 'band') + poly([[W, 0, H0], [W, D, H0], [W, D, H1], [W, 0, H1]], 'band'),
+    roof: poly([[0, D, H1], [W, D, H1], [W / 2, D, R]], 'band') + poly([[W, 0, H1], [W, D, H1], [W / 2, D, R], [W / 2, 0, R]], 'band'),
+  };
+  out += Object.entries(bands).map(([k, v]) => `<g data-band="${k}">${v}</g>`).join('');
+  // ground
+  line([[-3, D + 3, 0], [W + 3, D + 3, 0]], 'ln thin'); line([[W + 3, D + 3, 0], [W + 3, -3, 0]], 'ln thin');
+  // walls
+  line([[0, D, 0], [W, D, 0], [W, 0, 0]]);
+  line([[0, D, 0], [0, D, H1]]); line([[W, D, 0], [W, D, H1]]); line([[W, 0, 0], [W, 0, H1]]);
+  // stone course and floor slab
+  line([[0, D, H0], [W, D, H0], [W, 0, H0]], 'ln thin');
+  line([[0, D, H1], [W, D, H1]], 'ln thin dash');
+  // roof
+  line([[0, D, H1], [W / 2, D, R], [W, D, H1]]);                 // front gable
+  line([[W / 2, D, R], [W / 2, 0, R]]);                          // ridge
+  line([[W, 0, H1], [W, D, H1]]);                                // eave
+  line([[W, 0, H1], [W / 2, 0, R]]);                             // back gable edge
+  for (let y = 1; y < D; y += 1.4) line([[W, y, H1], [W / 2, y, R]], 'ln thin');   // shingle courses
+  // glass gable on the front: mullions under the roof line
+  const gx0 = 1.5, gx1 = W - 1.5;
+  line([[gx0, D, H0 + .3], [gx1, D, H0 + .3]], 'ln thin');
+  for (let x = gx0; x <= gx1 + .01; x += (gx1 - gx0) / 4) { const top = H1 + (R - H1) * (1 - Math.abs(x - W / 2) / (W / 2)) - .5; line([[x, D, H0 + .3], [x, D, top]], 'ln thin'); }
+  line([[gx0, D, H1 + (R - H1) * (gx0 / (W / 2)) - .5], [W / 2, D, R - .5], [gx1, D, H1 + (R - H1) * ((W - gx1) / (W / 2)) - .5]], 'ln thin');
+  // windows on the long side and the stone floor door
+  [[2.5, 4.3], [6.5, 8.3], [10.5, 12.3]].forEach(([a, b]) => line([[W, a, H0 + 1], [W, b, H0 + 1], [W, b, H0 + 2.6], [W, a, H0 + 2.6], [W, a, H0 + 1]], 'ln thin'));
+  line([[W, 9.5, 0], [W, 9.5, 2.2], [W, 11, 2.2], [W, 11, 0]], 'ln thin');
+  // chimney
+  line([[W * .72, 4, R - 2.2], [W * .72, 4, R + 1], [W * .72, 5, R + 1], [W * .72, 5, R - 2.6]]);
+  // labels
+  const lab = (x, y, z, t, dx = 12) => { const [a, b] = P(x, y, z); out += `<text x="${(a + dx).toFixed(1)}" y="${b.toFixed(1)}">${t}</text>`; };
+  lab(W + 3, 0, H0 / 2, '0  Stone floor'); lab(W + 3, 0, (H0 + H1) / 2, '+1 The hall'); lab(W + 3, 0, H1 + 3, '+2 Under the roof');
+  svg.innerHTML = out;
+  // fit the drawing to its own bounds
+  try { const bb = svg.getBBox(); svg.setAttribute('viewBox', `${(bb.x - 12).toFixed(0)} ${(bb.y - 12).toFixed(0)} ${(bb.width + 24).toFixed(0)} ${(bb.height + 24).toFixed(0)}`); } catch (e) {}
+  const choose = f => { $$('[data-band]', svg).forEach(g => g.querySelectorAll('.band').forEach(b => b.classList.toggle('on', g.dataset.band === f))); $$('.floor').forEach(b => b.setAttribute('aria-pressed', b.dataset.f === f)); };
+  $$('.floor').forEach(b => b.addEventListener('click', () => choose(b.dataset.f)));
+  choose('ground');
+})();
+
+/* ---------- reveals ---------- */
+const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { threshold: .25 });
+$$('.reveal, .draw').forEach(el => io.observe(el));
+
+/* ---------- interior rail ---------- */
+const rail = $('#rail');
+const stepRail = dir => { const f = rail.querySelector('figure'); rail.scrollBy({ left: dir * (f.getBoundingClientRect().width + 16), behavior: reduced ? 'auto' : 'smooth' }); };
+$('#prev').onclick = () => stepRail(-1); $('#next').onclick = () => stepRail(1);
+
+/* ---------- booking ---------- */
+const fIn = $('#in'), fOut = $('#out'), fG = $('#guests'), fE = $('#email'), sum = $('#sum'), err = $('#err');
+fG.innerHTML = Array.from({ length: MAX_GUESTS }, (_, i) => `<option value="${i + 1}"${i === 3 ? ' selected' : ''}>${i + 1} ${i ? 'guests' : 'guest'}</option>`).join('');
+const iso = d => d.toISOString().slice(0, 10), day = 864e5;
+const today = new Date(); today.setHours(12, 0, 0, 0);
+fIn.min = iso(new Date(+today + day)); fIn.value = iso(new Date(+today + 14 * day)); fOut.value = iso(new Date(+today + 17 * day));
+function nights(){ const a = new Date(fIn.value + 'T12:00'), b = new Date(fOut.value + 'T12:00'); return Math.round((b - a) / day); }
+function drawSum(){
+  fOut.min = iso(new Date(new Date(fIn.value + 'T12:00').getTime() + MIN_NIGHTS * day));
+  const n = nights(); err.textContent = '';
+  if (!(n > 0)) { sum.innerHTML = ''; return; }
+  sum.innerHTML = `<div><span>${money(RATE)} × ${n} ${n === 1 ? 'night' : 'nights'}</span><span>${money(RATE * n)}</span></div><div><span>Cleaning</span><span>${money(CLEANING)}</span></div><div class="tot"><span>Total</span><span>${money(RATE * n + CLEANING)}</span></div>`;
+}
+[fIn, fOut].forEach(f => f.addEventListener('change', drawSum)); drawSum();
+$('#book').addEventListener('submit', e => {
+  e.preventDefault(); const n = nights();
+  if (!fIn.value || !fOut.value || n < MIN_NIGHTS) { err.textContent = `Choose at least ${MIN_NIGHTS} nights.`; return; }
+  if (!/^\S+@\S+\.\S+$/.test(fE.value)) { err.textContent = 'Add an email so we can reply.'; fE.focus(); return; }
+  err.textContent = ''; toast(`Request sent for ${n} nights, ${fG.value} guests. We will reply within a day.`);
+});
+
+/* ---------- loop ---------- */
+function frame(){ applyWalk(); navTone(); requestAnimationFrame(frame); }
+addEventListener('resize', () => { vh = innerHeight; fitWord(); if (film.on) sizeCv(); });
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>

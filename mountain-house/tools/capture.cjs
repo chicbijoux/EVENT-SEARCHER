@@ -51,7 +51,7 @@ const lerp = (a, b, t) => a + (b - a) * t;
   const tap = (sel, fn, dt = 0) => T.push([t + dt, sel, fn]);
   const at = (sel, off = 0) => async () => (await p.evaluate(s => window.__top(s), sel)) + off;
 
-  hold(2.6);                                           // the name rises over the pond
+  hold(2.3);                                           // the name rises over the pond
   go(W(0), .9);                                        // into the walk: the first frame is the hero photo
   // the walk: pond, porch, hearth, long window, study, then the laptop opens (about 12.5 s)
   go(W(.30), 3.2, 'soft');                             // over the pond to the porch
@@ -60,9 +60,9 @@ const lerp = (a, b, t) => a + (b - a) * t;
   go(W(.84), 1.9, 'soft');                             // into the study, to the laptop
   hold(.35);
   go(W(1), 2.2, 'soft');                               // the screen opens into the case study
-  hold(.9);                                            // CASA MĂGURA
-  go(at('#analysis', 40), 1.1); hold(1.1);             // the site
-  go(at('#idea', 30), 1.0); hold(.9);                  // the idea
+  go(at('#house'), .7); hold(1.3);                    // CASA MĂGURA
+  go(at('#analysis', 40), 1.0); hold(.9);              // the site
+  go(at('#idea', 30), .9); hold(.8);                   // the idea
   go(at('#function', 20), 1.0);
   tap('.floor[data-f="roof"]', 'click', .4); hold(1.3);    // three floors: tap the roof
   go(at('#interior', 30), 1.0);
